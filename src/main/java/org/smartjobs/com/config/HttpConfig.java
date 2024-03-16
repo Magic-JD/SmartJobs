@@ -12,17 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import java.net.http.HttpClient;
 
 @Configuration
-public class Config {
-
-    @Bean
-    public Gson gson() {
-        return new GsonBuilder()
-                .registerTypeAdapter(GptModel.class, new GsonAdaptors.GptModelTypeAdapter())
-                .registerTypeAdapter(GptRole.class, new GsonAdaptors.GptRoleTypeAdapter())
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create();
-
-    }
+public class HttpConfig {
 
     @Bean
     public HttpClient httpClient() {

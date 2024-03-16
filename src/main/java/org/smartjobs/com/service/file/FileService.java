@@ -1,6 +1,9 @@
 package org.smartjobs.com.service.file;
 
 import jakarta.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.file.data.FileInformation;
 import org.smartjobs.com.service.file.data.FileType;
 import org.smartjobs.com.service.file.textextractor.PdfTextExtractor;
@@ -21,6 +24,7 @@ import java.util.Optional;
 @Service
 public class FileService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
     private final Path fileStorageLocation;
 
     @Autowired
@@ -76,6 +80,7 @@ public class FileService {
     }
 
     public FileInformation handleFile(MultipartFile file) {
+        logger.debug("Handling file {}", file.getOriginalFilename());
         FileType fileType = switch (getFileExtension(file.getOriginalFilename()).orElse("unsupported")) {
             case "pdf" -> FileType.PDF;
             case "txt" -> FileType.TXT;
@@ -83,6 +88,7 @@ public class FileService {
         };
         String text = extractText(file, fileType);
         String fileName = storeFile(file);
+        logger.debug("File with information {} stored at location {}", text, fileName);
         return new FileInformation(fileName, text);
     }
 }

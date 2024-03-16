@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+
 @RestController
 @RequestMapping("/candidate")
 public class CandidateController {
@@ -26,11 +28,12 @@ public class CandidateController {
 
     @PostMapping("/upload")
     public HttpStatus uploadFile(
-            @RequestParam(name = "file", required = false) MultipartFile file
+            @RequestParam(name = "files") MultipartFile[] files
     ) {
-        FileInformation fileInformation = fileService.handleFile(file);
-        candidateService.updateCandidateCv(fileInformation);
-
+        Arrays.stream(files).parallel().forEach(file -> {
+            FileInformation fileInformation = fileService.handleFile(file);
+            candidateService.updateCandidateCv(fileInformation);
+        });
         return HttpStatus.OK;
     }
 }

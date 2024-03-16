@@ -4,11 +4,12 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
+@Getter
 public enum GptModel {
     GPT_3_5("gpt-3.5-turbo"),
+    GPT_4("gpt-4"),
     UNKNOWN("unknown");
 
-    @Getter
     private final String name;
 
     GptModel(String name) {

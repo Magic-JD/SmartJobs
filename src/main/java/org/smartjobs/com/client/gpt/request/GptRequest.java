@@ -1,5 +1,7 @@
 package org.smartjobs.com.client.gpt.request;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartjobs.com.client.gpt.data.GptMessage;
 import org.smartjobs.com.client.gpt.data.GptModel;
 
@@ -10,6 +12,7 @@ import static org.smartjobs.com.client.gpt.data.GptMessage.systemMessage;
 import static org.smartjobs.com.client.gpt.data.GptMessage.userMessage;
 
 public record GptRequest(GptModel model, List<GptMessage> messages) {
+
     private static GptRequest gpt3(GptMessage... messages) {
         return new GptRequest(GptModel.GPT_3_5, Arrays.stream(messages).toList());
     }
@@ -26,8 +29,9 @@ public record GptRequest(GptModel model, List<GptMessage> messages) {
                         You will keep only the relevant information for determining the persons experience at a later date. Time periods of working should be kept. As should any specific skills or tools used.
                         It is important that you remove any details from the summary that reveal the persons name, age, sex or ethnicity.
                         Once you have extracted that information you will review it again and confirm that you have the highest quality answer to match this response.
-                        Then you will return the answer in this json format (using proper quotations)
-                        {name : |THE NAME YOU EXTRACTED|, description : |THE DESCRIPTION YOU EXTRACTED|}.
+                        Then you will return the answer in this json format (using proper quotations).
+                        The only two fields this json object will have is the name and the description. There should be no other fields.
+                        { name : THE NAME YOU EXTRACTED, description : THE DESCRIPTION YOU EXTRACTED}.
                         After you have verified this is valid json please return it."""),
                 userMessage(cvData));
     }

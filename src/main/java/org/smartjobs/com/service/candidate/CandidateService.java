@@ -1,5 +1,7 @@
 package org.smartjobs.com.service.candidate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.client.gpt.response.GptUserExtraction;
 import org.smartjobs.com.repository.CvDAO;
@@ -13,6 +15,8 @@ import java.util.Comparator;
 
 @Service
 public class CandidateService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CandidateService.class);
 
     private final GptClient client;
     private final CvDAO repository;
@@ -31,18 +35,25 @@ public class CandidateService {
                 .condensedText(gptUserExtraction.description())
                 .filePath(fileInformation.filePath())
                 .build();
+        logger.debug("Preparing to save candidate CV as: {}", cv);
         repository.save(cv);
     }
 
     public JobMatch findBestMatchForListing(String listingDescription) {
         return repository.findAll()
                 .parallelStream()
-                .map(cv -> new JobMatch(cv.getCandidateName(), client.determineMatch(listingDescription, cv.getCondensedText()), cv.getFullText(), cv.getFilePath()))
+                .map(cv -> jobMatch(listingDescription, cv))
                 .max(Comparator.comparing(JobMatch::match))
                 .orElseThrow();
     }
 
     public String justifyDecision(int match, String candidateCv, String jobListing) {
         return client.justifyDecision(match, candidateCv, jobListing);
+    }
+
+    private JobMatch jobMatch(String listingDescription, Cv cv) {
+        int matchPercentage = client.determineMatch(listingDescription, cv.getCondensedText());
+        logger.debug("CV {} given a match percentage of {}%", cv.getId(), matchPercentage);
+        return new JobMatch(cv.getCandidateName(), matchPercentage, cv.getFullText(), cv.getFilePath());
     }
 }
