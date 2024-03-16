@@ -38,7 +38,6 @@ public class CandidateController {
     ) {
         FileService.FileInformation fileInformation = fileService.handleFile(file);
 
-        var candidateName = "Need to extract this";
         UploadResponse uploadResponse = new UploadResponse("", fileInformation.fileContent());
 
         return ResponseEntity.ok().body(uploadResponse);

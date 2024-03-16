@@ -22,9 +22,9 @@ import static org.smartjobs.com.client.gpt.request.GptRequest.gpt3;
 @Component
 public class GptClient {
 
-    private HttpClient client;
-    private Gson gson;
-    private URI clientUri;
+    private final HttpClient client;
+    private final Gson gson;
+    private final URI clientUri;
 
     @Value("${gpt.api.key}")
     private String apiKey;
@@ -37,7 +37,7 @@ public class GptClient {
         this.client = client;
         this.gson = gson;
         try {
-            this.clientUri = new URI("https://api.openai.com/v1/chat/completions");
+            this.clientUri = new URI(gptUrl);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
