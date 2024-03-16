@@ -37,7 +37,7 @@ public class GptClient {
         this.client = client;
         this.gson = gson;
         try {
-            this.clientUri = new URI(gptUrl);
+            this.clientUri = new URI("https://api.openai.com/v1/chat/completions");
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
