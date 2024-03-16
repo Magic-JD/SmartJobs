@@ -1,17 +1,14 @@
-package org.smartjobs.com.service;
+package org.smartjobs.com.service.file;
 
 import jakarta.annotation.Nullable;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
+import org.smartjobs.com.service.file.textextractor.PdfTextExtractor;
+import org.smartjobs.com.service.file.textextractor.TxtTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,31 +37,8 @@ public class FileService {
 
     public String extractText(MultipartFile file, FileType fileType) {
         return switch (fileType) {
-            case TXT -> {
-                StringBuilder resultStringBuilder = new StringBuilder();
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        resultStringBuilder.append(line).append(" ");
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                yield resultStringBuilder.toString().replaceAll("[^(\\x00-\\xFF)]+(?:$|\\s*)", "");
-            }
-            case PDF -> {
-                try {
-                    PDDocument document = Loader.loadPDF(file.getBytes());
-                    PDFTextStripper stripper = new PDFTextStripper();
-                    String text = stripper.getText(document);
-                    document.close();
-                    yield text
-                            .replaceAll("[^(\\x00-\\xFF)]+(?:$|\\s*)", "")
-                            .replace("\n", "");
-                } catch (IOException e) {
-                    throw new RuntimeException();
-                }
-            }
+            case TXT -> new TxtTextExtractor().extractText(file);
+            case PDF -> new PdfTextExtractor().extractText(file);
             case UNSUPPORTED -> throw new UnsupportedOperationException();
         };
 
@@ -106,15 +80,7 @@ public class FileService {
             default -> FileType.UNSUPPORTED;
         };
         String text = extractText(file, fileType);
-        return new FileInformation("PATH", text);
-    }
-
-    public record FileInformation(String filePath, String fileContent) {
-    }
-
-    private enum FileType {
-        TXT,
-        PDF,
-        UNSUPPORTED
+        String fileName = storeFile(file);
+        return new FileInformation(fileName, text);
     }
 }

@@ -1,4 +1,4 @@
-package org.smartjobs.com.data;
+package org.smartjobs.com.repository.data;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,9 +17,18 @@ public class Cv {
     @Lob
     @Getter
     @Setter
-    private String text;
+    private String fullText;
+
+    @Lob
+    @Getter
+    @Setter
+    private String condensedText;
 
     @Getter
     @Setter
     private String candidateName;
+
+    @Getter
+    @Setter
+    private String filePath;
 }

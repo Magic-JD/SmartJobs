@@ -1,5 +1,6 @@
 package org.smartjobs.com.config;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.smartjobs.com.client.gpt.data.GptModel;
@@ -18,6 +19,7 @@ public class Config {
         return new GsonBuilder()
                 .registerTypeAdapter(GptModel.class, new GsonAdaptors.GptModelTypeAdapter())
                 .registerTypeAdapter(GptRole.class, new GsonAdaptors.GptRoleTypeAdapter())
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
 
     }
