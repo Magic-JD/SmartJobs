@@ -1,6 +1,8 @@
 package org.smartjobs.com.controller.listing;
 
 import jakarta.validation.Valid;
+import org.smartjobs.com.controller.listing.request.MatchRequest;
+import org.smartjobs.com.controller.listing.response.MatchResponse;
 import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.candidate.data.JobMatch;
 import org.springframework.beans.factory.annotation.Autowired;

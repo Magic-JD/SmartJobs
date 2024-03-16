@@ -1,6 +1,8 @@
 package org.smartjobs.com.service.file;
 
 import jakarta.annotation.Nullable;
+import org.smartjobs.com.service.file.data.FileInformation;
+import org.smartjobs.com.service.file.data.FileType;
 import org.smartjobs.com.service.file.textextractor.PdfTextExtractor;
 import org.smartjobs.com.service.file.textextractor.TxtTextExtractor;
 import org.springframework.beans.factory.annotation.Autowired;

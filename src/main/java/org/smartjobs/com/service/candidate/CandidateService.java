@@ -5,7 +5,7 @@ import org.smartjobs.com.client.gpt.response.GptUserExtraction;
 import org.smartjobs.com.repository.CvDAO;
 import org.smartjobs.com.repository.data.Cv;
 import org.smartjobs.com.service.candidate.data.JobMatch;
-import org.smartjobs.com.service.file.FileInformation;
+import org.smartjobs.com.service.file.data.FileInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

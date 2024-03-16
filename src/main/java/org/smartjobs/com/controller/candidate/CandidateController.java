@@ -1,8 +1,8 @@
 package org.smartjobs.com.controller.candidate;
 
 import org.smartjobs.com.service.candidate.CandidateService;
-import org.smartjobs.com.service.file.FileInformation;
 import org.smartjobs.com.service.file.FileService;
+import org.smartjobs.com.service.file.data.FileInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
