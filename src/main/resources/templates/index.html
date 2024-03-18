@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layout.html}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.ultraq.net.nz/thymeleaf/layout ">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <link href="../style.css" rel="stylesheet" type="text/css">
+        <title>File Upload with HTMX</title>
+        <script crossorigin="anonymous"
+                integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
+                src="https://unpkg.com/htmx.org@1.9.11"></script>
+    </head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+body {
+  background-color: #e8e2e1;
+  /* Light gray background */
+  color: #333;
+  /* Dark text color for better readability */
+  font-family: 'DM Sans', sans-serif;
+  /* Use DM Sans font */
+  font-size: 16px;
+  padding: 0px;
+  margin: 0px;
+}
+
+button {
+  font-family: 'DM Sans', sans-serif;
+  /* Use DM Sans font */
+  font-size: 20px;
+  background-color: #d9534f;
+  /* Muted red color for buttons */
+  color: #fff;
+  /* White text for better contrast */
+  padding: 12px 20px;
+  /* Slightly larger padding for a more comfortable button */
+  border: none;
+  /* Remove button border for a cleaner look */
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 16px 16px;
+  /* Apply margin to all sides for spacing between buttons */
+  display: inline-block;
+  transition: background-color 0.3s; /* Add a smooth transition effect */
+}
+
+button:hover {
+  background-color: #c9302c;
+  /* Darker red color on hover */
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+  font-family: 'DM Sans', sans-serif;
+  /* Use DM Sans font */
+  font-size: 20px;
+  background-color: #d9534f;
+  /* Muted red color for buttons */
+  color: #fff;
+  /* White text for better contrast */
+  padding: 12px 20px;
+  /* Slightly larger padding for a more comfortable button */
+  border: none;
+  /* Remove button border for a cleaner look */
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 16px 16px;
+  /* Apply margin to all sides for spacing between buttons */
+  display: inline-block;
+  transition: background-color 0.3s; /* Add a smooth transition effect */
+}
+
+div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-top: 16px;
+  padding: 20px;
+  /* Increase padding for a cleaner look */
+  margin: 0 auto;
+  width: fit-content;
+  line-height: 1.6;
+  /* Slightly increase line height for better spacing */
+}
+
+h1 {
+  text-align: center;
+}
+
+header {
+  background-color: #d9534f;
+  /* Muted red color*/
+  padding: 25px;
+  /* Adjust padding as needed */
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  flex: 50%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#speech-bubble-gpt {
+    background: #5ac4ed; /* Set the background color of the speech bubble */
+    margin: 16px 16px;
+    -moz-border-radius: 10px; /* Set the border radius for Mozilla Firefox */
+    -webkit-border-radius: 10px; /* Set the border radius for WebKit browsers */
+    border-radius: 10px; /* Set the border radius for other browsers */
+}
+
+#speech-bubble-human {
+    background: #2d449d; /* Set the background color of the speech bubble */
+    margin: 16px 16px;
+    -moz-border-radius: 10px; /* Set the border radius for Mozilla Firefox */
+    -webkit-border-radius: 10px; /* Set the border radius for WebKit browsers */
+    border-radius: 10px; /* Set the border radius for other browsers */
+}
+
+    </style>
+    <body id="mainBody">
+    <section layout:fragment="content">
+        <div class="row">
+            <div class="column">
+                <h1>File Upload</h1>
+                <table id="uploaded" xmlns:th="http://www.w3.org/1999/xhtml">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="val : ${candidates}">
+                        <td th:text="${val}">Value</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <form id="upload-form"
+                      hx-encoding="multipart/form-data"
+                      hx-post="/htmx/candidate/upload"
+                      hx-swap="innerHTML"
+                      hx-target="#uploaded">
+                    <label class="custom-file-upload">
+                        Select Files
+                        <input accept=".txt, .pdf"
+                               id="files"
+                               multiple
+                               name="files"
+                               type="file"> <!-- Adjust accept attribute based on accepted file types -->
+                    </label>
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
+            <div class="column">
+                <h1 id="uploadStatus" xmlns:th="http://www.w3.org/1999/xhtml">Please provide listing</h1>
+                    <textarea cols="50" id="listing" name="listing" rows="4"></textarea><br>
+                    <button hx-include="#listing"
+                            hx-post="http://localhost:8080/htmx/listing/match"
+                            hx-swap="innerHTML"
+                            hx-target="#gptchat"
+                            hx-trigger="click"
+                            type="button">Send
+                    </button>
+            </div>
+        </div>
+        <div id=gptchat xmlns:th="http://www.w3.org/1999/xhtml">
+        </div>
+    </section>
+    </body>
+</html>
+

@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+body {
+  background-color: #e8e2e1;
+  /* Light gray background */
+  color: #333;
+  /* Dark text color for better readability */
+  font-family: 'DM Sans', sans-serif;
+  /* Use DM Sans font */
+  font-size: 16px;
+  padding: 0px;
+  margin: 0px;
+}
+
+button {
+  font-family: 'DM Sans', sans-serif;
+  /* Use DM Sans font */
+  font-size: 20px;
+  background-color: #d9534f;
+  /* Muted red color for buttons */
+  color: #fff;
+  /* White text for better contrast */
+  padding: 12px 20px;
+  /* Slightly larger padding for a more comfortable button */
+  border: none;
+  /* Remove button border for a cleaner look */
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 16px 16px;
+  /* Apply margin to all sides for spacing between buttons */
+  display: inline-block;
+  transition: background-color 0.3s; /* Add a smooth transition effect */
+}
+
+button:hover {
+  background-color: #c9302c;
+  /* Darker red color on hover */
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+  font-family: 'DM Sans', sans-serif;
+  /* Use DM Sans font */
+  font-size: 20px;
+  background-color: #d9534f;
+  /* Muted red color for buttons */
+  color: #fff;
+  /* White text for better contrast */
+  padding: 12px 20px;
+  /* Slightly larger padding for a more comfortable button */
+  border: none;
+  /* Remove button border for a cleaner look */
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 16px 16px;
+  /* Apply margin to all sides for spacing between buttons */
+  display: inline-block;
+  transition: background-color 0.3s; /* Add a smooth transition effect */
+}
+
+div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-top: 16px;
+  padding: 20px;
+  /* Increase padding for a cleaner look */
+  margin: 0 auto;
+  width: fit-content;
+  line-height: 1.6;
+  /* Slightly increase line height for better spacing */
+}
+
+h1 {
+  text-align: center;
+}
+
+header {
+  background-color: #d9534f;
+  /* Muted red color*/
+  padding: 25px;
+  /* Adjust padding as needed */
+  width: 100%;
+}
+
+#speech-bubble-gpt {
+    background: #5ac4ed; /* Set the background color of the speech bubble */
+    margin: 16px 16px;
+    -moz-border-radius: 10px; /* Set the border radius for Mozilla Firefox */
+    -webkit-border-radius: 10px; /* Set the border radius for WebKit browsers */
+    border-radius: 10px; /* Set the border radius for other browsers */
+}
+
+#speech-bubble-human {
+    background: #2d449d; /* Set the background color of the speech bubble */
+    margin: 16px 16px;
+    -moz-border-radius: 10px; /* Set the border radius for Mozilla Firefox */
+    -webkit-border-radius: 10px; /* Set the border radius for WebKit browsers */
+    border-radius: 10px; /* Set the border radius for other browsers */
+}

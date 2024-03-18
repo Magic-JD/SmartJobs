@@ -1,0 +1,12 @@
+<table id="uploaded">
+    <thead>
+    <tr>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="val : ${candidates}">
+        <td th:text="${val}">Value</td>
+    </tr>
+    </tbody>
+</table>

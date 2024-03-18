@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class FileService {
@@ -61,7 +62,7 @@ public class FileService {
 
     public String storeFile(MultipartFile file) {
         // Normalize file name
-        String fileName = getFileExtension(file.getOriginalFilename()).map(fn -> new Date().getTime() + "-file." + fn).orElseThrow();
+        String fileName = getFileExtension(file.getOriginalFilename()).map(fn -> UUID.randomUUID() + "." + fn).orElseThrow();
 
         try {
             // Check if the filename contains invalid characters

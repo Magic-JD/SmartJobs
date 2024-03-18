@@ -1,7 +1,5 @@
 package org.smartjobs.com.client.gpt.request;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartjobs.com.client.gpt.data.GptMessage;
 import org.smartjobs.com.client.gpt.data.GptModel;
 
@@ -11,28 +9,36 @@ import java.util.List;
 import static org.smartjobs.com.client.gpt.data.GptMessage.systemMessage;
 import static org.smartjobs.com.client.gpt.data.GptMessage.userMessage;
 
-public record GptRequest(GptModel model, List<GptMessage> messages) {
+public record GptRequest(GptModel model, double temperature, double topP, List<GptMessage> messages) {
 
     private static GptRequest gpt3(GptMessage... messages) {
-        return new GptRequest(GptModel.GPT_3_5, Arrays.stream(messages).toList());
+        return new GptRequest(GptModel.GPT_3_5, 0.1, 0.2, Arrays.stream(messages).toList());
     }
 
-    public static GptRequest informationExtractionRequest(String cvData) {
+    public static GptRequest extractCandidateName(String cvData) {
         return gpt3(
                 systemMessage("""
-                        You are an expert in information extraction that only returns answers in a json format.
+                        You are an expert on finding names in a CV document.
+                         You will be able to scan the document and reliably and consistently find the name of the candidate from the document.
+                         You will then return the name and only the name. You will not return any additional information.
+                         Only return the candidates name. If you can't find the name then please answer with NAME_NOT_FOUND.
+                        """),
+                userMessage(cvData));
+    }
+
+    public static GptRequest anonymousCandidateDescription(String cvData) {
+        return gpt3(
+                systemMessage("""
+                        You are an expert in information extraction.
                         You will take a cv, and you will do two things.
-                        First you will determine what the name of the applicant is.
-                        You can deduce from the text what the applicants name is.
-                        Then you will summarize the rest of the cv in the most condensed way possible, maintaining the key information.
+                        You will summarize the rest of the cv in the most condensed way possible, maintaining the key information.
                         It is not important it is easy for a human to read. It only has to be easy for an ai model to read.
                         You will keep only the relevant information for determining the persons experience at a later date. Time periods of working should be kept. As should any specific skills or tools used.
-                        It is important that you remove any details from the summary that reveal the persons name, age, sex or ethnicity.
+                        It is important that you remove any details from the summary that reveal the persons name, age, sex, sexual orientation or ethnicity.
+                        If they have information that is specific about these then replace them with a neutral replacement (e.g. replace Fraternity with Social Club or All Girls High School with High School)
                         Once you have extracted that information you will review it again and confirm that you have the highest quality answer to match this response.
-                        Then you will return the answer in this json format (using proper quotations).
-                        The only two fields this json object will have is the name and the description. There should be no other fields.
-                        { name : THE NAME YOU EXTRACTED, description : THE DESCRIPTION YOU EXTRACTED}.
-                        After you have verified this is valid json please return it."""),
+                        Then return only this information with no additional commentary
+                        """),
                 userMessage(cvData));
     }
 

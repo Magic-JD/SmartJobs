@@ -1,66 +1,72 @@
 package org.smartjobs.com.controller.htmx;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
+import jakarta.websocket.server.PathParam;
 import org.smartjobs.com.controller.candidate.CandidateController;
 import org.smartjobs.com.controller.listing.ListingController;
 import org.smartjobs.com.controller.listing.request.MatchRequest;
+import org.smartjobs.com.controller.listing.response.MatchResponse;
+import org.smartjobs.com.controller.listing.response.TopMatch;
+import org.smartjobs.com.service.candidate.CandidateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@RestController
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Controller
 @RequestMapping("/htmx")
 public class HtmxController {
 
     private final CandidateController candidateController;
+
+    private final CandidateService candidateService;
     private final ListingController listingController;
 
     @Autowired
-    public HtmxController(ListingController listingController, CandidateController candidateController) {
+    public HtmxController(ListingController listingController, CandidateController candidateController, CandidateService candidateService) {
         this.candidateController = candidateController;
         this.listingController = listingController;
+        this.candidateService = candidateService;
     }
 
-    @HxRequest
     @PostMapping("/candidate/upload")
-    public String uploadFile(
-            @RequestParam(name = "files") MultipartFile[] files
+    public String uploadFile(Model model, @RequestParam(name = "files") MultipartFile[] files
     ) {
         HttpStatus httpStatus = candidateController.uploadFile(files);
-        String html = """
-                    <h1 id="uploadStatus">Uploaded - Please provide listing</h1>
-                    <br>
-                    <div>
-                        <textarea id="listing"
-                                  name="listing"
-                                  rows="4"
-                                  cols="50"></textarea><br>
-                        <button type="button"
-                                hx-post="http://localhost:8080/htmx/listing/match"
-                                hx-include="#listing"
-                                hx-trigger="click"
-                                hx-target="#mainBody"
-                                hx-swap"innerHTML">Send</button>
-                    </div>
-                    <div id="responseDiv"></div>
-                """;
-        return switch (httpStatus) {
-            case OK -> html;
-            default -> "There was an issue with uploading the files";
-        };
+        List<String> candidates = candidateService.getCurrentCandidates();
+        model.addAttribute("candidates", candidates);
+        return "table";
     }
 
-    @HxRequest
     @PostMapping("/listing/match")
-    @ResponseBody
-    public String evaluateCandidate(@RequestParam String listing) {
-        String justification = listingController.evaluateCandidate(new MatchRequest(listing)).getBody().justification();
-        return STR. """
-        <div>
-        <div id="speech-bubble-gpt">\{ justification }</div>
-        <textarea id="ask-futher" name="ask-further" rows="4" cols="50"></textarea>
-        </div>
-        """ ;
+    public String evaluateCandidate(@RequestParam String listing, Model model) {
+        MatchResponse response = listingController.evaluateCandidate(new MatchRequest(listing)).getBody();
+        List<TopMatch> topMatches = response.topMatches();
+        String topScorers = topMatches.stream()
+                .map(tm -> STR. "Name: \{ tm.name() } - Percentage Match: \{ tm.matchPercentage() }%" )
+                .collect(Collectors.joining("<br>"));
+        String topScorerName = topMatches.getFirst().name();
+        String gptResponse = response.justification();
+        String justification = STR."""
+        <p>
+        The top five candidates were
+        <br>
+        <br>
+        \{topScorers}
+        <br>
+        <br>
+        Overall \{topScorerName} scored the highest. This is why they were picked:
+        <br>
+        <br>
+        \{gptResponse}
+        </p>
+        """;
+        model.addAttribute("justification", justification);
+        return "gptchat";
     }
 }

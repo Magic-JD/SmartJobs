@@ -12,6 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
+import static java.util.concurrent.CompletableFuture.allOf;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 @Service
 public class CandidateService {
@@ -27,8 +33,16 @@ public class CandidateService {
         this.repository = repository;
     }
 
+    public List<String> getCurrentCandidates() {
+        return repository.findAll().stream().map(Cv::getCandidateName).toList();
+    }
+
     public void updateCandidateCv(FileInformation fileInformation) {
-        GptUserExtraction gptUserExtraction = client.parseCandidateData(fileInformation.fileContent());
+        var nameFuture = supplyAsync(() -> client.extractCandidateName(fileInformation.fileContent()));
+        var descriptionFuture = supplyAsync(() -> client.anonymousCandidateDescription(fileInformation.fileContent()));
+        String name = nameFuture.join();
+        String cvDescription = descriptionFuture.join();
+        GptUserExtraction gptUserExtraction = new GptUserExtraction(name, cvDescription);
         Cv cv = Cv.builder()
                 .candidateName(gptUserExtraction.name())
                 .fullText(fileInformation.fileContent())
@@ -39,12 +53,15 @@ public class CandidateService {
         repository.save(cv);
     }
 
-    public JobMatch findBestMatchForListing(String listingDescription) {
-        return repository.findAll()
+    public List<JobMatch> findBestMatchForListing(String listingDescription) {
+        List<JobMatch> jobMatch = repository.findAll()
                 .parallelStream()
-                .map(cv -> jobMatch(listingDescription, cv))
-                .max(Comparator.comparing(JobMatch::match))
-                .orElseThrow();
+                .map(cv -> jobMatch(listingDescription, cv)).toList();
+        return jobMatch
+                .stream()
+                .sorted(Comparator.comparing(JobMatch::match, Comparator.reverseOrder()))
+                .limit(5)
+                .toList();
     }
 
     public String justifyDecision(int match, String candidateCv, String jobListing) {
@@ -53,7 +70,7 @@ public class CandidateService {
 
     private JobMatch jobMatch(String listingDescription, Cv cv) {
         int matchPercentage = client.determineMatch(listingDescription, cv.getCondensedText());
-        logger.debug("CV {} given a match percentage of {}%", cv.getId(), matchPercentage);
+        logger.debug("CV ID:{} NAME:{} given a match percentage of {}%", cv.getId(), cv.getCandidateName(), matchPercentage);
         return new JobMatch(cv.getCandidateName(), matchPercentage, cv.getFullText(), cv.getFilePath());
     }
 }

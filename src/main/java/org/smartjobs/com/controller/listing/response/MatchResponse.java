@@ -1,4 +1,7 @@
 package org.smartjobs.com.controller.listing.response;
 
-public record MatchResponse(String justification, String fileLocation) {
+import java.util.List;
+
+public record MatchResponse(List<TopMatch> topMatches, String justification, String fileLocation) {
 }
+

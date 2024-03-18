@@ -51,14 +51,21 @@ public class GptClient {
                 .collect(Collectors.joining("\n"));
     }
 
-    public GptUserExtraction parseCandidateData(String cvData) {
-        GptRequest gptRequest = informationExtractionRequest(cvData);
+    public String extractCandidateName(String cvData) {
+        GptRequest gptRequest = GptRequest.extractCandidateName(cvData);
         GptResponse response = sendMessage(gptRequest);
         return response.choices().stream()
                 .map(choice -> choice.message().content())
-                .findFirst()
-                .map(this::extractJsonResponse)
-                .orElseThrow();
+                .collect(Collectors.joining("\n"));
+    }
+
+    public String anonymousCandidateDescription(String cvData) {
+        GptRequest gptRequest = GptRequest.anonymousCandidateDescription(cvData);
+        GptResponse response = sendMessage(gptRequest);
+        return response.choices().stream()
+                .map(choice -> choice.message().content())
+                .collect(Collectors.joining("\n"));
+
     }
 
     public int determineMatch(String listingDescription, String candidateDescription) {
@@ -79,7 +86,7 @@ public class GptClient {
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiKey)
-                .timeout(java.time.Duration.ofSeconds(20))
+                .timeout(java.time.Duration.ofSeconds(60))
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(request)))
                 .build();
         try {
