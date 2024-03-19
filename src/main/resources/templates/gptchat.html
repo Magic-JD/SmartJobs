@@ -1,4 +1,5 @@
 <div id=gptchat xmlns:th="http://www.w3.org/1999/xhtml">
     <div id="speech-bubble-gpt" th:utext="${justification}"></div>
-    <textarea cols="50" id="ask-futher" name="ask-further" rows="4"></textarea>
+    <a class="button" th:href="@{|/files/${id}|}" th:text="${buttonText}"></a>
+    <textarea cols="50" id="ask-further" name="ask-further" rows="4"></textarea>
 </div>

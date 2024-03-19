@@ -1,7 +1,5 @@
 package org.smartjobs.com.controller.htmx;
 
-import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
-import jakarta.websocket.server.PathParam;
 import org.smartjobs.com.controller.candidate.CandidateController;
 import org.smartjobs.com.controller.listing.ListingController;
 import org.smartjobs.com.controller.listing.request.MatchRequest;
@@ -12,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -67,6 +67,8 @@ public class HtmxController {
         </p>
         """;
         model.addAttribute("justification", justification);
+        model.addAttribute("buttonText", STR."Download " + topScorerName + "s CV");
+        model.addAttribute("id", topMatches.getFirst().cvDownload());
         return "gptchat";
     }
 }

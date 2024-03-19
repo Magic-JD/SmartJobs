@@ -3,7 +3,6 @@ package org.smartjobs.com.service.file;
 import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.file.data.FileInformation;
 import org.smartjobs.com.service.file.data.FileType;
 import org.smartjobs.com.service.file.textextractor.PdfTextExtractor;
@@ -13,12 +12,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -91,5 +90,10 @@ public class FileService {
         String fileName = storeFile(file);
         logger.debug("File with information {} stored at location {}", text, fileName);
         return new FileInformation(fileName, text);
+    }
+
+    public File getFile(String id) {
+        Path targetLocation = this.fileStorageLocation.resolve(id);
+        return targetLocation.toFile();
     }
 }
