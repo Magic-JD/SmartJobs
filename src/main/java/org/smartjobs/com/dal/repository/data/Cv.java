@@ -1,4 +1,4 @@
-package org.smartjobs.com.repository.data;
+package org.smartjobs.com.dal.repository.data;
 
 import jakarta.persistence.*;
 import lombok.*;

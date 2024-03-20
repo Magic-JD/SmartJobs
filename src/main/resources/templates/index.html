@@ -182,7 +182,7 @@ header {
                 </table>
                 <form id="upload-form"
                       hx-encoding="multipart/form-data"
-                      hx-post="/htmx/candidate/upload"
+                      hx-post="/candidate/upload"
                       hx-swap="innerHTML"
                       hx-target="#uploaded">
                     <label class="custom-file-upload">
@@ -200,7 +200,7 @@ header {
                 <h1 id="uploadStatus" xmlns:th="http://www.w3.org/1999/xhtml">Please provide listing</h1>
                     <textarea cols="50" id="listing" name="listing" rows="4"></textarea><br>
                     <button hx-include="#listing"
-                            hx-post="http://localhost:8080/htmx/listing/match"
+                            hx-post="http://localhost:8080/candidate/match"
                             hx-swap="innerHTML"
                             hx-target="#gptchat"
                             hx-trigger="click"

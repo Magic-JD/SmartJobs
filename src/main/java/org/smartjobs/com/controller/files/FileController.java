@@ -1,4 +1,4 @@
-package org.smartjobs.com.controller;
+package org.smartjobs.com.controller.files;
 
 import org.smartjobs.com.service.file.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,13 @@ public class FileController {
     @Autowired
     private FileService fileService;
 
-    @GetMapping("/files/{id}")
+    @GetMapping("/files/{topScorerCv}")
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
         File fileDB = fileService.getFile(id);
 
         try {
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, STR. "attachment; filename=\{ fileDB.getName() }" )
                     .body(Files.readAllBytes(fileDB.toPath()));
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(null);

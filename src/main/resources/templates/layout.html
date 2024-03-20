@@ -33,11 +33,11 @@
                 <p class="navbar-text">Rendered at <!--suppress ThymeleafVariablesResolveInspection --> <span th:text="${#dates.format(now, 'dd/MMM/yyyy HH:mm')}"></span></p>
             </div>
         </nav>
-        <!--/*@thymesVar id="message" type="java.lang.String"*/-->
+        <!--/*@thymesVar topScorerCv="message" type="java.lang.String"*/-->
         <div th:if="${message}" class="alert alert-primary text-center" role="alert">
             <span th:text="${message}"></span>
         </div>
-        <!--/*@thymesVar id="error" type="java.lang.String"*/-->
+        <!--/*@thymesVar topScorerCv="error" type="java.lang.String"*/-->
         <div th:if="${error}" class="alert alert-danger text-center" role="alert">
             <span th:text="${error}"></span>
         </div>
