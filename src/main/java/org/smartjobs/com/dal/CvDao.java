@@ -1,9 +1,11 @@
 package org.smartjobs.com.dal;
 
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartjobs.com.dal.repository.CvRepository;
 import org.smartjobs.com.dal.repository.data.Cv;
+import org.smartjobs.com.service.candidate.data.CandidateData;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,8 +35,8 @@ public class CvDao {
         repository.saveAllAndFlush(cvs);
     }
 
-    public List<String> getAllNames() {
-        return repository.findAll().stream().map(Cv::getCandidateName).toList();
+    public List<CandidateData> getAllNames() {
+        return repository.findAll().stream().map(cv -> new CandidateData(cv.getCandidateName(), cv.getFilePath())).toList();
     }
 
     public List<ProcessedCv> getAll() {
@@ -46,5 +48,20 @@ public class CvDao {
                         cv.getCondensedText(),
                         cv.getFullText()))
                 .toList();
+    }
+
+    @Transactional
+    public void deleteByFilePath(String filePath) {
+        repository.deleteByFilePath(filePath);
+    }
+
+    public void addCvToRepository(ProcessedCv cv) {
+        repository.saveAndFlush(Cv.builder()
+                .candidateName(cv.name())
+                .fullText(cv.fullDescription())
+                .condensedText(cv.condensedDescription())
+                .filePath(cv.fileLocation())
+                .build());
+
     }
 }

@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.dal.CvDao;
-import org.smartjobs.com.service.candidate.data.JobMatch;
-import org.smartjobs.com.service.candidate.data.ListingAnalysis;
-import org.smartjobs.com.service.candidate.data.ProcessedCv;
-import org.smartjobs.com.service.candidate.data.TopMatch;
+import org.smartjobs.com.service.candidate.data.*;
 import org.smartjobs.com.service.file.data.FileInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -37,20 +35,18 @@ public class CandidateService {
         this.maxTop = maxTop;
     }
 
-    public List<String> getCurrentCandidates() {
+    public List<CandidateData> getCurrentCandidates() {
         return cvDao.getAllNames();
     }
 
-    public List<ProcessedCv> updateCandidateCvs(List<FileInformation> fileInformationList) {
-        List<ProcessedCv> processedCvs = fileInformationList.parallelStream().map(fileInformation -> {
+    public void updateCandidateCvs(Stream<FileInformation> fileInformationList) {
+        fileInformationList.forEach(fileInformation -> {
             var nameFuture = supplyAsync(() -> client.extractCandidateName(fileInformation.fileContent()));
             var descriptionFuture = supplyAsync(() -> client.anonymousCandidateDescription(fileInformation.fileContent()));
             String name = nameFuture.join();
             String cvDescription = descriptionFuture.join();
-            return new ProcessedCv(name, fileInformation.filePath(), cvDescription, fileInformation.fileContent());
-        }).toList();
-        cvDao.addCvsToRepository(processedCvs);
-        return processedCvs;
+            cvDao.addCvToRepository(new ProcessedCv(name, fileInformation.filePath(), cvDescription, fileInformation.fileContent()));
+        });
     }
 
     public Optional<ListingAnalysis> analyseListing(String listing) {
@@ -74,5 +70,9 @@ public class CandidateService {
         int matchPercentage = client.determineMatchPercentage(listingDescription, cv.condensedDescription());
         logger.debug("CV ID:{} NAME:{} given a match percentage of {}%", cv.fileLocation(), cv.name(), matchPercentage);
         return new JobMatch(cv.name(), matchPercentage, cv.fullDescription(), cv.fileLocation());
+    }
+
+    public void deleteCandidate(String filePath) {
+        cvDao.deleteByFilePath(filePath);
     }
 }

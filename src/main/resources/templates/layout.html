@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ultraq.net.nz/thymeleaf/layout ">
+<html lang="en" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -41,7 +41,7 @@
         <div th:if="${error}" class="alert alert-danger text-center" role="alert">
             <span th:text="${error}"></span>
         </div>
-        <section layout:fragment="content">
+        <section th:insert="content">
             <p>Page content goes here</p>
         </section>
         <img alt="Loading Indicator" class="htmx-indicator" src="https://raw.githubusercontent.com/SamHerbert/SVG-Loaders/master/svg-loaders/spinning-circles.svg"/>

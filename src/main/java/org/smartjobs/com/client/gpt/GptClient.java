@@ -84,7 +84,7 @@ public class GptClient {
     }
 
     private GptResponse sendMessage(GptRequest request) {
-        logger.debug("Calling GPT with request: {}", request);
+        logger.trace("Calling GPT with request: {}", request);
         HttpRequest httpRequest = createRequest(request);
         try {
             HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
@@ -92,7 +92,7 @@ public class GptClient {
                 throw new RuntimeException();
             }
             GptResponse gptResponse = gson.fromJson(response.body(), GptResponse.class);
-            logger.debug("Received response from GPT: {}", gptResponse);
+            logger.trace("Received response from GPT: {}", gptResponse);
             GptUsage usage = gptResponse.usage();
             logger.info("Token spent: Prompt {}, Completion, {} Total, {}", usage.promptTokens(), usage.completionTokens(), usage.totalTokens());
             return gptResponse;

@@ -99,6 +99,15 @@ header {
   width: 100%;
 }
 
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.column {
+  flex: 50%;
+}
+
 #speech-bubble-gpt {
     background: #5ac4ed; /* Set the background color of the speech bubble */
     margin: 16px 16px;

@@ -96,4 +96,12 @@ public class FileService {
         Path targetLocation = this.fileStorageLocation.resolve(id);
         return targetLocation.toFile();
     }
+
+    public void deleteFile(String filePath) {
+        try {
+            Files.delete(this.fileStorageLocation.resolve(filePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

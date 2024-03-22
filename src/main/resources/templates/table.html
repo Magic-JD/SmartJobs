@@ -1,12 +1,17 @@
-<table id="uploaded">
+<table id="uploaded" th:fragment="table" hx-get="/candidate" hx-swap="outerHTML swap" hx-trigger="on load">
     <thead>
     <tr>
         <th>Name</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="val : ${candidates}">
-        <td th:text="${val}">Value</td>
+    <tbody hx-target="closest tr" hx-swap="outerHTML swap">
+    <tr th:each="candidate : ${candidates}">
+        <td th:text="${candidate.name}">Value</td>
+        <td>
+            <button class='btn btn-danger' th:attr="hx-delete=@{|/candidate/delete/${candidate.uuid}|}">
+                Delete
+            </button>
+        </td>
     </tr>
     </tbody>
 </table>

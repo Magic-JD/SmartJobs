@@ -2,17 +2,13 @@ package org.smartjobs.com.controller.candidate;
 
 import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.file.FileService;
-import org.smartjobs.com.service.file.data.FileInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Controller
 @RequestMapping("/candidate")
@@ -29,10 +25,24 @@ public class CandidateController {
 
     @PostMapping("/upload")
     public String uploadFile(Model model, @RequestParam(name = "files") MultipartFile[] files) {
-        List<FileInformation> handledFiles = Arrays.stream(files).map(fileService::handleFile).toList();
+        var handledFiles = Arrays.stream(files).parallel().map(fileService::handleFile);
         candidateService.updateCandidateCvs(handledFiles);
         model.addAttribute("candidates", candidateService.getCurrentCandidates());
         return "table";
+    }
+
+    @GetMapping()
+    public String getAllCandidates(Model model) {
+        var candidates = candidateService.getCurrentCandidates();
+        model.addAttribute("candidates", candidates);
+        return "table";
+    }
+
+    @DeleteMapping("/delete/{filePath}")
+    @ResponseBody
+    public void deleteCandidate(@PathVariable String filePath) {
+        fileService.deleteFile(filePath);
+        candidateService.deleteCandidate(filePath);
     }
 
     @PostMapping("/match")
