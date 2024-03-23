@@ -1,10 +1,10 @@
-<table id="uploaded" th:fragment="table" hx-get="/candidate" hx-swap="outerHTML swap">
+<table id="uploaded" th:fragment="table">
     <thead>
     <tr>
         <th>Name</th>
     </tr>
     </thead>
-    <tbody hx-target="closest tr" hx-swap="outerHTML swap">
+    <tbody hx-target="closest tr" hx-swap="outerHTML">
     <tr th:each="candidate : ${candidates}">
         <td th:text="${candidate.name}">Value</td>
         <td>

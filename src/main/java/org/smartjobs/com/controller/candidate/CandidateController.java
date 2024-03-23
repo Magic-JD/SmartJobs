@@ -40,9 +40,10 @@ public class CandidateController {
 
     @DeleteMapping("/delete/{filePath}")
     @ResponseBody
-    public void deleteCandidate(@PathVariable String filePath) {
+    public String deleteCandidate(@PathVariable String filePath) {
         fileService.deleteFile(filePath);
         candidateService.deleteCandidate(filePath);
+        return "";
     }
 
     @PostMapping("/match")

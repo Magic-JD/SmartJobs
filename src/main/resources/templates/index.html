@@ -14,45 +14,8 @@
     </head>
     <body id="mainBody">
     <header class="header-bar">
-        <a class="login-button" th:href="@{/private/}">Login</a>
+        <a class="login-button" th:href="@{/login}">Login</a>
     </header>
-    <section layout:fragment="content">
-        <div class="row">
-            <div class="column" hx-get="/candidate" hx-swap="innerHTML" hx-target="#uploaded" hx-trigger="load">
-                <h1>File Upload</h1>
-                <table th:insert="table">
-                </table>
-                <form id="upload-form"
-                      hx-encoding="multipart/form-data"
-                      hx-post="/candidate/upload"
-                      hx-swap="innerHTML"
-                      hx-target="#uploaded">
-                    <label class="custom-file-upload">
-                        Select Files
-                        <input accept=".txt, .pdf"
-                               id="files"
-                               multiple
-                               name="files"
-                               type="file"> <!-- Adjust accept attribute based on accepted file types -->
-                    </label>
-                    <button type="submit">Upload</button>
-                </form>
-            </div>
-            <div class="column">
-                <h1 id="uploadStatus" xmlns:th="http://www.w3.org/1999/xhtml">Please provide listing</h1>
-                    <textarea cols="50" id="listing" name="listing" rows="4"></textarea><br>
-                    <button hx-include="#listing"
-                            hx-post="/candidate/match"
-                            hx-swap="innerHTML"
-                            hx-target="#gptchat"
-                            hx-trigger="click"
-                            type="button">Send
-                    </button>
-            </div>
-        </div>
-        <div id=gptchat xmlns:th="http://www.w3.org/1999/xhtml">
-        </div>
-    </section>
     </body>
 </html>
 
