@@ -1,6 +1,7 @@
 package org.smartjobs.com.controller.candidate;
 
 import org.smartjobs.com.service.candidate.CandidateService;
+import org.smartjobs.com.service.credit.CreditService;
 import org.smartjobs.com.service.file.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,20 +17,26 @@ public class CandidateController {
 
     private final CandidateService candidateService;
     private final FileService fileService;
+    private final CreditService creditService;
 
     @Autowired
-    public CandidateController(FileService fileService, CandidateService candidateService) {
+    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService) {
         this.fileService = fileService;
         this.candidateService = candidateService;
+        this.creditService = creditService;
     }
 
     @PostMapping("/upload")
     public String uploadFile(Model model, @RequestParam(name = "files") MultipartFile[] files) {
+        if (!creditService.userHasEnoughCredits()) {
+            throw new RuntimeException();
+        }
         var handledFiles = Arrays.stream(files).parallel().map(fileService::handleFile);
         candidateService.updateCandidateCvs(handledFiles);
         model.addAttribute("candidates", candidateService.getCurrentCandidates());
         return "table";
     }
+
 
     @GetMapping()
     public String getAllCandidates(Model model) {
