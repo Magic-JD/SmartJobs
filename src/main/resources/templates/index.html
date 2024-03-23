@@ -10,11 +10,15 @@
         <script crossorigin="anonymous"
                 integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
                 src="https://unpkg.com/htmx.org@1.9.11"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/sse.js"></script>
     </head>
     <body id="mainBody">
+    <header class="header-bar">
+        <a class="login-button" th:href="@{/private/}">Login</a>
+    </header>
     <section layout:fragment="content">
         <div class="row">
-            <div class="column">
+            <div class="column" hx-get="/candidate" hx-swap="innerHTML" hx-target="#uploaded" hx-trigger="load">
                 <h1>File Upload</h1>
                 <table th:insert="table">
                 </table>
@@ -38,7 +42,7 @@
                 <h1 id="uploadStatus" xmlns:th="http://www.w3.org/1999/xhtml">Please provide listing</h1>
                     <textarea cols="50" id="listing" name="listing" rows="4"></textarea><br>
                     <button hx-include="#listing"
-                            hx-post="http://localhost:8080/candidate/match"
+                            hx-post="/candidate/match"
                             hx-swap="innerHTML"
                             hx-target="#gptchat"
                             hx-trigger="click"

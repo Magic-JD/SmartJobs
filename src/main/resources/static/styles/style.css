@@ -99,6 +99,37 @@ header {
   width: 100%;
 }
 
+/* Style the header bar */
+.header-bar {
+    background-color: #4CAF50; /* Green */
+    height: 50px; /* Adjust the height as needed */
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-left: 20px;
+    box-sizing: border-box;
+}
+
+/* Style the login button */
+.login-button {
+    background-color: white;
+    border: none;
+    color: #4CAF50;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 0;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
 .row {
   display: flex;
   flex-direction: row;
