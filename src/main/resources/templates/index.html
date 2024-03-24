@@ -1,21 +1,66 @@
 <!DOCTYPE html>
-<html lang="en" layout:decorate="~{layout.html}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.ultraq.net.nz/thymeleaf/layout ">
-    <head>
-        <meta charset="UTF-8">
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <title>File Upload with HTMX</title>
-        <link th:rel="stylesheet" th:href="@{/styles/style.css}"/>
-        <script crossorigin="anonymous"
-                integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
-                src="https://unpkg.com/htmx.org@1.9.11"></script>
-        <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/sse.js"></script>
-    </head>
-    <body id="mainBody">
-    <header class="header-bar">
-        <a class="login-button" th:href="@{/login}">Login</a>
-    </header>
+<html lang="en">
+<head th:replace="head"></head>
+<body id="mainBody" class="background wrapper">
+<header th:replace="header"></header>
+<main>
+    <div>
+        <div class="heading">
+            <h1 class="landing-text text-xl">Smart Jobs</h1>
+            <p class="landing-text text-medium tagline">Simple. Secure. Smarter</p>
+        </div>
+        <div class="heading landing-text text-small">
+            <p class="spaced-paragraph">Welcome to Smart Jobs, the next-generation recruitment platform that
+                revolutionizes the way you find and hire top talent. With our cutting-edge AI technology, recruiters can
+                now streamline the candidate screening process like never before, saving time, effort, and resources
+                while identifying the perfect fit for every position.
+            </p>
+            <p class="spaced-paragraph">
+            <h3 class="text-medium">Efficiency Redefined</h3>
+            <snippet>
+                Gone are the days of manually sifting through countless resumes and cover letters. With Smart Jobs,
+                recruiters can upload CVs and let our AI algorithms do the heavy lifting. Our intelligent system swiftly
+                scans and analyzes applicant data, extracting key information such as skills, qualifications, and
+                experience with unmatched accuracy and speed.
+            </snippet>
+            </p><p class="spaced-paragraph">
+            <h3 class="text-medium">Precision Selection</h3>
+            <snippet>
+                Say goodbye to guesswork and hello to data-driven decision-making. Smart Jobs utilizes advanced machine
+                learning capabilities to intelligently rank and categorize candidates based on their suitability for the
+                role. By identifying the most promising candidates upfront, recruiters can focus their efforts on
+                engaging with the best prospects, leading to faster and more successful hires.
+            </snippet>
+            </p><p class="spaced-paragraph">
+            <h3 class="text-medium">Bias-Free Recruitment </h3>
+            <snippet>
+                Diversity and inclusion are at the core of our mission. Smart Jobs helps mitigate unconscious bias by
+                evaluating candidates solely on their qualifications and potential, regardless of demographic background
+                or personal characteristics. By promoting fairness and objectivity in the hiring process, we empower
+                organizations to build more diverse and high-performing teams.
+            </snippet>
+            </p><p class="spaced-paragraph">
+            <h3 class="text-medium"> Insightful Analytics </h3>
+            <snippet>
+                Empower your recruitment strategy with actionable insights and comprehensive analytics. Smart Jobs
+                provides real-time visibility into recruitment metrics, allowing recruiters to track key performance
+                indicators such as time-to-fill, cost-per-hire, and candidate quality. With our intuitive dashboard, you
+                can make informed decisions, identify areas for improvement, and optimize your hiring process for
+                maximum efficiency.
+            </snippet>
+            </p><p class="spaced-paragraph">
+            <h3 class="text-medium"> Get Started Today </h3>
+            <snippet>
+                Join the ranks of leading organizations that trust Smart Jobs to transform their recruitment efforts.
+                Whether you're a small business looking to expand your team or a large enterprise seeking top talent,
+                our AI-powered platform is your ultimate recruitment solution. Sign up now and experience the future of
+                hiring with Smart Jobs.
+            </snippet>
+            </p>
+        </div>
+    </div>
+</main>
+<footer th:replace="footer"></footer>
     </body>
 </html>
 

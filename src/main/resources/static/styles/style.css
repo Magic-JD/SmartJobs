@@ -1,156 +1,204 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
+:root {
+    --clr-highlight: rgb(1, 19, 45);
+    --clr-background: rgb(8, 10, 19);
+    --clr-text: rgb(175, 177, 195);
 
+    --ff-primary: "Sorts Mill Goudy", serif; 
+    
+    --ff-body: var(--ff-primary); 
+    --ff-heading: var(--ff-primary); 
+
+    --fs-small: 1.25rem;
+    --fs-medium: 1.75rem;
+    --fs-large: 3rem;
+    --fs-extra-large: 5rem;
+}
+
+* Box sizing rules */
 *,
-*:before,
-*:after {
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-
-textarea {
-  font-family: inherit;
-  font-size: inherit;
+* {
+    margin: 0;
+    padding: 0;
+    font: inherit;
 }
 
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+}
+
+/* Set core root defaults */
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+main {
+    padding-top: 140px;
+}
+
+/* Set core body defaults */
 body {
-  background-color: #e8e2e1;
-  /* Light gray background */
-  color: #333;
-  /* Dark text color for better readability */
-  font-family: 'DM Sans', sans-serif;
-  /* Use DM Sans font */
-  font-size: 16px;
-  padding: 0px;
-  margin: 0px;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
 }
 
-button {
-  font-family: 'DM Sans', sans-serif;
-  /* Use DM Sans font */
-  font-size: 20px;
-  background-color: #d9534f;
-  /* Muted red color for buttons */
-  color: #fff;
-  /* White text for better contrast */
-  padding: 12px 20px;
-  /* Slightly larger padding for a more comfortable button */
-  border: none;
-  /* Remove button border for a cleaner look */
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 16px 16px;
-  /* Apply margin to all sides for spacing between buttons */
-  display: inline-block;
-  transition: background-color 0.3s; /* Add a smooth transition effect */
+html,
+body {
+    height: 100%;
 }
 
-button:hover {
-  background-color: #c9302c;
-  /* Darker red color on hover */
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
 }
 
-input[type="file"] {
-    display: none;
+/* Make images easier to work with */
+svg,
+img,
+picture {
+  max-width: 100%;
+  display: block;
 }
 
-.custom-file-upload {
-  font-family: 'DM Sans', sans-serif;
-  /* Use DM Sans font */
-  font-size: 20px;
-  background-color: #d9534f;
-  /* Muted red color for buttons */
-  color: #fff;
-  /* White text for better contrast */
-  padding: 12px 20px;
-  /* Slightly larger padding for a more comfortable button */
-  border: none;
-  /* Remove button border for a cleaner look */
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 16px 16px;
-  /* Apply margin to all sides for spacing between buttons */
-  display: inline-block;
-  transition: background-color 0.3s; /* Add a smooth transition effect */
+
+/* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+   scroll-behavior: auto;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-div {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  margin-top: 16px;
-  padding: 20px;
-  /* Increase padding for a cleaner look */
-  margin: 0 auto;
-  width: fit-content;
-  line-height: 1.6;
-  /* Slightly increase line height for better spacing */
+/* Utility Classes */                                                
+.text-small {
+    color: var(--clr-text);
+    font-size: var(--fs-small);
+    font-family: var(--ff-body);
 }
 
-h1 {
-  text-align: center;
+.text-medium {
+    color: var(--clr-text);
+    font-size: var(--fs-medium);
+    font-family: var(--ff-body);
 }
 
-header {
-  background-color: #d9534f;
-  /* Muted red color*/
-  padding: 25px;
-  /* Adjust padding as needed */
-  width: 100%;
+.text-large {
+    color: var(--clr-text);
+    font-size: var(--fs-large);
+    font-family: var(--ff-heading);
 }
 
-/* Style the header bar */
-.header-bar {
-    background-color: #4CAF50; /* Green */
-    height: 50px; /* Adjust the height as needed */
-    width: 100%;
+.text-xl {
+    color: var(--clr-text);
+    font-size: var(--fs-extra-large);
+    font-family: var(--ff-heading);
+}
+
+.background {
+    background-color: var(--clr-background);
+}
+
+.highlight {
+    background-color: var(--clr-highlight);
+}
+
+/* Main Classes */      
+.primary-header {
     position: fixed;
     top: 0;
-    left: 0;
+    width: 100%;
+    height: 70px;
+    z-index: 100;
+}
+
+.flex-container {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
-    padding-left: 20px;
-    box-sizing: border-box;
 }
 
-/* Style the login button */
-.login-button {
-    background-color: white;
-    border: none;
-    color: #4CAF50;
-    padding: 10px 20px;
-    text-align: center;
+.icon-link {
+    padding: 5px 20px;
     text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 0;
-    cursor: pointer;
-    border-radius: 5px;
 }
 
-
-.row {
-  display: flex;
-  flex-direction: row;
+.button {
+  background-color: var(--clr-text);
+  border: none;
+  color: var(--clr-background);
+  padding: 2px 7px;
+  margin: 5px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: var(--fs-small);
+  border-radius: 8px;
 }
 
-.column {
-  flex: 50%;
+.right-pushed {
+    margin-left: auto;
 }
 
-#speech-bubble-gpt {
-    background: #5ac4ed; /* Set the background color of the speech bubble */
-    margin: 16px 16px;
-    -moz-border-radius: 10px; /* Set the border radius for Mozilla Firefox */
-    -webkit-border-radius: 10px; /* Set the border radius for WebKit browsers */
-    border-radius: 10px; /* Set the border radius for other browsers */
+.landing-text {
+    text-align: center;
 }
 
-#speech-bubble-human {
-    background: #2d449d; /* Set the background color of the speech bubble */
-    margin: 16px 16px;
-    -moz-border-radius: 10px; /* Set the border radius for Mozilla Firefox */
-    -webkit-border-radius: 10px; /* Set the border radius for WebKit browsers */
-    border-radius: 10px; /* Set the border radius for other browsers */
+.heading {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.tagline {
+    opacity: 0.75;
+}
+
+.spaced-paragraph {
+    padding-bottom: 30px;
+}
+
+.primary-footer {
+    height: 100px;
+    width: 100%;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto;
+}
+footer {
+    flex-shrink: 0;
+}
+
+.social-media-area {
+    padding-left: 30px;
+    
+}
+
+.contact-us {
+    padding-right: 40px;
 }

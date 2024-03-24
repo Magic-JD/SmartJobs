@@ -1,22 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" layout:decorate="~{layout.html}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.ultraq.net.nz/thymeleaf/layout ">
-<head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>File Upload with HTMX</title>
-    <link th:rel="stylesheet" th:href="@{/styles/style.css}"/>
-    <script crossorigin="anonymous"
-            integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
-            src="https://unpkg.com/htmx.org@1.9.11"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.11/dist/ext/sse.js"></script>
-</head>
-<body id="mainBody">
-<header class="header-bar">
-    <a class="login-button" th:href="@{/logout}">Logout</a>
-</header>
-<section layout:fragment="content">
+<html lang="en">
+<head th:replace="head"></head>
+<body id="mainBody" class="background wrapper">
+<header th:replace="header"></header>
+<main>
     <div class="row">
         <div class="column">
             <h1>File Upload</h1>
@@ -52,7 +39,7 @@
     </div>
     <div id=gptchat xmlns:th="http://www.w3.org/1999/xhtml">
     </div>
-</section>
+</main>
+<footer th:replace="footer"></footer>
 </body>
 </html>
-
