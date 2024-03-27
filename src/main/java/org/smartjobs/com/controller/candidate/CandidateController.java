@@ -1,5 +1,7 @@
 package org.smartjobs.com.controller.candidate;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.smartjobs.com.service.auth.AuthService;
 import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.credit.CreditService;
 import org.smartjobs.com.service.file.FileService;
@@ -18,29 +20,35 @@ public class CandidateController {
     private final CandidateService candidateService;
     private final FileService fileService;
     private final CreditService creditService;
+    private final AuthService authService;
+
+
 
     @Autowired
-    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService) {
+    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, AuthService authService) {
         this.fileService = fileService;
         this.candidateService = candidateService;
         this.creditService = creditService;
+        this.authService = authService;
     }
 
     @PostMapping("/upload")
-    public String uploadFile(Model model, @RequestParam(name = "files") MultipartFile[] files) {
-        if (!creditService.userHasEnoughCredits()) {
+    public String uploadFile(Model model, @RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
+        String currentUsername = authService.getCurrentUsername();
+        if (!creditService.userHasEnoughCredits(currentUsername)) {
             throw new RuntimeException();
         }
         var handledFiles = Arrays.stream(files).parallel().map(fileService::handleFile);
-        candidateService.updateCandidateCvs(handledFiles);
-        model.addAttribute("candidates", candidateService.getCurrentCandidates());
-        return "table";
+        candidateService.updateCandidateCvs(currentUsername, handledFiles);
+        response.addHeader("HX-Redirect", "/candidates");
+        return "success";
     }
 
 
     @GetMapping()
     public String getAllCandidates(Model model) {
-        var candidates = candidateService.getCurrentCandidates();
+        String currentUsername = authService.getCurrentUsername();
+        var candidates = candidateService.getCurrentCandidates(currentUsername);
         model.addAttribute("candidates", candidates);
         return "table";
     }
@@ -49,21 +57,10 @@ public class CandidateController {
     @ResponseBody
     public String deleteCandidate(@PathVariable String filePath) {
         fileService.deleteFile(filePath);
-        candidateService.deleteCandidate(filePath);
+        String currentUsername = authService.getCurrentUsername();
+        candidateService.deleteCandidate(currentUsername, filePath);
         return "";
     }
 
-    @PostMapping("/match")
-    public String evaluateCandidate(@RequestParam String listing, Model model) {
-        return candidateService.analyseListing(listing).map(listingAnalysis -> {
-            model.addAttribute("gptJustification", listingAnalysis.gptJustification());
-            model.addAttribute("numberTop", listingAnalysis.numberTop());
-            model.addAttribute("topScorerName", listingAnalysis.topScorerName());
-            model.addAttribute("topScorers", listingAnalysis.topScorers());
-            model.addAttribute("topScorerCv", listingAnalysis.topScorerCv());
-            return "gptchat";
-        }).orElse("emptychat");
 
-
-    }
 }

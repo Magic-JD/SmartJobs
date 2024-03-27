@@ -1,0 +1,56 @@
+package org.smartjobs.com.controller.analysis;
+
+import org.smartjobs.com.service.analysis.AnalysisService;
+import org.smartjobs.com.service.auth.AuthService;
+import org.smartjobs.com.service.candidate.CandidateService;
+import org.smartjobs.com.service.candidate.data.ProcessedCv;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/analysis")
+public class AnalysisController {
+
+    private final CandidateService candidateService;
+    private final AnalysisService analysisService;
+    private final AuthService authService;
+
+    @Autowired
+    public AnalysisController(CandidateService candidateService, AnalysisService analysisService, AuthService authService) {
+        this.candidateService = candidateService;
+        this.analysisService = analysisService;
+        this.authService = authService;
+    }
+
+
+    @PostMapping("/match")
+    public String evaluateCandidate(@RequestParam String listing, Model model) {
+        String username = authService.getCurrentUsername();
+        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username);
+        return analysisService.analyseListing(listing, candidateInformation).map(listingAnalysis -> {
+            model.addAttribute("gptJustification", listingAnalysis.gptJustification());
+            model.addAttribute("numberTop", listingAnalysis.numberTop());
+            model.addAttribute("topScorerName", listingAnalysis.topScorerName());
+            model.addAttribute("topScorers", listingAnalysis.topScorers());
+            model.addAttribute("topScorerCv", listingAnalysis.topScorerCv());
+            return "top-scorers";
+        }).orElse("emptychat");
+    }
+
+    @GetMapping("/scoring")
+    public String scoreAllCandidates(Model model) {
+        String username = authService.getCurrentUsername();
+        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username);
+        var results = analysisService.scoreToCriteria(candidateInformation);
+        model.addAttribute("results", results);
+        return "scoring";
+    }
+
+}

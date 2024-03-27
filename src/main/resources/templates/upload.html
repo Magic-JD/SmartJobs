@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="head"></head>
+<body class="background wrapper" id="mainBody">
+<header th:replace="header"></header>
+<main>
+    <form class="flex-stack gappy" hx-encoding="multipart/form-data"
+          hx-post="/candidate/upload"
+          id="upload-form">
+
+        <label for="files" class="drop-container" id="dropcontainer">
+            <span class="drop-title text-large">Drop files here<br>or</span>
+        </label>
+        <input class="text-medium" accept=".txt, .pdf" id="files" multiple name="files" type="file">
+        <button type="submit" class="button-light button-enlarge">Upload Files</button>
+    </form>
+</main>
+<footer th:replace="footer"></footer>
+</body>
+<script>
+    const dropContainer = document.getElementById("dropcontainer")
+  const fileInput = document.getElementById("files")
+
+  dropContainer.addEventListener("dragover", (e) => {
+    // prevent default to allow drop
+    e.preventDefault()
+  }, false)
+
+  dropContainer.addEventListener("dragenter", () => {
+    dropContainer.classList.add("drag-active")
+  })
+
+  dropContainer.addEventListener("dragleave", () => {
+    dropContainer.classList.remove("drag-active")
+  })
+
+  dropContainer.addEventListener("drop", (e) => {
+    e.preventDefault()
+    dropContainer.classList.remove("drag-active")
+    fileInput.files = e.dataTransfer.files
+  })
+</script>
+</html>

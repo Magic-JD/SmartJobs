@@ -1,7 +1,7 @@
 :root {
     --clr-highlight: rgb(1, 19, 45);
     --clr-background: rgb(8, 10, 19);
-    --clr-text: rgb(175, 177, 195);
+    --clr-text: rgb(204, 207, 235);
 
     --ff-primary: "Sorts Mill Goudy", serif; 
     
@@ -133,15 +133,23 @@ picture {
     align-items: center;
 }
 
+
+.flex-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
 .icon-link {
     padding: 5px 20px;
     text-decoration: none;
 }
 
-.button {
+.button-light {
   background-color: var(--clr-text);
-  border: none;
   color: var(--clr-background);
+  border: none;
   padding: 2px 7px;
   margin: 5px 20px;
   text-align: center;
@@ -149,6 +157,39 @@ picture {
   display: inline-block;
   font-size: var(--fs-small);
   border-radius: 8px;
+  transition-duration: 0.4s;
+}
+
+.button-light:hover {
+  background-color: var(--clr-background);
+  color: var(--clr-text);
+}
+
+.button-dark {
+  background-color: var(--clr-background);
+  color: var(--clr-text);
+  border: none;
+  padding: 2px 7px;
+  margin: 5px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: var(--fs-small);
+  border-radius: 8px;
+  transition-duration: 0.4s;
+}
+
+.button-dark:hover {
+  background-color: var(--clr-text);
+  color: var(--clr-background);
+}
+
+
+.button-enlarge {
+  border: none;
+  padding: 4px 14px;
+  margin: 60px 60px;
+  font-size: var(--fs-medium);
 }
 
 .right-pushed {
@@ -201,4 +242,93 @@ footer {
 
 .contact-us {
     padding-right: 40px;
+}
+
+.candidate-table {
+    width: 100%;
+    border-left: none;
+    border-right: none;
+}
+
+.candidate-row {
+    border-bottom: 1px solid;
+    border-color: var(--clr-text);
+    width: 90%;
+    left-margin: 5%;
+}
+
+.candidate-display-left {
+    margin: 10px 20px;
+}
+
+.candidate-display-right {
+    margin: 10px 20px;
+    margin-left: auto;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 40px;
+    gap: 40px;
+}
+
+.drop-container {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 300px;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px dashed;
+  color: var(--clr-text);
+  font: var(--ft-body);
+  cursor: pointer;
+  transition: background .2s ease-in-out, border .2s ease-in-out;
+}
+
+.drop-container:hover {
+  background: var(--clr-text);
+  border-color: var(--clr-background);
+}
+
+.drop-container:hover .drop-title {
+  color: var(--clr-background);
+}
+
+.drop-title {
+  color: var(--clr-text);
+  text-align: center;
+  transition: color .2s ease-in-out;
+}
+
+input[type=file]::file-selector-button {
+  margin-right: 20px;
+  border: none;
+  background: var(--clr-text);
+  color: var(--clr-background);
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .2s ease-in-out;
+}
+
+input[type=file]::file-selector-button:hover {
+  background: var(--clr-background);
+  color: var(--clr-text);
+
+}
+
+.gappy {
+    gap: 50px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
 }

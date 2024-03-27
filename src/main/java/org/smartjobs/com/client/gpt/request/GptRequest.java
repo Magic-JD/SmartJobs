@@ -1,7 +1,9 @@
 package org.smartjobs.com.client.gpt.request;
 
+import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.client.gpt.data.GptMessage;
 import org.smartjobs.com.client.gpt.data.GptModel;
+import org.smartjobs.com.service.candidate.data.ProcessedCv;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +15,10 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
 
     private static GptRequest gpt3(GptMessage... messages) {
         return new GptRequest(GptModel.GPT_3_5, 0.0, 0.1, Arrays.stream(messages).toList());
+    }
+
+    private static GptRequest gpt4(GptMessage... messages) {
+        return new GptRequest(GptModel.GPT_4_TURBO, 0.0, 0.1, Arrays.stream(messages).toList());
     }
 
     public static GptRequest extractCandidateName(String cvData) {
@@ -68,4 +74,49 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                 userMessage("Candidate rating: " + candidateRating + "%. Candidate Information: " + candidateInformation + " Job Listing: " + jobListing));
     }
 
+    public static GptRequest scoreToCriteria(ProcessedCv cv, GptClient.ScoringCriteria scoringCriteria) {
+        return gpt3(
+                systemMessage(STR. """
+                        You are the master of scoring candidates. You will be given a scoring criteria and a number of points.
+                        Then you must carefully examine the cv that you are provided with.
+                        As you examine that cv you must determine how well the candidate matches with the scoring criteria.
+                        You must then rate the candidate out of \{ scoringCriteria.weight() }. The max amount you can give the candidate is \{ scoringCriteria.weight() }.
+                        You must return only the number, with no other additional characters or punctuation.
+                        """ ),
+                userMessage(STR. "CV: \{ cv.condensedDescription() }. Scoring criteria: \{ scoringCriteria.description() }" ));
+    }
+
+    public static GptRequest scoreToCriteriaSingleRun(ProcessedCv cv) {
+        return gpt3(
+                systemMessage(STR."""
+                        You are the master of scoring candidates. You will be given a scoring criteria.
+                        The scoring criteria will ask you to consider a number of factors. You should make a reply that answers all of these factors.
+                        The reply should be well thought out and highlight the score you are giving the candidate and why you are giving them the score.
+                        As well as each of the individual scores, you should give them a total score which is the sum of all their previous scores at the end.
+                        """),
+                userMessage(STR. """
+                CV: \{ cv.condensedDescription() }.
+
+Scoring criteria:
+1. Education (Total: 20 Points)
+Degree in Computer Science or related field (10 points)
+Advanced degree (MSc, Ph.D.) in a relevant field (additional 5 points)
+Relevant certifications (e.g., AWS Certified Developer, Microsoft Certified: Azure Developer Associate) (up to 5 points)
+2. Technical Skills (Total: 30 Points)
+Proficiency in Java and Python (up to 10 points)
+Likely to be familiar with React (or Angular, Vue.js) (up to 10 points)
+Understanding of databases and cloud platforms (up to 10 points)
+3. Professional Experience (Total: 30 Points)
+Relevant consumer tech industry experience (1 point per year, up to 10 points)
+Experience in a Software Engineering role (5 points)
+Demonstrated leadership and/or coaching role (5 points)
+Notable projects or contributions (up to 10 points for complexity and relevance)
+4. Achievements and Portfolio (Total: 10 Points)
+Published work (papers, patents) in the field (up to 5 points)
+Contributions to open-source projects or public code repositories (e.g., GitHub) (up to 5 points)
+5. Soft Skills and Cultural Fit (Total: 10 Points)
+Evidence of teamwork, leadership, or other soft skills (up to 5 points)
+Alignment with agile methodologies (5 points)
+                """ ));
+    }
 }

@@ -14,7 +14,7 @@ public class CreditService {
         this.creditDao = creditDao;
     }
 
-    public boolean userHasEnoughCredits() {
+    public boolean userHasEnoughCredits(String username) {
         // Retrieve current user from security context
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails userDetails) {
