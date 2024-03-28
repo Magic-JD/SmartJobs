@@ -9,8 +9,6 @@ import org.smartjobs.com.config.adaptors.GsonAdaptors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.net.http.HttpClient;
-
 @Configuration
 public class JsonConfig {
 

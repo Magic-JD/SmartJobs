@@ -10,6 +10,10 @@ import java.io.IOException;
 
 public class GsonAdaptors {
 
+    private GsonAdaptors() {
+        // Private constructor to prevent instantiation.
+    }
+
     public static class GptModelTypeAdapter extends TypeAdapter<GptModel> {
         @Override
         public void write(JsonWriter out, GptModel value) throws IOException {

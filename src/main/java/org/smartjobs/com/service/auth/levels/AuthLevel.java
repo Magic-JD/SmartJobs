@@ -9,9 +9,9 @@ public enum AuthLevel {
     USER(1),
     ROLE_ANONYMOUS(0);
 
-    private final int authLevel;
+    private final int levelNumber;
 
-    AuthLevel(int authLevel) {
-        this.authLevel = authLevel;
+    AuthLevel(int levelNumber) {
+        this.levelNumber = levelNumber;
     }
 }

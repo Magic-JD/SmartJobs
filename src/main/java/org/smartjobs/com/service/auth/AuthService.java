@@ -24,7 +24,7 @@ public class AuthService {
                 .getAuthentication()
                 .getAuthorities()
                 .stream().map(ga -> AuthLevel.valueOf(ga.getAuthority()))
-                .max(Comparator.comparing(AuthLevel::getAuthLevel))
+                .max(Comparator.comparing(AuthLevel::getLevelNumber))
                 .orElseThrow(IncorrectAuthenticationException::new);
     }
 

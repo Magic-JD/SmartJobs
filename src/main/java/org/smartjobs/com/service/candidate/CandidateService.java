@@ -38,11 +38,7 @@ public class CandidateService {
     }
 
     public List<CandidateData> getCurrentCandidates(String userName) {
-        if (!candidates.containsKey(userName)) {
-            var candidateData = cvDao.getAllNames();
-            candidates.put(userName, candidateData);
-        }
-        return candidates.get(userName);
+        return candidates.computeIfAbsent(userName, _ -> cvDao.getAllNames());
     }
 
     public void updateCandidateCvs(String username, Stream<FileInformation> fileInformationList) {

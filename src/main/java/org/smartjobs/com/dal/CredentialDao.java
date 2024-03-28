@@ -1,7 +1,5 @@
 package org.smartjobs.com.dal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartjobs.com.dal.repository.CredentialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,8 +12,6 @@ import java.util.Optional;
 
 @Component
 public class CredentialDao {
-
-    private static final Logger logger = LoggerFactory.getLogger(CredentialDao.class);
 
     private final CredentialRepository repository;
 

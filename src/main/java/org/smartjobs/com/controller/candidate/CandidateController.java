@@ -55,7 +55,6 @@ public class CandidateController {
     }
 
     @DeleteMapping("/delete/{filePath}")
-    @ResponseBody
     public String deleteCandidate(@PathVariable String filePath) {
         String currentUsername = authService.getCurrentUsername();
         candidateService.deleteCandidate(currentUsername, filePath);

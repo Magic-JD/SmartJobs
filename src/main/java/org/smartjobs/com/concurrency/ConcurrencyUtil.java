@@ -7,6 +7,9 @@ import java.util.function.Function;
 
 public class ConcurrencyUtil {
 
+    private ConcurrencyUtil() {
+        // Private constructor to prevent instantiation.
+    }
 
     public static <T, R> List<R> virtualThreadList(List<T> list, Function<T, R> transform) {
         List<CompletableFuture<R>> completeableFuture = list.stream()
