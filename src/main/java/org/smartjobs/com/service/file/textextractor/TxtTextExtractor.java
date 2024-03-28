@@ -1,5 +1,6 @@
 package org.smartjobs.com.service.file.textextractor;
 
+import org.smartjobs.com.exception.categories.AsynchronousExceptions.TxtTextExtractionException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -17,7 +18,7 @@ public class TxtTextExtractor implements TextExtractor {
                 resultStringBuilder.append(line).append(" ");
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TxtTextExtractionException(file.getOriginalFilename(), e);
         }
         return resultStringBuilder.toString().replaceAll("[^(\\x00-\\xFF)]+(?:$|\\s*)", " ");
     }

@@ -3,11 +3,12 @@
 <head th:replace="head"></head>
 <body class="background wrapper" id="mainBody">
 <header th:replace="header"></header>
+<div id="error"></div>
 <main>
-    <form class="flex-stack gappy" hx-encoding="multipart/form-data"
+    <form class="flex-stack gappy"
+          hx-encoding="multipart/form-data"
           hx-post="/candidate/upload"
           id="upload-form">
-
         <label for="files" class="drop-container" id="dropcontainer">
             <span class="drop-title text-large">Drop files here<br>or</span>
         </label>

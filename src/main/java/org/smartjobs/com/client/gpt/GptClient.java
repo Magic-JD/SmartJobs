@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.smartjobs.com.client.gpt.request.GptRequest;
 import org.smartjobs.com.client.gpt.response.GptResponse;
 import org.smartjobs.com.client.gpt.response.GptUsage;
+import org.smartjobs.com.exception.categories.ApplicationExceptions.GptClientConnectionFailure;
+import org.smartjobs.com.exception.categories.AsynchronousExceptions.JustificationException;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +49,7 @@ public class GptClient {
         try {
             this.clientUri = new URI(url);
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new GptClientConnectionFailure(e);
         }
         this.apiKey = apiKey;
     }
@@ -57,7 +59,8 @@ public class GptClient {
         var response = sendMessage(gptRequest);
         return response.map(rp -> rp.choices().stream()
                 .map(choice -> choice.message().content())
-                .collect(Collectors.joining("\n"))).orElseThrow(RuntimeException::new);
+                        .collect(Collectors.joining("\n")))
+                .orElseThrow(JustificationException::new);
     }
 
     public Optional<String> extractCandidateName(String cvData) {

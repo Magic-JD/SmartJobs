@@ -2,6 +2,7 @@
     --clr-highlight: rgb(1, 19, 45);
     --clr-background: rgb(8, 10, 19);
     --clr-text: rgb(204, 207, 235);
+    --clr-error: rgb(102, 2, 29);
 
     --ff-primary: "Sorts Mill Goudy", serif; 
     
@@ -331,4 +332,40 @@ input[type=file]::file-selector-button:hover {
     margin-left: auto;
     margin-right: auto;
     justify-content: center;
+}
+
+.error-message {
+    background: var(--clr-error);
+    text-color: var(--clr-text);
+    position: fixed;
+    top: 10%;
+    left: 10%;
+    margin-left: -150px;
+    padding: 20px
+    width: 300px;
+    border-radius: 8px;
+    z-index: 9999;
+    padding: 8px 14px;
+    animation: fadeOut 5s ease 3s forwards;
+    box-shadow:
+    	0px 1px 1px rgba(000,000,000,0.5),
+    	inset 1px 2px 0px rgba(255,255,255,0.4);
+    text-shadow:
+    	1px 1px 2px rgba(000,000,000,0.7),
+        0px 1px 0px rgba(255,255,255,0.4);
+}
+
+@keyframes fadeOut{
+    0% {
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+        left: 10%
+    }
+    100% {
+        left: -100%;
+        opacity: 0;
+        display: none;
+    }
 }

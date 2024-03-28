@@ -38,8 +38,6 @@ public class CandidateService {
     }
 
     public List<CandidateData> getCurrentCandidates(String userName) {
-        //return cvDao.getAllNames();
-        //return List.of(new CandidateData("Joe Bloggs", "NONSENSE"), new CandidateData("Nes Bloggs", "NONSENSE"), new CandidateData("Strange Person", "NONSENSE"));
         if (!candidates.containsKey(userName)) {
             var candidateData = cvDao.getAllNames();
             candidates.put(userName, candidateData);
@@ -57,7 +55,7 @@ public class CandidateService {
             if (name.isEmpty() || cvDescription.isEmpty()) {
                 logger.error("Either CV name {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
             } else {
-                cvDao.addCvToRepository(new ProcessedCv(name.get(), fileInformation.filePath(), cvDescription.get(), fileInformation.fileContent()));
+                cvDao.addCvToRepository(new ProcessedCv(name.get(), "FILE LOCATION NO LONGER STORED", cvDescription.get(), fileInformation.fileContent()));
             }
 
         });

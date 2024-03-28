@@ -1,6 +1,7 @@
 package org.smartjobs.com.controller.candidate;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.smartjobs.com.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
 import org.smartjobs.com.service.auth.AuthService;
 import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.credit.CreditService;
@@ -33,15 +34,15 @@ public class CandidateController {
     }
 
     @PostMapping("/upload")
-    public String uploadFile(Model model, @RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
+    public String uploadFile(@RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
         String currentUsername = authService.getCurrentUsername();
         if (!creditService.userHasEnoughCredits(currentUsername)) {
-            throw new RuntimeException();
+            throw new NotEnoughCreditException();
         }
         var handledFiles = Arrays.stream(files).parallel().map(fileService::handleFile);
         candidateService.updateCandidateCvs(currentUsername, handledFiles);
         response.addHeader("HX-Redirect", "/candidates");
-        return "success";
+        return "";
     }
 
 
@@ -56,7 +57,6 @@ public class CandidateController {
     @DeleteMapping("/delete/{filePath}")
     @ResponseBody
     public String deleteCandidate(@PathVariable String filePath) {
-        fileService.deleteFile(filePath);
         String currentUsername = authService.getCurrentUsername();
         candidateService.deleteCandidate(currentUsername, filePath);
         return "";
