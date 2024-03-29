@@ -1,0 +1,6 @@
+<div
+        class="text-medium"
+        hx-target="this"
+        hx-swap="outerHTML"
+        th:attr="hx-delete=@{|analysis/result/details/${result.uuid}|}"
+        th:text="${result.full}"></div>

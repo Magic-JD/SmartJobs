@@ -42,7 +42,7 @@ public class CandidateController {
         var handledFiles = Arrays.stream(files).parallel().map(fileService::handleFile);
         candidateService.updateCandidateCvs(currentUsername, handledFiles);
         response.addHeader("HX-Redirect", "/candidates");
-        return "";
+        return "empty-response";
     }
 
 
@@ -58,7 +58,7 @@ public class CandidateController {
     public String deleteCandidate(@PathVariable String filePath) {
         String currentUsername = authService.getCurrentUsername();
         candidateService.deleteCandidate(currentUsername, filePath);
-        return "";
+        return "empty-response";
     }
 
 

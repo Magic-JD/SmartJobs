@@ -1,5 +1,6 @@
 package org.smartjobs.com.controller.analysis;
 
+import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.service.analysis.AnalysisService;
 import org.smartjobs.com.service.auth.AuthService;
 import org.smartjobs.com.service.candidate.CandidateService;
@@ -7,12 +8,10 @@ import org.smartjobs.com.service.candidate.data.ProcessedCv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequestMapping("/analysis")
@@ -21,6 +20,8 @@ public class AnalysisController {
     private final CandidateService candidateService;
     private final AnalysisService analysisService;
     private final AuthService authService;
+
+    private final ConcurrentHashMap<String, GptClient.ScoringCriteriaResult> cache = new ConcurrentHashMap<>();
 
     @Autowired
     public AnalysisController(CandidateService candidateService, AnalysisService analysisService, AuthService authService) {
@@ -49,8 +50,20 @@ public class AnalysisController {
         String username = authService.getCurrentUsername();
         List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username);
         var results = analysisService.scoreToCriteria(candidateInformation);
+        results.forEach(result -> cache.put(result.uuid(), result));
         model.addAttribute("results", results);
         return "scoring";
     }
 
+    @GetMapping("/result/details/{resultUuid}")
+    public String retrieveResultDetails(@PathVariable String resultUuid, Model model) {
+        model.addAttribute("result", cache.get(resultUuid));
+        return "result-details";
+    }
+
+    @DeleteMapping("/result/details/{resultUuid}")
+    public String removeResultDetails(@PathVariable String resultUuid, Model model) {
+        model.addAttribute("result", cache.get(resultUuid));
+        return "result-collapsed";
+    }
 }

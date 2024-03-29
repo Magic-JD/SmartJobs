@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +56,8 @@ public class AnalysisService {
         return new JobMatch(cv.name(), matchPercentage, cv.fullDescription(), cv.fileLocation());
     }
 
-    public List<String> scoreToCriteria(List<ProcessedCv> candidateInformation) {
-        return virtualThreadList(candidateInformation, client::scoreToCriteria).stream().flatMap(Collection::stream).toList();
+    public List<GptClient.ScoringCriteriaResult> scoreToCriteria(List<ProcessedCv> candidateInformation) {
+        return virtualThreadList(candidateInformation, client::scoreToCriteria);
     }
 
 

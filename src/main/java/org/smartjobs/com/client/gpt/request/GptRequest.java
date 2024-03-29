@@ -80,8 +80,12 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                         You are the master of scoring candidates. You will be given a scoring criteria and a number of points.
                         Then you must carefully examine the cv that you are provided with.
                         As you examine that cv you must determine how well the candidate matches with the scoring criteria.
-                        You must then rate the candidate out of \{ scoringCriteria.weight() }. The max amount you can give the candidate is \{ scoringCriteria.weight() }.
-                        You must return only the number, with no other additional characters or punctuation.
+                        Your output must be as follows. First you must output a short, one sentence explaination for the role. After that you must state the score.
+                        For the score you must rate the candidate out of \{ scoringCriteria.weight() }. The max amount you can give the candidate is \{ scoringCriteria.weight() }.
+                        The output must be as follows.
+                        First a short, single sentence explaining why the candidate recived this score.
+                        DO NOT include information about the role, ONLY INCLUDE the reasoning for the score.
+                        Then insert the word SCORE in upper case and finally the score itself. It should be only the score number, nothing additional.
                         """ ),
                 userMessage(STR. "CV: \{ cv.condensedDescription() }. Scoring criteria: \{ scoringCriteria.description() }" ));
     }
