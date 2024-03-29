@@ -27,40 +27,35 @@ public class CvDao {
     public void addCvsToRepository(List<ProcessedCv> processedCvs) {
         List<Cv> cvs = processedCvs.stream().map(cv -> Cv.builder()
                 .candidateName(cv.name())
-                .fullText(cv.fullDescription())
                 .condensedText(cv.condensedDescription())
-                .filePath(cv.fileLocation())
                 .build()).toList();
         logger.debug("Preparing to save candidate CVs as: {}", cvs);
         repository.saveAllAndFlush(cvs);
     }
 
     public List<CandidateData> getAllNames() {
-        return repository.findAll().stream().map(cv -> new CandidateData(cv.getCandidateName(), cv.getFilePath())).toList();
+        return repository.findAll().stream().map(cv -> new CandidateData(cv.getId(), cv.getCandidateName())).toList();
     }
 
     public List<ProcessedCv> getAll() {
         return repository.findAll()
                 .stream()
                 .map(cv -> new ProcessedCv(
+                        null,
                         cv.getCandidateName(),
-                        cv.getFilePath(),
-                        cv.getCondensedText(),
-                        cv.getFullText()))
+                        cv.getCondensedText()))
                 .toList();
     }
 
     @Transactional
-    public void deleteByFilePath(String filePath) {
-        repository.deleteByFilePath(filePath);
+    public void deleteByCvId(long cvId) {
+        repository.deleteById(cvId);
     }
 
     public void addCvToRepository(ProcessedCv cv) {
         repository.saveAndFlush(Cv.builder()
                 .candidateName(cv.name())
-                .fullText(cv.fullDescription())
                 .condensedText(cv.condensedDescription())
-                .filePath(cv.fileLocation())
                 .build());
 
     }

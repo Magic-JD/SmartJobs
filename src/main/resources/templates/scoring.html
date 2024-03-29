@@ -1,4 +1,14 @@
-<div id=gptchat xmlns:th="http://www.w3.org/1999/xhtml">
-    <div th:each="result : ${results}" class="text-medium" hx-target="this" hx-swap="outerHTML"
-         th:attr="hx-get=@{|analysis/result/details/${result.uuid}|}" th:text="${result.title}"></div>
+<div class="candidate-table flex-stack" id="scoring">
+    <div class="candidate-row flex-container">
+        <p class="candidate-display-left">Name</p>
+        <p class="candidate-display-right">Percent</p>
+    </div>
+    <div class="candidate-row flex-container"
+         hx-swap="outerHTML"
+         hx-target="this"
+         th:attr="hx-get=@{|analysis/result/details/${result.uuid}|}"
+         th:each="result : ${results}">
+        <p class="candidate-display-left" th:text="${result.name}"></p>
+        <p class="candidate-display-right" th:text="${result.percentage}"></p>
+    </div>
 </div>

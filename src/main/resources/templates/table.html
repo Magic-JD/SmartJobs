@@ -7,7 +7,7 @@
     <div class="candidate-row flex-container" th:each="candidate : ${candidates}">
         <p class="candidate-display-left" th:text="${candidate.name}">Value</p>
         <button class='button-dark candidate-display-right'
-                th:attr="hx-delete=@{|/candidate/delete/${candidate.uuid}|}">Delete
+                th:attr="hx-delete=@{|/candidate/delete/${candidate.id}|}">Delete
         </button>
     </div>
 </div>

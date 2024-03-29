@@ -17,15 +17,8 @@ public class Cv {
 
     @Lob
     @Setter
-    private String fullText;
-
-    @Lob
-    @Setter
     private String condensedText;
 
     @Setter
     private String candidateName;
-
-    @Setter
-    private String filePath;
 }

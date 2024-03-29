@@ -51,14 +51,14 @@ public class CandidateService {
             if (name.isEmpty() || cvDescription.isEmpty()) {
                 logger.error("Either CV name {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
             } else {
-                cvDao.addCvToRepository(new ProcessedCv(name.get(), "FILE LOCATION NO LONGER STORED", cvDescription.get(), fileInformation.fileContent()));
+                cvDao.addCvToRepository(new ProcessedCv(null, name.get(), cvDescription.get()));
             }
 
         });
     }
 
-    public void deleteCandidate(String username, String filePath) {
+    public void deleteCandidate(String username, long cvId) {
         candidates.remove(username);
-        cvDao.deleteByFilePath(filePath);
+        cvDao.deleteByCvId(cvId);
     }
 }

@@ -54,10 +54,10 @@ public class CandidateController {
         return "table";
     }
 
-    @DeleteMapping("/delete/{filePath}")
-    public String deleteCandidate(@PathVariable String filePath) {
+    @DeleteMapping("/delete/{cvId}")
+    public String deleteCandidate(@PathVariable long cvId) {
         String currentUsername = authService.getCurrentUsername();
-        candidateService.deleteCandidate(currentUsername, filePath);
+        candidateService.deleteCandidate(currentUsername, cvId);
         return "empty-response";
     }
 

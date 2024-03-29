@@ -3,11 +3,7 @@ package org.smartjobs.com.client.gpt;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartjobs.com.client.gpt.data.GptMessage;
-import org.smartjobs.com.client.gpt.data.GptModel;
-import org.smartjobs.com.client.gpt.data.GptRole;
 import org.smartjobs.com.client.gpt.request.GptRequest;
-import org.smartjobs.com.client.gpt.response.GptChoices;
 import org.smartjobs.com.client.gpt.response.GptResponse;
 import org.smartjobs.com.client.gpt.response.GptUsage;
 import org.smartjobs.com.exception.categories.ApplicationExceptions.GptClientConnectionFailure;
@@ -17,11 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.util.ArrayList;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,6 +32,7 @@ import static org.smartjobs.com.concurrency.ConcurrencyUtil.virtualThreadList;
 public class GptClient {
 
     private static final Logger logger = LoggerFactory.getLogger(GptClient.class);
+    public static final String FAILED_GPT_CALL = "Failure calling GPT, code {}";
 
     private final HttpClient client;
     private final Gson gson;
@@ -130,53 +128,47 @@ public class GptClient {
                             return false;
                         }
                     })
-                    .map(ra -> new ScoringCriteriaResponse(STR. "\{ sc.description } : \{ ra[0].trim() }" , Double.parseDouble(ra[1].trim()), sc.weight))
-                    .orElse(new ScoringCriteriaResponse(STR. "\{ sc.description }: The score couldn't be determined for this value" , 0, 0));
+                    .map(ra -> new ScoringCriteriaDisplay(sc.description, ra[0].trim(), Double.parseDouble(ra[1].trim()), sc.weight))
+                    .orElse(new ScoringCriteriaDisplay(sc.description, "The score could not be calculated for this value", 0, 0));
         });
         double totalScore = scoringResponses.stream()
-                .mapToDouble(ScoringCriteriaResponse::score)
+                .mapToDouble(ScoringCriteriaDisplay::score)
                 .sum();
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add(STR. "\{ ci.name() } with a result of \{ totalScore }%" );
-        strings.addAll(scoringResponses.stream().map(sr -> STR. "----\{ sr.description } with a score of \{ sr.score }/\{ sr.weight }" ).sorted().toList());
-        return new ScoringCriteriaResult(UUID.randomUUID().toString(), STR. "\{ ci.name() } with a result of \{ totalScore }%" , strings.stream().collect(Collectors.joining("\n")));
+        return new ScoringCriteriaResult(UUID.randomUUID().toString(), ci.name(), totalScore, scoringResponses);
     }
 
     public record ScoringCriteria(String description, int weight) {
     }
 
-    public record ScoringCriteriaResponse(String description, double score, int weight) {
+    public record ScoringCriteriaResult(String uuid, String name, double percentage,
+                                        List<ScoringCriteriaDisplay> scoringCriteria) {
     }
 
-    public record ScoringCriteriaResult(String uuid, String title, String full) {
+    public record ScoringCriteriaDisplay(String criteriaRequest, String justification, double score, int weight) {
     }
 
     private Optional<GptResponse> sendMessage(GptRequest request) {
         logger.trace("Calling GPT with request: {}", request);
-        return Optional.of(new GptResponse("", "", 11111111, GptModel.GPT_3_5, new GptUsage(
-                100, 200, 300
-        ), List.of(new GptChoices(
-                new GptMessage(
-                        GptRole.SYSTEM, "THIS IS TEST CONTENT SCORE 5"
-                ), "", "", 0)
-        )
-        ));
-//        HttpRequest httpRequest = createRequest(request);
-//        try {
-//            HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-//            if (response.statusCode() != 200) {
-//                logger.error("Could not retrieve the correct value for {}, code {}", "request", response.statusCode());
-//                return Optional.empty();
-//            }
-//            GptResponse gptResponse = gson.fromJson(response.body(), GptResponse.class);
-//            logger.trace("Received response from GPT: {}", gptResponse);
-//            GptUsage usage = gptResponse.usage();
-//            logger.info("Token spent: Prompt {}, Completion, {} Total, {}", usage.promptTokens(), usage.completionTokens(), usage.totalTokens());
-//            return Optional.of(gptResponse);
-//        } catch (IOException | InterruptedException e) {
-//            logger.error("Could not retrieve the correct value for {}, code {}", "request", e.getMessage());
-//            return Optional.empty();
-//        }
+        HttpRequest httpRequest = createRequest(request);
+        try {
+            HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                logger.error(FAILED_GPT_CALL, response.statusCode());
+                return Optional.empty();
+            }
+            GptResponse gptResponse = gson.fromJson(response.body(), GptResponse.class);
+            logger.trace("Received response from GPT: {}", gptResponse);
+            GptUsage usage = gptResponse.usage();
+            logger.info("Token spent: Prompt {}, Completion, {} Total, {}", usage.promptTokens(), usage.completionTokens(), usage.totalTokens());
+            return Optional.of(gptResponse);
+        } catch (IOException e) {
+            logger.error(FAILED_GPT_CALL, e.getMessage());
+            return Optional.empty();
+        } catch (InterruptedException e) {
+            logger.error(FAILED_GPT_CALL, e.getMessage());
+            Thread.currentThread().interrupt();
+            return Optional.empty();
+        }
     }
 
     private HttpRequest createRequest(GptRequest request) {

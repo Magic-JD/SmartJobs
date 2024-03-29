@@ -1,5 +1,6 @@
 package org.smartjobs.com.controller.analysis;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.service.analysis.AnalysisService;
 import org.smartjobs.com.service.auth.AuthService;
@@ -8,10 +9,15 @@ import org.smartjobs.com.service.candidate.data.ProcessedCv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.smartjobs.com.exception.message.ExceptionMessage.createUserErrorMessageToDisplayForUser;
 
 @Controller
 @RequestMapping("/analysis")
@@ -31,24 +37,13 @@ public class AnalysisController {
     }
 
 
-    @PostMapping("/match")
-    public String evaluateCandidate(@RequestParam String listing, Model model) {
-        String username = authService.getCurrentUsername();
-        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username);
-        return analysisService.analyseListing(listing, candidateInformation).map(listingAnalysis -> {
-            model.addAttribute("gptJustification", listingAnalysis.gptJustification());
-            model.addAttribute("numberTop", listingAnalysis.numberTop());
-            model.addAttribute("topScorerName", listingAnalysis.topScorerName());
-            model.addAttribute("topScorers", listingAnalysis.topScorers());
-            model.addAttribute("topScorerCv", listingAnalysis.topScorerCv());
-            return "top-scorers";
-        }).orElse("emptychat");
-    }
-
     @GetMapping("/scoring")
-    public String scoreAllCandidates(Model model) {
+    public String scoreAllCandidates(HttpServletResponse response, Model model) {
         String username = authService.getCurrentUsername();
         List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username);
+        if (candidateInformation.isEmpty()) {
+            return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
+        }
         var results = analysisService.scoreToCriteria(candidateInformation);
         results.forEach(result -> cache.put(result.uuid(), result));
         model.addAttribute("results", results);

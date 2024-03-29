@@ -1,6 +1,17 @@
-<div
-        class="text-medium"
-        hx-target="this"
-        hx-swap="outerHTML"
-        th:attr="hx-delete=@{|analysis/result/details/${result.uuid}|}"
-        th:text="${result.full}"></div>
+<div class="flex-stack candidate-table"
+     hx-swap="outerHTML"
+     hx-target="this"
+     th:attr="hx-delete=@{|analysis/result/details/${result.uuid}|}">
+
+    <div class="candidate-row flex-container">
+
+        <p class="candidate-display-left" th:text="${result.name}"></p>
+        <p class="candidate-display-right" th:text="${result.percentage}"></p>
+
+    </div>
+    <div class="candidate-row flex-container text-small" th:each="sc : ${result.scoringCriteria}">
+        <p class="candidate-display-left"><span th:text="|${sc.criteriaRequest}:|"></span><br><span
+                th:text="${sc.justification}"></span></p>
+        <p class="candidate-display-right" th:text="|${sc.score}/${sc.weight}|"></p>
+    </div>
+</div>
