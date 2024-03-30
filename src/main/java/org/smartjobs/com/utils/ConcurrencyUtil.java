@@ -1,4 +1,4 @@
-package org.smartjobs.com.concurrency;
+package org.smartjobs.com.utils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

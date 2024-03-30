@@ -197,6 +197,10 @@ picture {
     margin-left: auto;
 }
 
+.right-nudged {
+    padding-left: 50px;
+}
+
 .landing-text {
     text-align: center;
 }

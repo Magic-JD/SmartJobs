@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.smartjobs.com.concurrency.ConcurrencyUtil.virtualThreadList;
+import static org.smartjobs.com.utils.ConcurrencyUtil.virtualThreadList;
 
 @Service
 public class AnalysisService {

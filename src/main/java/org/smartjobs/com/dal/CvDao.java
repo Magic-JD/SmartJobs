@@ -34,7 +34,7 @@ public class CvDao {
     }
 
     public List<CandidateData> getAllNames() {
-        return repository.findAll().stream().map(cv -> new CandidateData(cv.getId(), cv.getCandidateName())).toList();
+        return repository.findAllProjectedAsCandidateData();
     }
 
     public List<ProcessedCv> getAll() {

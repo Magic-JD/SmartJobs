@@ -2,6 +2,7 @@ package org.smartjobs.com.service.candidate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartjobs.com.cache.CandidateCache;
 import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.dal.CvDao;
 import org.smartjobs.com.service.candidate.data.CandidateData;
@@ -11,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
@@ -25,12 +24,13 @@ public class CandidateService {
     private final GptClient client;
     private final CvDao cvDao;
 
-    private static final Map<String, List<CandidateData>> candidates = new ConcurrentHashMap<>();
+    private final CandidateCache cache;
 
     @Autowired
-    public CandidateService(GptClient client, CvDao cvDao) {
+    public CandidateService(GptClient client, CvDao cvDao, CandidateCache candidateCache) {
         this.client = client;
         this.cvDao = cvDao;
+        this.cache = candidateCache;
     }
 
     public List<ProcessedCv> getFullCandidateInfo(String userName) {
@@ -38,11 +38,11 @@ public class CandidateService {
     }
 
     public List<CandidateData> getCurrentCandidates(String userName) {
-        return candidates.computeIfAbsent(userName, _ -> cvDao.getAllNames());
+        return cache.getFromCacheOrCompute(userName, _ -> cvDao.getAllNames());
     }
 
     public void updateCandidateCvs(String username, Stream<FileInformation> fileInformationList) {
-        candidates.remove(username);
+        cache.clearCache(username);
         fileInformationList.forEach(fileInformation -> {
             var nameFuture = supplyAsync(() -> client.extractCandidateName(fileInformation.fileContent()));
             var descriptionFuture = supplyAsync(() -> client.anonymousCandidateDescription(fileInformation.fileContent()));
@@ -58,7 +58,7 @@ public class CandidateService {
     }
 
     public void deleteCandidate(String username, long cvId) {
-        candidates.remove(username);
+        cache.clearCache(username);
         cvDao.deleteByCvId(cvId);
     }
 }

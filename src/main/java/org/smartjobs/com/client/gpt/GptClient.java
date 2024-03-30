@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.smartjobs.com.client.gpt.request.GptRequest.evaluateCandidate;
 import static org.smartjobs.com.client.gpt.request.GptRequest.justifyGptDecision;
-import static org.smartjobs.com.concurrency.ConcurrencyUtil.virtualThreadList;
+import static org.smartjobs.com.utils.ConcurrencyUtil.virtualThreadList;
 
 @Component
 public class GptClient {

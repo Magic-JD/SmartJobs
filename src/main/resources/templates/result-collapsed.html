@@ -4,5 +4,5 @@
         hx-target="this"
         th:attr="hx-get=@{|analysis/result/details/${result.uuid}|}">
     <p class="candidate-display-left" th:text="${result.name}"></p>
-    <p class="candidate-display-right" th:text="${result.percentage}"></p>
+    <p class="candidate-display-right" th:text="|${@numberFormatUtils.formatNumber(result.percentage)}%|"></p>
 </div>

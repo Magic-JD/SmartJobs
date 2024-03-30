@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -44,7 +45,8 @@ public class AnalysisController {
         if (candidateInformation.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
         }
-        var results = analysisService.scoreToCriteria(candidateInformation);
+        var results = analysisService.scoreToCriteria(candidateInformation).stream()
+                .sorted(Comparator.comparing(GptClient.ScoringCriteriaResult::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
         model.addAttribute("results", results);
         return "scoring";
