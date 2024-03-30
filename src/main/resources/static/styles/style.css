@@ -4,10 +4,10 @@
     --clr-text: rgb(204, 207, 235);
     --clr-error: rgb(102, 2, 29);
 
-    --ff-primary: "Sorts Mill Goudy", serif; 
-    
+    --ff-primary: "Heebo", sans-serif;
+
     --ff-body: var(--ff-primary); 
-    --ff-heading: var(--ff-primary); 
+    --ff-heading: var(--ff-primary);
 
     --fs-small: 1.25rem;
     --fs-medium: 1.75rem;
@@ -156,6 +156,7 @@ picture {
   text-align: center;
   text-decoration: none;
   display: inline-block;
+  font-family: var(--ff-body);
   font-size: var(--fs-small);
   border-radius: 8px;
   transition-duration: 0.4s;
@@ -176,6 +177,7 @@ picture {
   text-decoration: none;
   display: inline-block;
   font-size: var(--fs-small);
+  font-family: var(--ff-body);
   border-radius: 8px;
   transition-duration: 0.4s;
 }
