@@ -8,35 +8,43 @@ import java.util.List;
 public class AsynchronousExceptions {
 
     @Getter
-    public static class FileTypeNotSupportedException extends RuntimeException {
+    public static class FileTypeNotSupportedException extends TextExtractionException {
 
         private final List<String> allowedFileTypes;
-        private final String fileName;
 
         public FileTypeNotSupportedException(List<String> allowedFileTypes, String fileName) {
-            super(STR. "\{ fileName } failed to upload as filetype is not supported" );
+            super(fileName);
             this.allowedFileTypes = Collections.unmodifiableList(allowedFileTypes);
+        }
+    }
+
+    @Getter
+    public static abstract class TextExtractionException extends RuntimeException {
+
+        private final String fileName;
+
+        public TextExtractionException(String fileName) {
+            super(STR. "An error occurred when processing file \{ fileName }" );
+            this.fileName = fileName;
+        }
+
+        public TextExtractionException(String fileName, Exception e) {
+            super(STR. "An error occurred when processing file \{ fileName }" , e);
             this.fileName = fileName;
         }
     }
 
     @Getter
-    public static class PdfTextExtractionException extends RuntimeException {
-        private final String fileName;
-
+    public static class PdfTextExtractionException extends TextExtractionException {
         public PdfTextExtractionException(String fileName, Exception e) {
-            super(STR. "An error occurred when processing file \{ fileName }" , e);
-            this.fileName = fileName;
+            super(fileName, e);
         }
     }
 
     @Getter
-    public static class TxtTextExtractionException extends RuntimeException {
-        private final String fileName;
-
+    public static class TxtTextExtractionException extends TextExtractionException {
         public TxtTextExtractionException(String fileName, Exception e) {
-            super(STR. "An error occurred when processing file \{ fileName }" , e);
-            this.fileName = fileName;
+            super(fileName, e);
         }
     }
 

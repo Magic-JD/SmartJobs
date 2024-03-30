@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartjobs.com.exception.categories.AsynchronousExceptions.FileTypeNotSupportedException;
+import org.smartjobs.com.exception.categories.AsynchronousExceptions.TextExtractionException;
 import org.smartjobs.com.service.file.data.FileInformation;
 import org.smartjobs.com.service.file.data.FileType;
 import org.smartjobs.com.service.file.textextractor.PdfTextExtractor;
@@ -11,26 +12,52 @@ import org.smartjobs.com.service.file.textextractor.TxtTextExtractor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.smartjobs.com.service.file.data.FileType.UNSUPPORTED;
+import static org.smartjobs.com.service.file.data.FileType.*;
 
 @Service
 public class FileService {
 
     private static final Logger logger = LoggerFactory.getLogger(FileService.class);
 
-    public FileInformation handleFile(MultipartFile file) {
+    public Optional<FileInformation> handleFile(MultipartFile file) {
         logger.debug("Handling file {}", file.getOriginalFilename());
-        FileType fileType = switch (getFileExtension(file.getOriginalFilename()).orElse("unsupported")) {
-            case "pdf" -> FileType.PDF;
-            case "txt" -> FileType.TXT;
-            default -> UNSUPPORTED;
-        };
-        String text = extractText(file, fileType);
-        logger.debug("File information {} extracted from {}", text, file.getOriginalFilename());
-        return new FileInformation(text);
+        var hashString = extractHash(file);
+        return hashString.flatMap(hash -> {
+            logger.debug("File hash {}", hash);
+            FileType fileType = switch (getFileExtension(file.getOriginalFilename()).orElse("unsupported")) {
+                case "pdf" -> PDF;
+                case "txt" -> TXT;
+                default -> UNSUPPORTED;
+            };
+            try {
+                String text = extractText(file, fileType);
+                logger.debug("File information {} extracted from {}", text, file.getOriginalFilename());
+                return Optional.of(new FileInformation(hash, text));
+            } catch (TextExtractionException e) {
+                logger.error("Failed to resolve the file due to {}", e.getMessage());
+                return Optional.empty();
+            }
+        });
+
+    }
+
+    private Optional<String> extractHash(MultipartFile file) {
+        try {
+            byte[] uploadBytes = file.getBytes();
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            byte[] digest = md5.digest(uploadBytes);
+            return Optional.of(new BigInteger(1, digest).toString(16));
+        } catch (IOException | NoSuchAlgorithmException e) {
+            logger.error("Could not extract hash for file {}", file.getOriginalFilename());
+            return Optional.empty();
+        }
     }
 
     private String extractText(MultipartFile file, FileType fileType) {

@@ -39,7 +39,9 @@ public class CandidateController {
         if (!creditService.userHasEnoughCredits(currentUsername)) {
             throw new NotEnoughCreditException();
         }
-        var handledFiles = Arrays.stream(files).parallel().map(fileService::handleFile);
+        var handledFiles = Arrays.stream(files)
+                .map(fileService::handleFile)
+                .toList();
         candidateService.updateCandidateCvs(currentUsername, handledFiles);
         response.addHeader("HX-Redirect", "/candidates");
         return "empty-response";

@@ -24,9 +24,11 @@ public class CvDao {
         this.repository = repository;
     }
 
+    @Transactional
     public void addCvsToRepository(List<ProcessedCv> processedCvs) {
         List<Cv> cvs = processedCvs.stream().map(cv -> Cv.builder()
                 .candidateName(cv.name())
+                .fileHash(cv.fileHash())
                 .condensedText(cv.condensedDescription())
                 .build()).toList();
         logger.debug("Preparing to save candidate CVs as: {}", cvs);
@@ -41,22 +43,19 @@ public class CvDao {
         return repository.findAll()
                 .stream()
                 .map(cv -> new ProcessedCv(
-                        null,
+                        cv.getId(),
                         cv.getCandidateName(),
+                        cv.getFileHash(),
                         cv.getCondensedText()))
                 .toList();
     }
 
-    @Transactional
     public void deleteByCvId(long cvId) {
         repository.deleteById(cvId);
     }
 
-    public void addCvToRepository(ProcessedCv cv) {
-        repository.saveAndFlush(Cv.builder()
-                .candidateName(cv.name())
-                .condensedText(cv.condensedDescription())
-                .build());
 
+    public boolean knownHash(String fileHash) {
+        return repository.existsCvByFileHash(fileHash);
     }
 }

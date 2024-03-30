@@ -8,11 +8,12 @@ import org.smartjobs.com.dal.CvDao;
 import org.smartjobs.com.service.candidate.data.CandidateData;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
 import org.smartjobs.com.service.file.data.FileInformation;
+import org.smartjobs.com.utils.ConcurrencyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
@@ -41,24 +42,38 @@ public class CandidateService {
         return cache.getFromCacheOrCompute(userName, _ -> cvDao.getAllNames());
     }
 
-    public void updateCandidateCvs(String username, Stream<FileInformation> fileInformationList) {
+    public void updateCandidateCvs(String username, List<Optional<FileInformation>> fileInformationList) {
         cache.clearCache(username);
-        fileInformationList.forEach(fileInformation -> {
-            var nameFuture = supplyAsync(() -> client.extractCandidateName(fileInformation.fileContent()));
-            var descriptionFuture = supplyAsync(() -> client.anonymousCandidateDescription(fileInformation.fileContent()));
-            var name = nameFuture.join();
-            var cvDescription = descriptionFuture.join();
-            if (name.isEmpty() || cvDescription.isEmpty()) {
-                logger.error("Either CV name {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
-            } else {
-                cvDao.addCvToRepository(new ProcessedCv(null, name.get(), cvDescription.get()));
-            }
-
-        });
+        var processedCvs = ConcurrencyUtil.virtualThreadList(fileInformationList, fileInformation -> fileInformation.flatMap(this::processCv));
+        List<ProcessedCv> list = processedCvs.stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+        if (processedCvs.isEmpty()) {
+            return;
+        }
+        cvDao.addCvsToRepository(list);
+        cache.clearCache(username);
     }
 
     public void deleteCandidate(String username, long cvId) {
         cache.clearCache(username);
         cvDao.deleteByCvId(cvId);
+    }
+
+    private Optional<ProcessedCv> processCv(FileInformation fileInformation) {
+        if (cvDao.knownHash(fileInformation.fileHash())) {
+            return Optional.empty();
+        }
+        var nameFuture = supplyAsync(() -> client.extractCandidateName(fileInformation.fileContent()));
+        var descriptionFuture = supplyAsync(() -> client.anonymousCandidateDescription(fileInformation.fileContent()));
+        var name = nameFuture.join();
+        var cvDescription = descriptionFuture.join();
+        if (name.isEmpty() || cvDescription.isEmpty()) {
+            logger.error("Either CV name {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
+            return Optional.empty();
+        } else {
+            return Optional.of(new ProcessedCv(null, name.get(), fileInformation.fileHash(), cvDescription.get()));
+        }
     }
 }

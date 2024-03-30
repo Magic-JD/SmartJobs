@@ -12,4 +12,5 @@ public interface CvRepository extends JpaRepository<Cv, Long> {
     @Query("SELECT NEW org.smartjobs.com.service.candidate.data.CandidateData(c.id, c.candidateName) FROM Cv c")
     List<CandidateData> findAllProjectedAsCandidateData();
 
+    boolean existsCvByFileHash(String fileHash);
 }
