@@ -12,8 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.smartjobs.com.constants.ThymeleafConstants.*;
+
 @Controller
 public class PageController {
+
 
     private final AuthService authService;
 
@@ -26,26 +29,33 @@ public class PageController {
     @GetMapping("/")
     public String overview(Model model) {
         setAllowedNavigationForUser(model);
-        return "index";
+        return LANDING_PAGE;
     }
 
 
     @GetMapping("/analyze")
     public String getAnalysisPage(Model model) {
         setAllowedNavigationForUser(model);
-        return "analyze";
+        return ANALYSIS_PAGE;
     }
 
     @GetMapping("/candidates")
     public String getCandidatesPage(Model model) {
         setAllowedNavigationForUser(model);
-        return "candidates";
+        return CANDIDATE_PAGE;
     }
 
     @GetMapping("/upload")
     public String getUploadPage(Model model) {
         setAllowedNavigationForUser(model);
-        return "upload";
+        return UPLOAD_PAGE;
+    }
+
+    @GetMapping("/roles")
+    public String getRolesPage(Model model) {
+        setAllowedNavigationForUser(model);
+        return ROLES_PAGE;
+
     }
 
     private void setAllowedNavigationForUser(Model model) {
@@ -54,8 +64,9 @@ public class PageController {
             case ADMIN, USER -> model.addAllAttributes(Map.of(
                     "loggedIn", true,
                     "navElements", List.of(
-                            new NavElement("candidates", "Candidates", false),
-                            new NavElement("analyze", "Analyze", false))));
+                            new NavElement(ROLES_PAGE, "Roles", false),
+                            new NavElement(CANDIDATE_PAGE, "Candidates", false),
+                            new NavElement(ANALYSIS_PAGE, "Analyze", false))));
             case ROLE_ANONYMOUS -> model.addAllAttributes(Map.of(
                     "loggedIn", false,
                     "navElements", Collections.emptyList()));

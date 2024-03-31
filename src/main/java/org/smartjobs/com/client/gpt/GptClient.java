@@ -9,6 +9,7 @@ import org.smartjobs.com.client.gpt.response.GptUsage;
 import org.smartjobs.com.exception.categories.ApplicationExceptions.GptClientConnectionFailure;
 import org.smartjobs.com.exception.categories.AsynchronousExceptions.JustificationException;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
+import org.smartjobs.com.service.role.data.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -93,19 +94,9 @@ public class GptClient {
 
     }
 
-    public ScoringCriteriaResult scoreToCriteria(ProcessedCv ci) {
-        List<ScoringCriteria> scoringCriteria = List.of(
-                new ScoringCriteria("Degree in Computer Science or related field", 10),
-                new ScoringCriteria("Advanced degree (MSc, Ph.D.) in computer science or related field", 5),
-                new ScoringCriteria("Relevant certifications (e.g., AWS Certified Developer, Microsoft Certified: Azure Developer Associate)", 5),
-                new ScoringCriteria("Proficiency in Java and Python", 10),
-                new ScoringCriteria("Likely to be familiar with React (or Angular, Vue.js)", 10),
-                new ScoringCriteria("Understanding of databases and cloud platforms", 20),
-                new ScoringCriteria("Relevant consumer tech industry experience 1 point per year", 10),
-                new ScoringCriteria("Experience in a Software Engineering role ", 5),
-                new ScoringCriteria("Demonstrated leadership and/or coaching role", 5),
-                new ScoringCriteria("Notable projects or contributions", 20)
-        );
+    public ScoringCriteriaResult scoreToCriteria(ProcessedCv ci, Role role) {
+
+        var scoringCriteria = role.scoringCriteria();
         var scoringResponses = virtualThreadList(scoringCriteria, sc -> {
             GptRequest gptRequest = GptRequest.scoreToCriteria(ci, sc);
             return sendMessage(gptRequest)
@@ -128,16 +119,13 @@ public class GptClient {
                             return false;
                         }
                     })
-                    .map(ra -> new ScoringCriteriaDisplay(sc.description, ra[0].trim(), Double.parseDouble(ra[1].trim()), sc.weight))
-                    .orElse(new ScoringCriteriaDisplay(sc.description, "The score could not be calculated for this value", 0, 0));
+                    .map(ra -> new ScoringCriteriaDisplay(sc.description(), ra[0].trim(), Double.parseDouble(ra[1].trim()), sc.weight()))
+                    .orElse(new ScoringCriteriaDisplay(sc.description(), "The score could not be calculated for this value", 0, 0));
         });
         double totalScore = scoringResponses.stream()
                 .mapToDouble(ScoringCriteriaDisplay::score)
                 .sum();
         return new ScoringCriteriaResult(UUID.randomUUID().toString(), ci.name(), totalScore, scoringResponses);
-    }
-
-    public record ScoringCriteria(String description, int weight) {
     }
 
     public record ScoringCriteriaResult(String uuid, String name, double percentage,

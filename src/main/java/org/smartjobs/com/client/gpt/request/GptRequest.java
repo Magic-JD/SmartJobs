@@ -1,9 +1,9 @@
 package org.smartjobs.com.client.gpt.request;
 
-import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.client.gpt.data.GptMessage;
 import org.smartjobs.com.client.gpt.data.GptModel;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
+import org.smartjobs.com.service.role.data.ScoringCriteria;
 
 import java.util.Arrays;
 import java.util.List;
@@ -74,7 +74,7 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                 userMessage("Candidate rating: " + candidateRating + "%. Candidate Information: " + candidateInformation + " Job Listing: " + jobListing));
     }
 
-    public static GptRequest scoreToCriteria(ProcessedCv cv, GptClient.ScoringCriteria scoringCriteria) {
+    public static GptRequest scoreToCriteria(ProcessedCv cv, ScoringCriteria scoringCriteria) {
         return gpt3(
                 systemMessage(STR. """
                         You are the master of scoring candidates. You will be given a scoring criteria and a number of points.

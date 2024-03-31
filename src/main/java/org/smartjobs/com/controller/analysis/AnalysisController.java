@@ -6,6 +6,7 @@ import org.smartjobs.com.service.analysis.AnalysisService;
 import org.smartjobs.com.service.auth.AuthService;
 import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
+import org.smartjobs.com.service.role.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,23 +19,28 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.smartjobs.com.constants.ThymeleafConstants.*;
 import static org.smartjobs.com.exception.message.ExceptionMessage.createUserErrorMessageToDisplayForUser;
 
 @Controller
 @RequestMapping("/analysis")
 public class AnalysisController {
 
+
     private final CandidateService candidateService;
     private final AnalysisService analysisService;
     private final AuthService authService;
 
+    private final RoleService roleService;
+
     private final ConcurrentHashMap<String, GptClient.ScoringCriteriaResult> cache = new ConcurrentHashMap<>();
 
     @Autowired
-    public AnalysisController(CandidateService candidateService, AnalysisService analysisService, AuthService authService) {
+    public AnalysisController(CandidateService candidateService, AnalysisService analysisService, AuthService authService, RoleService roleService) {
         this.candidateService = candidateService;
         this.analysisService = analysisService;
         this.authService = authService;
+        this.roleService = roleService;
     }
 
 
@@ -45,22 +51,23 @@ public class AnalysisController {
         if (candidateInformation.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
         }
-        var results = analysisService.scoreToCriteria(candidateInformation).stream()
+        var role = roleService.getRole();
+        var results = analysisService.scoreToCriteria(candidateInformation, role).stream()
                 .sorted(Comparator.comparing(GptClient.ScoringCriteriaResult::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
         model.addAttribute("results", results);
-        return "scoring";
+        return SCORING_FRAGMENT;
     }
 
     @GetMapping("/result/details/{resultUuid}")
     public String retrieveResultDetails(@PathVariable String resultUuid, Model model) {
         model.addAttribute("result", cache.get(resultUuid));
-        return "result-details";
+        return RESULT_DETAILS_FRAGMENT;
     }
 
     @DeleteMapping("/result/details/{resultUuid}")
     public String removeResultDetails(@PathVariable String resultUuid, Model model) {
         model.addAttribute("result", cache.get(resultUuid));
-        return "result-collapsed";
+        return RESULT_COLLAPSED_FRAGMENT;
     }
 }

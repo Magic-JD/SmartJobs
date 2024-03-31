@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="head"></head>
+<body id="mainBody" class="background wrapper">
+<header th:replace="header"></header>
+<div id="error"></div>
+<main>
+    <div hx-get="/roles/display/1" hx-swap="outerHTML" hx-target="this"
+         hx-trigger="load"
+    ></div>
+</main>
+<footer th:replace="footer"></footer>
+</body>
+</html>
+

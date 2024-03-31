@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class CvDao {
@@ -29,6 +30,7 @@ public class CvDao {
         List<Cv> cvs = processedCvs.stream().map(cv -> Cv.builder()
                 .candidateName(cv.name())
                 .fileHash(cv.fileHash())
+                .currentlySelected(cv.currentlySelected())
                 .condensedText(cv.condensedDescription())
                 .build()).toList();
         logger.debug("Preparing to save candidate CVs as: {}", cvs);
@@ -39,12 +41,13 @@ public class CvDao {
         return repository.findAllProjectedAsCandidateData();
     }
 
-    public List<ProcessedCv> getAll() {
-        return repository.findAll()
+    public List<ProcessedCv> getAllSelected() {
+        return repository.findByCurrentlySelected(true)
                 .stream()
                 .map(cv -> new ProcessedCv(
                         cv.getId(),
                         cv.getCandidateName(),
+                        cv.getCurrentlySelected(),
                         cv.getFileHash(),
                         cv.getCondensedText()))
                 .toList();
@@ -57,5 +60,10 @@ public class CvDao {
 
     public boolean knownHash(String fileHash) {
         return repository.existsCvByFileHash(fileHash);
+    }
+
+    public Optional<CandidateData> updateCurrentlySelectedById(long cvId, boolean select) {
+        repository.updateCurrentlySelectedById(cvId, select);
+        return repository.findCandidateDataById(cvId);
     }
 }

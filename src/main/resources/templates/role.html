@@ -1,0 +1,6 @@
+<div id="role" th:fragment="role" class="text-medium">
+    <p>This role is for the position <span th:text="${role.position}"></span></p>
+    <p>Criteria:</p>
+    <p class="text-small right-nudged" th:each="criteria : ${role.scoringCriteria}"
+       th:text="|${criteria.description}, scored out of ${criteria.weight}|"></p>
+</div>

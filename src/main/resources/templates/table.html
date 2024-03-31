@@ -6,7 +6,13 @@
     </div>
     <div class="candidate-row flex-container" th:each="candidate : ${candidates}">
         <p class="candidate-display-left" th:text="${candidate.name}">Value</p>
-        <button class='button-dark candidate-display-right'
+        <button class='candidate-display-right'
+                th:classappend="${candidate.currentlySelected ? 'button-light' : 'button-dark'}"
+                th:attr="hx-put=@{|/candidate/select/${candidate.id}?select=${!candidate.currentlySelected}|} "
+                th:text="${candidate.currentlySelected} ? Selected : Select"
+                hx-swap="innerHTML">
+        </button>
+        <button class='button-dark'
                 th:attr="hx-delete=@{|/candidate/delete/${candidate.id}|}">Delete
         </button>
     </div>

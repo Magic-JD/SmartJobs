@@ -18,6 +18,9 @@ public class Cv {
     @Setter
     private String fileHash;
 
+    @Setter
+    private Boolean currentlySelected;
+
     @Lob
     @Setter
     private String condensedText;

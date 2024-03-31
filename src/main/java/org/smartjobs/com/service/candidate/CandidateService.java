@@ -35,7 +35,7 @@ public class CandidateService {
     }
 
     public List<ProcessedCv> getFullCandidateInfo(String userName) {
-        return cvDao.getAll();
+        return cvDao.getAllSelected();
     }
 
     public List<CandidateData> getCurrentCandidates(String userName) {
@@ -73,7 +73,12 @@ public class CandidateService {
             logger.error("Either CV name {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
             return Optional.empty();
         } else {
-            return Optional.of(new ProcessedCv(null, name.get(), fileInformation.fileHash(), cvDescription.get()));
+            return Optional.of(new ProcessedCv(null, name.get(), true, fileInformation.fileHash(), cvDescription.get()));
         }
+    }
+
+    public Optional<CandidateData> toggleCandidateSelect(String currentUsername, long cvId, boolean select) {
+        cache.clearCache(currentUsername);
+        return cvDao.updateCurrentlySelectedById(cvId, select);
     }
 }

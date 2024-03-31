@@ -1,0 +1,11 @@
+<p class="candidate-display-left" th:text="${candidate.name}">Value</p>
+<button class='candidate-display-right'
+        th:attr="hx-put=@{|/candidate/select/${candidate.id}?select=${!candidate.currentlySelected}|} "
+        th:classappend="${candidate.currentlySelected ? 'button-light' : 'button-dark'}"
+        th:text="${candidate.currentlySelected} ? Selected : Select"
+        hx-swap="innerHTML">
+
+</button>
+<button class='button-dark'
+        th:attr="hx-delete=@{|/candidate/delete/${candidate.id}|}">Delete
+</button>
