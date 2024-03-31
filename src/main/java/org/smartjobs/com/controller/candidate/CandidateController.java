@@ -81,4 +81,11 @@ public class CandidateController {
 
     }
 
+    @GetMapping("/number/selected")
+    public String findNumberOfCandidatesSelected(Model model) {
+        int selectedCount = candidateService.findSelectedCandidateCount();
+        model.addAttribute("selectedCount", selectedCount);
+        return CANDIDATE_COUNT_FRAGMENT;
+    }
+
 }

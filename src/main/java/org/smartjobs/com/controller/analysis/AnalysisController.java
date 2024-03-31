@@ -36,7 +36,11 @@ public class AnalysisController {
     private final ConcurrentHashMap<String, GptClient.ScoringCriteriaResult> cache = new ConcurrentHashMap<>();
 
     @Autowired
-    public AnalysisController(CandidateService candidateService, AnalysisService analysisService, AuthService authService, RoleService roleService) {
+    public AnalysisController(
+            CandidateService candidateService,
+            AnalysisService analysisService,
+            AuthService authService,
+            RoleService roleService) {
         this.candidateService = candidateService;
         this.analysisService = analysisService;
         this.authService = authService;

@@ -30,4 +30,7 @@ public interface CvRepository extends JpaRepository<Cv, Long> {
 
     @Transactional
     List<Cv> findByCurrentlySelected(boolean currentlySelected);
+
+    @Transactional
+    int countByCurrentlySelected(boolean currentlySelected);
 }

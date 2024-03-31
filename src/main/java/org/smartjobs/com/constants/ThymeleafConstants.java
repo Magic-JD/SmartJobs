@@ -15,6 +15,8 @@ public class ThymeleafConstants {
     public static final String EMPTY_FRAGMENT = "empty-response";
     public static final String CANDIDATE_TABLE_FRAGMENT = "table";
     public static final String SINGLE_CANDIDATE_ROW_FRAGMENT = "single-candidate-row";
+    public static final String CANDIDATE_COUNT_FRAGMENT = "candidate-count";
+
 
 
     public static final String SCORING_FRAGMENT = "scoring";

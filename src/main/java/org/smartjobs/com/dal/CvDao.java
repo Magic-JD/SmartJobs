@@ -66,4 +66,8 @@ public class CvDao {
         repository.updateCurrentlySelectedById(cvId, select);
         return repository.findCandidateDataById(cvId);
     }
+
+    public int findSelectedCandidateCount() {
+        return repository.countByCurrentlySelected(true);
+    }
 }

@@ -81,4 +81,8 @@ public class CandidateService {
         cache.clearCache(currentUsername);
         return cvDao.updateCurrentlySelectedById(cvId, select);
     }
+
+    public int findSelectedCandidateCount() {
+        return cvDao.findSelectedCandidateCount();
+    }
 }
