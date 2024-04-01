@@ -1,11 +1,10 @@
-<div class="flex-stack candidate-table"
-     hx-swap="outerHTML"
-     hx-target="this"
-     th:attr="hx-delete=@{|analysis/result/details/${result.uuid}|}">
+<div hx-target="this" class="flex-stack candidate-table">
+    <div class="candidate-row flex-container"
+         hx-swap="outerHTML"
 
-    <div class="candidate-row flex-container">
+         th:attr="hx-delete=@{|analysis/result/details/${result.uuid}|}">
 
-        <p class="candidate-display-left" th:text="${result.name}"></p>
+        <p class="candidate-display-left" th:text="|⌄ ${result.name}|"></p>
         <p class="candidate-display-right" th:text="|${@numberFormatUtils.formatNumber(result.percentage)}%|"></p>
 
     </div>

@@ -7,9 +7,9 @@ import org.smartjobs.com.client.gpt.request.GptRequest;
 import org.smartjobs.com.client.gpt.response.GptResponse;
 import org.smartjobs.com.client.gpt.response.GptUsage;
 import org.smartjobs.com.exception.categories.ApplicationExceptions.GptClientConnectionFailure;
-import org.smartjobs.com.exception.categories.AsynchronousExceptions.JustificationException;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
 import org.smartjobs.com.service.role.data.Role;
+import org.smartjobs.com.service.role.data.ScoringCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.smartjobs.com.client.gpt.request.GptRequest.evaluateCandidate;
-import static org.smartjobs.com.client.gpt.request.GptRequest.justifyGptDecision;
 import static org.smartjobs.com.utils.ConcurrencyUtil.virtualThreadList;
 
 @Component
@@ -57,15 +55,6 @@ public class GptClient {
         this.apiKey = apiKey;
     }
 
-    public String justifyDecision(int match, String candidateCv, String jobListing) {
-        GptRequest gptRequest = justifyGptDecision(match, candidateCv, jobListing);
-        var response = sendMessage(gptRequest);
-        return response.map(rp -> rp.choices().stream()
-                .map(choice -> choice.message().content())
-                        .collect(Collectors.joining("\n")))
-                .orElseThrow(JustificationException::new);
-    }
-
     public Optional<String> extractCandidateName(String cvData) {
         GptRequest gptRequest = GptRequest.extractCandidateName(cvData);
         var response = sendMessage(gptRequest);
@@ -83,19 +72,9 @@ public class GptClient {
 
     }
 
-    public int determineMatchPercentage(String listingDescription, String candidateDescription) {
-        GptRequest gptRequest = evaluateCandidate(listingDescription, candidateDescription);
-        var response = sendMessage(gptRequest);
-        return response.flatMap(rp -> rp.choices().stream()
-                .map(choice -> choice.message().content())
-                .findFirst()
-                        .map(Integer::parseInt))
-                .orElseThrow();
-
-    }
-
     public ScoringCriteriaResult scoreToCriteria(ProcessedCv ci, Role role) {
 
+        var maxPossibleScore = role.scoringCriteria().stream().mapToDouble(ScoringCriteria::weight).sum();
         var scoringCriteria = role.scoringCriteria();
         var scoringResponses = virtualThreadList(scoringCriteria, sc -> {
             GptRequest gptRequest = GptRequest.scoreToCriteria(ci, sc);
@@ -109,23 +88,26 @@ public class GptClient {
                         return false;
                     })
                     .map(rs -> rs.split("SCORE"))
-                    .filter(ra -> {
-                        String scoreString = ra[1].trim();
+                    .flatMap(ra -> {
+                        String scoreString = ra[1].trim().replaceAll("[^0-9.]", "");
+                        if (scoreString.endsWith(".")) {
+                            scoreString = scoreString.substring(0, scoreString.length() - 1);
+                        }
                         try {
-                            Double.parseDouble(scoreString);
-                            return true;
+                            double score = Double.parseDouble(scoreString);
+                            return Optional.of(new ScoringCriteriaDisplay(sc.description(), ra[0].trim(), score, sc.weight()));
                         } catch (NumberFormatException e) {
                             logger.error("The returned response from GPT was not a properly formatted number. The value was {}", scoreString);
-                            return false;
+                            return Optional.empty();
                         }
+
                     })
-                    .map(ra -> new ScoringCriteriaDisplay(sc.description(), ra[0].trim(), Double.parseDouble(ra[1].trim()), sc.weight()))
                     .orElse(new ScoringCriteriaDisplay(sc.description(), "The score could not be calculated for this value", 0, 0));
         });
         double totalScore = scoringResponses.stream()
                 .mapToDouble(ScoringCriteriaDisplay::score)
                 .sum();
-        return new ScoringCriteriaResult(UUID.randomUUID().toString(), ci.name(), totalScore, scoringResponses);
+        return new ScoringCriteriaResult(UUID.randomUUID().toString(), ci.name(), (totalScore / maxPossibleScore) * 100, scoringResponses);
     }
 
     public record ScoringCriteriaResult(String uuid, String name, double percentage,
