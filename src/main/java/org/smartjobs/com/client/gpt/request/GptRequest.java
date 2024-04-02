@@ -45,7 +45,7 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                 userMessage(cvData));
     }
 
-    public static GptRequest scoreToCriteria(ProcessedCv cv, ScoringCriteria scoringCriteria) {
+    public static GptRequest scoreToCriteria(String context, ScoringCriteria scoringCriteria) {
         return gpt(
                 systemMessage(STR. """
                         You are the master of scoring candidates. You will be given a scoring criteria and a number of points.
@@ -60,12 +60,13 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                         The max amount you can give the candidate is \{ scoringCriteria.weight() }.
                         If the candidate doesn't match the scoring criteria at all they should get no points.
                         You may only award points for factors that are mentioned in the criteria.
+                        If the CV is not provided, just state that this attribute cannot be found and give 0 points.
 
                         Here are some examples of the correct output you should give:
                         Example 1: The candidate has held several positions where they have used Java, but shows no evidence of having used python. SCORE 6
                         Example 2: The candidate does not have an advanced degree in Computer Science. SCORE 0
                         Example 3: The canidate fully meets the supplied criteria. SCORE 10
                         """ ),
-                userMessage(STR. "CV: \{ cv.condensedDescription() }. Scoring criteria: \{ scoringCriteria.description() }" ));
+                userMessage(STR. "CV: \{ context }. Scoring criteria: \{ scoringCriteria.description() }" ));
     }
 }

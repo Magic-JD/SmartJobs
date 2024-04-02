@@ -26,7 +26,7 @@ public class CvDao {
     }
 
     @Transactional
-    public void addCvsToRepository(List<ProcessedCv> processedCvs) {
+    public List<Cv> addCvsToRepository(List<ProcessedCv> processedCvs) {
         List<Cv> cvs = processedCvs.stream().map(cv -> Cv.builder()
                 .candidateName(cv.name())
                 .fileHash(cv.fileHash())
@@ -34,7 +34,7 @@ public class CvDao {
                 .condensedText(cv.condensedDescription())
                 .build()).toList();
         logger.debug("Preparing to save candidate CVs as: {}", cvs);
-        repository.saveAllAndFlush(cvs);
+        return repository.saveAllAndFlush(cvs);
     }
 
     public List<CandidateData> getAllNames() {

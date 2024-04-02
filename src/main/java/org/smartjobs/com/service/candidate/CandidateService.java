@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.smartjobs.com.cache.CandidateCache;
 import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.dal.CvDao;
+import org.smartjobs.com.dal.repository.data.Cv;
 import org.smartjobs.com.service.candidate.data.CandidateData;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
 import org.smartjobs.com.service.file.data.FileInformation;
@@ -12,6 +13,7 @@ import org.smartjobs.com.utils.ConcurrencyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +44,7 @@ public class CandidateService {
         return cache.getFromCacheOrCompute(userName, _ -> cvDao.getAllNames());
     }
 
-    public void updateCandidateCvs(String username, List<Optional<FileInformation>> fileInformationList) {
+    public List<Cv> updateCandidateCvs(String username, List<Optional<FileInformation>> fileInformationList) {
         cache.clearCache(username);
         var processedCvs = ConcurrencyUtil.virtualThreadList(fileInformationList, fileInformation -> fileInformation.flatMap(this::processCv));
         List<ProcessedCv> list = processedCvs.stream()
@@ -50,10 +52,11 @@ public class CandidateService {
                 .map(Optional::get)
                 .toList();
         if (processedCvs.isEmpty()) {
-            return;
+            return Collections.emptyList();
         }
-        cvDao.addCvsToRepository(list);
+        List<Cv> cvs = cvDao.addCvsToRepository(list);
         cache.clearCache(username);
+        return cvs;
     }
 
     public void deleteCandidate(String username, long cvId) {

@@ -6,6 +6,7 @@ import org.smartjobs.com.service.analysis.AnalysisService;
 import org.smartjobs.com.service.auth.AuthService;
 import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
+import org.smartjobs.com.service.chroma.ChromaService;
 import org.smartjobs.com.service.role.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,8 @@ public class AnalysisController {
 
     private final RoleService roleService;
 
+    private final ChromaService chromaService;
+
     private final ConcurrentHashMap<String, GptClient.ScoringCriteriaResult> cache = new ConcurrentHashMap<>();
 
     @Autowired
@@ -40,13 +43,16 @@ public class AnalysisController {
             CandidateService candidateService,
             AnalysisService analysisService,
             AuthService authService,
-            RoleService roleService) {
+            RoleService roleService, ChromaService chromaService) {
         this.candidateService = candidateService;
         this.analysisService = analysisService;
         this.authService = authService;
         this.roleService = roleService;
+        this.chromaService = chromaService;
     }
 
+
+    public record ChromaContext(String name, List<String> relevantContext){}
 
     @GetMapping("/scoring")
     public String scoreAllCandidates(HttpServletResponse response, Model model) {

@@ -2,10 +2,12 @@ package org.smartjobs.com.controller.candidate;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
+import org.smartjobs.com.dal.repository.data.Cv;
 import org.smartjobs.com.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
 import org.smartjobs.com.service.auth.AuthService;
 import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.candidate.data.CandidateData;
+import org.smartjobs.com.service.chroma.ChromaService;
 import org.smartjobs.com.service.credit.CreditService;
 import org.smartjobs.com.service.file.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 import static org.smartjobs.com.constants.ThymeleafConstants.*;
 
@@ -28,15 +32,16 @@ public class CandidateController {
     private final FileService fileService;
     private final CreditService creditService;
     private final AuthService authService;
-
+    private final ChromaService chromaService;
 
 
     @Autowired
-    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, AuthService authService) {
+    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, AuthService authService, ChromaService chromaService) {
         this.fileService = fileService;
         this.candidateService = candidateService;
         this.creditService = creditService;
         this.authService = authService;
+        this.chromaService = chromaService;
     }
 
     @PostMapping("/upload")
@@ -48,7 +53,8 @@ public class CandidateController {
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
                 .toList();
-        candidateService.updateCandidateCvs(currentUsername, handledFiles);
+        List<Cv> cvs = candidateService.updateCandidateCvs(currentUsername, handledFiles);
+        cvs.forEach(cv -> chromaService.addCv(cv.getId(), cv.getCondensedText()));
         response.addHeader("HX-Redirect", "/candidates");
         return EMPTY_FRAGMENT;
     }

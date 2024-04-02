@@ -1,13 +1,18 @@
 package org.smartjobs.com.client.gpt;
 
 import com.google.gson.Gson;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.store.embedding.EmbeddingMatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartjobs.com.client.gpt.request.GptRequest;
 import org.smartjobs.com.client.gpt.response.GptResponse;
 import org.smartjobs.com.client.gpt.response.GptUsage;
+import org.smartjobs.com.controller.analysis.AnalysisController;
+import org.smartjobs.com.controller.analysis.AnalysisController.ChromaContext;
 import org.smartjobs.com.exception.categories.ApplicationExceptions.GptClientConnectionFailure;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
+import org.smartjobs.com.service.chroma.ChromaService;
 import org.smartjobs.com.service.role.data.Role;
 import org.smartjobs.com.service.role.data.ScoringCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +43,15 @@ public class GptClient {
     private final URI clientUri;
     private final String apiKey;
 
+    private final ChromaService chromaService;
+
     @Autowired
     public GptClient(
             HttpClient client,
             Gson gson,
             @Value("${gpt.api.site}") String site,
             @Value("${gpt.api.endpoint}") String endpoint,
-            @Value("${gpt.api.key}") String apiKey) {
+            @Value("${gpt.api.key}") String apiKey, ChromaService chromaService) {
         this.client = client;
         this.gson = gson;
         try {
@@ -53,6 +60,7 @@ public class GptClient {
             throw new GptClientConnectionFailure(e);
         }
         this.apiKey = apiKey;
+        this.chromaService = chromaService;
     }
 
     public Optional<String> extractCandidateName(String cvData) {
@@ -77,7 +85,9 @@ public class GptClient {
         var maxPossibleScore = role.scoringCriteria().stream().mapToDouble(ScoringCriteria::weight).sum();
         var scoringCriteria = role.scoringCriteria();
         var scoringResponses = virtualThreadList(scoringCriteria, sc -> {
-            GptRequest gptRequest = GptRequest.scoreToCriteria(ci, sc);
+            String context = chromaService
+                    .search(ci.id(), sc.description(), 10).stream().map(em -> em.embedded().toString()).collect(Collectors.joining("\n"));
+            GptRequest gptRequest = GptRequest.scoreToCriteria(context, sc);
             return sendMessage(gptRequest)
                     .flatMap(rp -> rp.choices().stream().map(choice -> choice.message().content()).findFirst())
                     .filter(rs -> {
