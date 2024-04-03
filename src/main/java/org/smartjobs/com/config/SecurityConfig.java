@@ -30,8 +30,9 @@ public class SecurityConfig {
                 .requestMatchers("/**.html").denyAll()
                 .requestMatchers("/", "/login", "/styles/style.css").permitAll()
                 .anyRequest().authenticated());
-        http.formLogin(_ -> {
-        });
+        http.formLogin(formLogin -> formLogin
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/", true));
         http.logout(_ -> {
         });
         return http.build();
