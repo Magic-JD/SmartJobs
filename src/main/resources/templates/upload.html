@@ -14,6 +14,7 @@
         </label>
         <input class="text-medium" accept=".txt, .pdf" id="files" multiple name="files" type="file">
         <button type="submit" class="button-light button-enlarge">Upload Files</button>
+        <img class='htmx-indicator' th:src="@{/images/loading.gif}"/>
     </form>
 </main>
 <footer th:replace="footer"></footer>

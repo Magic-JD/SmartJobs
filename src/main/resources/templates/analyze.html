@@ -13,6 +13,7 @@
                 hx-swap="innerHTML"
                 hx-target="#scoring"
                 hx-trigger="click"
+                hx-indicator="#loading-icon"
                 type="button">Analyze Now
         </button>
     </div>
@@ -23,6 +24,7 @@
             <p class="candidate-display-left">Name</p>
             <p class="candidate-display-right">Percent</p>
         </div>
+        <img id="loading-icon" class='htmx-indicator' th:src="@{/images/loading.gif}"/>
     </div>
 </main>
 <footer th:replace="footer"></footer>
