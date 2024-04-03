@@ -1,5 +1,6 @@
 package org.smartjobs.com.controller.analysis;
 
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.service.analysis.AnalysisService;
@@ -48,6 +49,7 @@ public class AnalysisController {
     }
 
 
+    @HxRequest
     @GetMapping("/scoring")
     public String scoreAllCandidates(HttpServletResponse response, Model model) {
         String username = authService.getCurrentUsername();
@@ -63,12 +65,14 @@ public class AnalysisController {
         return SCORING_FRAGMENT;
     }
 
+    @HxRequest
     @GetMapping("/result/details/{resultUuid}")
     public String retrieveResultDetails(@PathVariable String resultUuid, Model model) {
         model.addAttribute("result", cache.get(resultUuid));
         return RESULT_DETAILS_FRAGMENT;
     }
 
+    @HxRequest
     @DeleteMapping("/result/details/{resultUuid}")
     public String removeResultDetails(@PathVariable String resultUuid, Model model) {
         model.addAttribute("result", cache.get(resultUuid));

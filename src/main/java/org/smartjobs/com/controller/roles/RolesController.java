@@ -1,5 +1,6 @@
 package org.smartjobs.com.controller.roles;
 
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import org.smartjobs.com.service.role.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ public class RolesController {
         this.roleService = roleService;
     }
 
+    @HxRequest
     @GetMapping("/display/{roleId}")
     public String displayRole(@PathVariable("roleId") long roleId, Model model) {
         model.addAttribute("role", roleService.getRole());

@@ -1,5 +1,6 @@
 package org.smartjobs.com.controller.candidate;
 
+import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import org.smartjobs.com.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
@@ -39,6 +40,7 @@ public class CandidateController {
         this.authService = authService;
     }
 
+    @HxRequest
     @PostMapping("/upload")
     public String uploadFile(@RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
         String currentUsername = authService.getCurrentUsername();
@@ -54,6 +56,7 @@ public class CandidateController {
     }
 
 
+    @HxRequest
     @GetMapping()
     public String getAllCandidates(Model model) {
         String currentUsername = authService.getCurrentUsername();
@@ -63,6 +66,7 @@ public class CandidateController {
         return CANDIDATE_TABLE_FRAGMENT;
     }
 
+    @HxRequest
     @DeleteMapping("/delete/{cvId}")
     public String deleteCandidate(@PathVariable long cvId) {
         String currentUsername = authService.getCurrentUsername();
@@ -71,6 +75,7 @@ public class CandidateController {
     }
 
 
+    @HxRequest
     @PutMapping("/select/{cvId}")
     public String deleteCandidate(@PathVariable long cvId, @PathParam("select") boolean select, Model model) {
         String currentUsername = authService.getCurrentUsername();
@@ -81,6 +86,7 @@ public class CandidateController {
 
     }
 
+    @HxRequest
     @GetMapping("/number/selected")
     public String findNumberOfCandidatesSelected(Model model) {
         int selectedCount = candidateService.findSelectedCandidateCount();
