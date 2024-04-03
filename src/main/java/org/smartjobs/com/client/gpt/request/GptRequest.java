@@ -40,7 +40,7 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                         You will remove any details about the persons name, age, sex, sexual orientation or ethnicity. These details must not be present in the output.
                         If necessary replace details with a neutral replacement (e.g. replace Fraternity with Social Club or All Girls High School with High School).
                         Return only this information with no additional commentary.
-                        This job is very important. Ensure you do it thoroughly.
+                        This job is very important. Ensure you do it thoroughly. Output a maximum of 600 tokens, but if possible output less.
                         """),
                 userMessage(cvData));
     }

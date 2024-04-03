@@ -56,7 +56,7 @@ public class GptClient {
     }
 
     public Optional<String> extractCandidateName(String cvData) {
-        GptRequest gptRequest = GptRequest.extractCandidateName(cvData);
+        GptRequest gptRequest = GptRequest.extractCandidateName(cvData.substring(0, Math.min(cvData.length(), 500)));
         var response = sendMessage(gptRequest);
         return response.map(rp -> rp.choices().stream()
                 .map(choice -> choice.message().content())
