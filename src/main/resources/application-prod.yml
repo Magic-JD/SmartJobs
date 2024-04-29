@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://secretsauce.cxs4y0ae6u93.eu-west-2.rds.amazonaws.com:5432/postgres
+    username: postgres
+    password: CreamyThresh

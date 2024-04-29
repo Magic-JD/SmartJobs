@@ -10,10 +10,6 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  datasource:
-    url: jdbc:postgresql://secretsauce.cxs4y0ae6u93.eu-west-2.rds.amazonaws.com:5432/postgres
-    username: postgres
-    password: CreamyThresh
 
 app:
   file:
@@ -25,13 +21,13 @@ logging:
     root: ERROR
     org:
       smartjobs:
-        com: INFO
+        com: ERROR
   org:
     springframework:
       boot:
         test:
           context:
-            SpringBootTestContextBootstrapper: WARN
+            SpringBootTestContextBootstrapper: ERROR
       context:
         support:
           AbstractContextLoader: OFF
