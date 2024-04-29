@@ -1,0 +1,56 @@
+gpt:
+  api:
+    key: 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
+    site: https://api.openai.com
+    endpoint: /v1/chat/completions
+
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    url: jdbc:postgresql://secretsauce.cxs4y0ae6u93.eu-west-2.rds.amazonaws.com:5432/postgres
+    username: postgres
+    password: CreamyThresh
+
+app:
+  file:
+    upload-dir: ./data/uploads/files
+logging:
+  file:
+    path: ./data/logs
+  level:
+    root: ERROR
+    org:
+      smartjobs:
+        com: INFO
+  org:
+    springframework:
+      boot:
+        test:
+          context:
+            SpringBootTestContextBootstrapper: WARN
+      context:
+        support:
+          AbstractContextLoader: OFF
+          AnnotationConfigContextLoaderUtils: OFF
+        thymeleaf: ERROR
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "|>|%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+threads:
+  virtual:
+    enabled: true
+
+thymeleaf:
+  mode: HTML
+  encoding: UTF-8
+  prefix: classpath:/templates/
+  suffix: .html
+
+web:
+  resources:
+    static-locations: classpath:/static/,classpath:/public/,classpath:/resources/,classpath:/META-INF/resources/
