@@ -1,11 +1,19 @@
 <div class="sidebar" id="saved-role" th:fragment="saved-role">
     <div class="flex-stack saved-role"
-         th:each="role : ${savedRoles}"
-         th:text="${role.name}"
          hx-swap="outerHTML"
          hx-target="#role-display"
          hx-trigger="click"
          th:attr="hx-get=@{|/roles/display/${role.id}|}"
+         th:each="role : ${savedRoles}"
+         th:text="${role.name}"
     >
+    </div>
+    <div class="flex-stack saved-role"
+         hx-swap="outerHTML"
+         hx-target="#role-display"
+         hx-trigger="click"
+         hx-get="/roles/template"
+    >
+        <button class="button-light button-enlarge">Add New Role</button>
     </div>
 </div>

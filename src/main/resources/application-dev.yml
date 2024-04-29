@@ -1,5 +1,23 @@
 spring:
+  resources:
+    chain:
+      strategy:
+        content:
+          enabled: true
+          cache:
+            time-to-live: 0
   datasource:
-    url: jdbc:postgresql://secretsauce.cxs4y0ae6u93.eu-west-2.rds.amazonaws.com:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: CreamyThresh
+    password: cream
+  thymeleaf:
+    cache: false
+
+logging:
+  file:
+    path: ./data/logs
+  level:
+    root: ERROR
+    org:
+      smartjobs:
+        com: DEBUG

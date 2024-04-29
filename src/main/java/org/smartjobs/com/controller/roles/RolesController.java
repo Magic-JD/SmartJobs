@@ -14,8 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.smartjobs.com.constants.ThymeleafConstants.ROLE_FRAGMENT;
-import static org.smartjobs.com.constants.ThymeleafConstants.SAVED_ROLE_FRAGMENT;
+import static org.smartjobs.com.constants.ThymeleafConstants.*;
 
 @Controller
 @RequestMapping("/roles")
@@ -37,6 +36,12 @@ public class RolesController {
         var username = authService.getCurrentUsername();
         model.addAttribute("savedRoles", roleService.getUserRoles(username));
         return SAVED_ROLE_FRAGMENT;
+    }
+
+    @HxRequest
+    @GetMapping("/template")
+    public String roleTemplate(Model model) {
+        return ROLE_TEMPLATE_FRAGMENT;
     }
 
     @HxRequest

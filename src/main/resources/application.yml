@@ -6,6 +6,7 @@ gpt:
 
 
 spring:
+  profiles.active: dev
   servlet:
     multipart:
       max-file-size: 10MB
@@ -21,7 +22,7 @@ logging:
     root: ERROR
     org:
       smartjobs:
-        com: ERROR
+        com: INFO
   org:
     springframework:
       boot:
