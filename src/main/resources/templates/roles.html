@@ -5,9 +5,10 @@
 <header th:replace="header"></header>
 <div id="error"></div>
 <main>
-    <div hx-get="/roles/display/1" hx-swap="outerHTML" hx-target="this"
-         hx-trigger="load"
-    ></div>
+    <div class="flex-container text-medium">
+        <div hx-get="/roles/saved" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
+        <div id="role-display"></div>
+    </div>
 </main>
 <footer th:replace="footer"></footer>
 </body>

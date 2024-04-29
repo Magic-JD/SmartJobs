@@ -27,5 +27,4 @@ public class AuthService {
                 .max(Comparator.comparing(AuthLevel::getLevelNumber))
                 .orElseThrow(IncorrectAuthenticationException::new);
     }
-
 }

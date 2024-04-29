@@ -57,7 +57,7 @@ public class AnalysisController {
         if (candidateInformation.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
         }
-        var role = roleService.getRole();
+        var role = roleService.getRole(1);
         var results = analysisService.scoreToCriteria(candidateInformation, role).stream()
                 .sorted(Comparator.comparing(GptClient.ScoringCriteriaResult::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
