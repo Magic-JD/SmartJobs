@@ -1,9 +1,5 @@
 <div id="role-display" th:fragment="role-template" class="text-medium">
-    <form>
-        <label for="fname">Role name: </label><input type="text" id="fname" name="fname"><br>
-    </form>
-    <div th:each="category : ${categories}"
-         th:text="${category}"
+    <div th:text="${category}"
          th:attr="hx-get=@{|roles/template/criteria/open/${category}|}"
          hx-swap="outerHTML"
          hx-target="this"

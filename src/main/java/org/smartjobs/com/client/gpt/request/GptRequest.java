@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.smartjobs.com.client.gpt.data.GptMessage.systemMessage;
 import static org.smartjobs.com.client.gpt.data.GptMessage.userMessage;
+import static org.smartjobs.com.constants.ProgramConstants.USER_BASE_SCORE;
 
 public record GptRequest(GptModel model, double temperature, double topP, List<GptMessage> messages) {
 
@@ -56,16 +57,16 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                         It must be focused on how well the candidate meets the given scoring criteria.
                         Then state the word SCORE
                         After that you must state the score.
-                        For the score you must rate the candidate out of \{ scoringCriteria.weight() }.
-                        The max amount you can give the candidate is \{ scoringCriteria.weight() }.
+                        For the score you must rate the candidate out of \{ USER_BASE_SCORE }.
+                        The max amount you can give the candidate is \{ USER_BASE_SCORE }.
                         If the candidate doesn't match the scoring criteria at all they should get no points.
                         You may only award points for factors that are mentioned in the criteria.
 
                         Here are some examples of the correct output you should give:
                         Example 1: The candidate has held several positions where they have used Java, but shows no evidence of having used python. SCORE 6
                         Example 2: The candidate does not have an advanced degree in Computer Science. SCORE 0
-                        Example 3: The canidate fully meets the supplied criteria. SCORE 10
+                        Example 3: The candidate fully meets the supplied criteria. SCORE 10
                         """ ),
-                userMessage(STR. "CV: \{ cv.condensedDescription() }. Scoring criteria: \{ scoringCriteria.description() }" ));
+                userMessage(STR. "CV: \{ cv.condensedDescription() }. Scoring criteria: \{ scoringCriteria.criteria() }" ));
     }
 }

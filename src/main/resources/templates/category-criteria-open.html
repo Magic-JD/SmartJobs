@@ -1,0 +1,9 @@
+<div id="category-display" th:fragment="role-template" class="text-medium">
+    <div th:text="${category}"
+         th:attr="hx-get=@{|roles/template/criteria/close/${category}|}"
+         hx-swap="outerHTML"
+         hx-target="#category-display"
+         hx-trigger="click"
+    ></div>
+    <div class="right-nudged" th:each="cr : ${criteria}" th:text="${cr.description}"></div>
+</div>

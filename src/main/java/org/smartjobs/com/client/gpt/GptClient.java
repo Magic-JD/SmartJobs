@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.smartjobs.com.constants.ProgramConstants.USER_BASE_SCORE;
 import static org.smartjobs.com.utils.ConcurrencyUtil.virtualThreadList;
 
 @Component
@@ -74,7 +75,7 @@ public class GptClient {
 
     public ScoringCriteriaResult scoreToCriteria(ProcessedCv ci, Role role) {
 
-        var maxPossibleScore = role.scoringCriteria().stream().mapToDouble(ScoringCriteria::weight).sum();
+        var maxPossibleScore = role.scoringCriteria().stream().mapToDouble(ScoringCriteria::weighting).sum();
         var scoringCriteria = role.scoringCriteria();
         var scoringResponses = virtualThreadList(scoringCriteria, sc -> {
             GptRequest gptRequest = GptRequest.scoreToCriteria(ci, sc);
@@ -94,15 +95,16 @@ public class GptClient {
                             scoreString = scoreString.substring(0, scoreString.length() - 1);
                         }
                         try {
-                            double score = Double.parseDouble(scoreString);
-                            return Optional.of(new ScoringCriteriaDisplay(sc.description(), ra[0].trim(), score, sc.weight()));
+                            double percentage = Double.parseDouble(scoreString) / USER_BASE_SCORE;
+                            double candidateScore = percentage * sc.weighting();
+                            return Optional.of(new ScoringCriteriaDisplay(sc.criteria(), ra[0].trim(), candidateScore, sc.weighting()));
                         } catch (NumberFormatException e) {
                             logger.error("The returned response from GPT was not a properly formatted number. The value was {}", scoreString);
                             return Optional.empty();
                         }
 
                     })
-                    .orElse(new ScoringCriteriaDisplay(sc.description(), "The score could not be calculated for this value", 0, 0));
+                    .orElse(new ScoringCriteriaDisplay(sc.criteria(), "The score could not be calculated for this value", 0, 0));
         });
         double totalScore = scoringResponses.stream()
                 .mapToDouble(ScoringCriteriaDisplay::score)
