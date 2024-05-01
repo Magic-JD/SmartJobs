@@ -1,6 +1,6 @@
 <div id="category-display" th:fragment="role-template" class="categories-container">
     <div th:text="${category}"
-         th:attr="hx-get=@{|roles/template/criteria/close/${category}|}"
+         th:attr="hx-get=@{|roles/criteria/${category}|}"
          hx-swap="outerHTML"
          hx-target="closest div.categories-container"
          hx-trigger="click"

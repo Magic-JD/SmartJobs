@@ -45,28 +45,10 @@ public class RolesController {
 
     @HxRequest
     @GetMapping("/template")
-    public String roleTemplate(Model model) {
-        var categoryNames = Arrays.stream(CriteriaCategory.values()).map(CriteriaCategory::toString).sorted().toList();
-        model.addAttribute("categories", categoryNames);
+    public String roleTemplate() {
         return ROLE_TEMPLATE_FRAGMENT;
     }
 
-    @HxRequest
-    @GetMapping("/template/criteria/open/{category}")
-    public String criteriaTemplateOpen(@PathVariable("category") String category, Model model) {
-        var criteriaCategory = CriteriaCategory.getFromName(category);
-        var criteria = criteriaService.getScoringCriteriaForCategory(criteriaCategory);
-        model.addAttribute("criteria", criteria);
-        model.addAttribute("category", category);
-        return CATEGORY_CRITERIA_OPEN;
-    }
-
-    @HxRequest
-    @GetMapping("/template/criteria/close/{category}")
-    public String criteriaTemplateClose(@PathVariable("category") String category, Model model) {
-        model.addAttribute("category", category);
-        return CATEGORY_CRITERIA_CLOSED;
-    }
     @HxRequest
     @GetMapping("/display/{roleId}")
     public String displayRole(@PathVariable("roleId") long roleId, Model model) {
