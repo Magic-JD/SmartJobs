@@ -23,4 +23,10 @@ public class ApplicationExceptions {
             super(STR. "No defined scoring criteria could be found for id \{ id }" );
         }
     }
+
+    public static class IncorrectIdForRoleRetrievalException extends RuntimeException {
+        public IncorrectIdForRoleRetrievalException(long id) {
+            super(STR. "No role could be found for id \{ id }" );
+        }
+    }
 }

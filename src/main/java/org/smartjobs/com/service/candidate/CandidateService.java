@@ -70,7 +70,7 @@ public class CandidateService {
         var name = nameFuture.join();
         var cvDescription = descriptionFuture.join();
         if (name.isEmpty() || cvDescription.isEmpty()) {
-            logger.error("Either CV name {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
+            logger.error("Either CV position {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
             return Optional.empty();
         } else {
             return Optional.of(new ProcessedCv(null, name.get(), true, fileInformation.fileHash(), cvDescription.get()));

@@ -1,12 +1,27 @@
-<div class="sidebar" id="saved-role" th:fragment="saved-role">
-    <div class="flex-stack saved-role"
-         hx-swap="outerHTML"
-         hx-target="#role-display"
-         hx-trigger="click"
-         th:attr="hx-get=@{|/roles/display/${role.id}|}"
+<div class="sidebar" id="saved-role"
+     th:fragment="saved-role"
+     hx-get="/roles/saved"
+     hx-swap="outerHTML"
+     hx-target="this"
+     hx-trigger="role-changed from:body">
+    <div class="flex-container saved-role"
          th:each="role : ${savedRoles}"
-         th:text="${role.name}"
     >
+        <div class="right-nudged"
+             th:text="${role.position}"
+             hx-swap="outerHTML"
+             hx-target="#role-display"
+             hx-trigger="click"
+             th:attr="hx-get=@{|/roles/display/${role.id}|}">
+
+        </div>
+        <button class="button-light right-pushed"
+                hx-swap="outerHTML"
+                hx-target="closest div"
+                hx-trigger="click"
+                th:attr="hx-delete=@{|/roles/delete/${role.id}|}"
+        >Remove
+        </button>
     </div>
     <div class="flex-stack saved-role"
          hx-swap="outerHTML"

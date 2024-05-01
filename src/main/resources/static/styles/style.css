@@ -388,3 +388,5 @@ input[type=file]::file-selector-button:hover {
     justify-content: left;
     margin-top: 20px;
 }
+
+.categories-container {}

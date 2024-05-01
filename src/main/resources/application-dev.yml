@@ -21,3 +21,14 @@ logging:
     org:
       smartjobs:
         com: DEBUG
+  org:
+    springframework:
+      boot:
+        test:
+          context:
+            springboottestcontextbootstrapper: ERROR
+      context:
+        support:
+          abstractcontextloader: off
+          annotationconfigcontextloaderutils: off
+        thymeleaf: DEBUG

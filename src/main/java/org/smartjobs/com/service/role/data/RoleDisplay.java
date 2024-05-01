@@ -1,4 +1,4 @@
 package org.smartjobs.com.service.role.data;
 
-public record RoleDisplay(long id, String name) {
+public record RoleDisplay(long id, String position) {
 }

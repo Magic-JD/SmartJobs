@@ -1,12 +1,11 @@
 <div id="role-display" th:fragment="role-template" class="text-medium">
     <form>
-        <label for="fname">Role name: </label><input type="text" id="fname" name="fname"><br>
+        <label for="name">Role name: </label><input type="text" id="name" name="name"><br>
     </form>
-    <div th:each="category : ${categories}"
-         th:text="${category}"
-         th:attr="hx-get=@{|roles/template/criteria/open/${category}|}"
-         hx-swap="outerHTML"
-         hx-target="this"
-         hx-trigger="click"
-    ></div>
+    <button class="button-light button-enlarge"
+            hx-post="/roles/create" hx-include="[name='name']"
+            hx-target="#role-display"
+            hx-swap="outer-html"
+    >Save
+    </button>
 </div>

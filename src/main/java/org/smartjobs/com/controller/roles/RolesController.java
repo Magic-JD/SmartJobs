@@ -1,6 +1,8 @@
 package org.smartjobs.com.controller.roles;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.websocket.server.PathParam;
 import org.smartjobs.com.service.auth.AuthService;
 import org.smartjobs.com.service.criteria.CriteriaService;
 import org.smartjobs.com.service.role.RoleService;
@@ -8,9 +10,7 @@ import org.smartjobs.com.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -71,7 +71,35 @@ public class RolesController {
     @GetMapping("/display/{roleId}")
     public String displayRole(@PathVariable("roleId") long roleId, Model model) {
         var internalRole = roleService.getRole(roleId);
-        var role = new Role(internalRole.position(),
+        return prepareRoleDisplay(model, internalRole);
+    }
+
+    @HxRequest
+    @DeleteMapping("/delete/{roleId}")
+    public String deleteRole(@PathVariable("roleId") long roleId) {
+        roleService.deleteRole(roleId);
+        return EMPTY_FRAGMENT;
+    }
+
+    @HxRequest
+    @PostMapping("/create")
+    public String createNewRole(@PathParam("position") String name, HttpServletResponse response, Model model) {
+        var username = authService.getCurrentUsername();
+        var internalRole = roleService.createRole(name, username);
+        response.addHeader("HX-Trigger", "role-changed");
+        return prepareRoleDisplay(model, internalRole);
+    }
+
+    private String prepareRoleDisplay(Model model, org.smartjobs.com.service.role.data.Role internalRole) {
+        var role = convertToControllerRole(internalRole);
+        var categoryNames = Arrays.stream(CriteriaCategory.values()).map(CriteriaCategory::toString).sorted().toList();
+        model.addAttribute("role", role);
+        model.addAttribute("categories", categoryNames);
+        return ROLE_FRAGMENT;
+    }
+
+    private Role convertToControllerRole(org.smartjobs.com.service.role.data.Role internalRole) {
+        return new Role(internalRole.position(),
                 internalRole.scoringCriteria().stream()
                         .collect(Collectors.groupingBy(org.smartjobs.com.service.role.data.ScoringCriteria::category))
                         .entrySet().stream()
@@ -81,8 +109,6 @@ public class RolesController {
                                         .map(sc -> new ScoringCriteria(sc.criteria(), sc.weighting()))
                                         .sorted(Comparator.comparing(ScoringCriteria::description)).toList()))
                         .sorted(Comparator.comparing(Category::name)).toList());
-        model.addAttribute("role", role);
-        return ROLE_FRAGMENT;
     }
 
     private record Role(String position, List<Category> categories) {
