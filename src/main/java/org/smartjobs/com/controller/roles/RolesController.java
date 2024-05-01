@@ -50,6 +50,14 @@ public class RolesController {
     }
 
     @HxRequest
+    @GetMapping("/categories")
+    public String getCategories(Model model) {
+        var categoryNames = Arrays.stream(CriteriaCategory.values()).map(CriteriaCategory::toString).sorted().toList();
+        model.addAttribute("categories", categoryNames);
+        return CATEGORIES_FRAGMENT;
+    }
+
+    @HxRequest
     @GetMapping("/display/{roleId}")
     public String displayRole(@PathVariable("roleId") long roleId, Model model) {
         var internalRole = roleService.getRole(roleId);
@@ -70,6 +78,14 @@ public class RolesController {
         var internalRole = roleService.createRole(name, username);
         response.addHeader("HX-Trigger", "role-changed");
         return prepareRoleDisplay(model, internalRole);
+    }
+
+    @HxRequest
+    @GetMapping("/criteria/{category}")
+    public String criteriaForCategory(@PathVariable("category") String category, Model model) {
+        var criteria = criteriaService.getScoringCriteriaForCategory(CriteriaCategory.getFromName(category));
+        model.addAttribute("criteria", criteria);
+        return CATEGORY_CRITERIA_FRAGMENT;
     }
 
     private String prepareRoleDisplay(Model model, org.smartjobs.com.service.role.data.Role internalRole) {

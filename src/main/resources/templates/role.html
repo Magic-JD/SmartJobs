@@ -6,6 +6,11 @@
            th:text="|${sc.description}, scored out of ${sc.weight}|"></p>
     </div>
     <div class="flex-container">
-        <button class="button-light" th:each="category : ${categories}" th:text="'Add new ' + ${category}"></button>
+        <button class="button-light" th:each="category : ${categories}" th:text="'Add new ' + ${category}"
+                th:attr="hx-get=@{|roles/criteria/${category}|}"
+                hx-swap="outerHTML"
+                hx-target="closest div"
+                hx-trigger="click"
+        ></button>
     </div>
 </div>

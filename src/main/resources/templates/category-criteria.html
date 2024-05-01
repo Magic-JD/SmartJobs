@@ -1,9 +1,12 @@
-<div id="category-display" th:fragment="role-template" class="categories-container">
-    <div th:text="${category}"
-         th:attr="hx-get=@{|roles/criteria/${category}|}"
-         hx-swap="outerHTML"
-         hx-target="closest div.categories-container"
-         hx-trigger="click"
-    ></div>
-    <div class="right-nudged" th:each="cr : ${criteria}" th:text="${cr.description}"></div>
+<div id="category-criteria" class="categories-container">
+    <div th:each="cr : ${criteria}" th:text="${cr.description}"></div>
+    <div class="flex-container">
+        <button class="button-light"
+                hx-get="roles/categories"
+                hx-swap="outerHTML"
+                hx-target="#category-criteria"
+                hx-trigger="click"
+        >Back
+        </button>
+    </div>
 </div>
