@@ -1,5 +1,10 @@
 <div id="category-criteria" class="categories-container">
-    <div th:each="cr : ${criteria}" th:text="${cr.description}"></div>
+    <div th:each="cr : ${criteria}" th:text="${cr.description}"
+         th:attr="hx-get=@{|roles/select/${cr.id}|}"
+         hx-swap="outerHTML"
+         hx-target="#category-criteria"
+         hx-trigger="click"
+    ></div>
     <div class="flex-container">
         <button class="button-light"
                 hx-get="roles/categories"

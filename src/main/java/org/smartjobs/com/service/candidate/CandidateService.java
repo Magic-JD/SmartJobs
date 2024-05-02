@@ -2,7 +2,6 @@ package org.smartjobs.com.service.candidate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartjobs.com.cache.CandidateCache;
 import org.smartjobs.com.client.gpt.GptClient;
 import org.smartjobs.com.dal.CvDao;
 import org.smartjobs.com.service.candidate.data.CandidateData;
@@ -25,13 +24,10 @@ public class CandidateService {
     private final GptClient client;
     private final CvDao cvDao;
 
-    private final CandidateCache cache;
-
     @Autowired
-    public CandidateService(GptClient client, CvDao cvDao, CandidateCache candidateCache) {
+    public CandidateService(GptClient client, CvDao cvDao) {
         this.client = client;
         this.cvDao = cvDao;
-        this.cache = candidateCache;
     }
 
     public List<ProcessedCv> getFullCandidateInfo(String userName) {
@@ -39,11 +35,10 @@ public class CandidateService {
     }
 
     public List<CandidateData> getCurrentCandidates(String userName) {
-        return cache.getFromCacheOrCompute(userName, _ -> cvDao.getAllNames());
+        return cvDao.getAllNames();
     }
 
     public void updateCandidateCvs(String username, List<Optional<FileInformation>> fileInformationList) {
-        cache.clearCache(username);
         var processedCvs = ConcurrencyUtil.virtualThreadList(fileInformationList, fileInformation -> fileInformation.flatMap(this::processCv));
         List<ProcessedCv> list = processedCvs.stream()
                 .filter(Optional::isPresent)
@@ -53,11 +48,9 @@ public class CandidateService {
             return;
         }
         cvDao.addCvsToRepository(list);
-        cache.clearCache(username);
     }
 
     public void deleteCandidate(String username, long cvId) {
-        cache.clearCache(username);
         cvDao.deleteByCvId(cvId);
     }
 
@@ -78,7 +71,6 @@ public class CandidateService {
     }
 
     public Optional<CandidateData> toggleCandidateSelect(String currentUsername, long cvId, boolean select) {
-        cache.clearCache(currentUsername);
         return cvDao.updateCurrentlySelectedById(cvId, select);
     }
 

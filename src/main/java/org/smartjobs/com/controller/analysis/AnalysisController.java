@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.smartjobs.com.constants.ThymeleafConstants.*;
@@ -57,7 +58,11 @@ public class AnalysisController {
         if (candidateInformation.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
         }
-        var role = roleService.getRole(1);
+        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRole(username);
+        if (currentlySelectedRole.isEmpty()) {
+            return createUserErrorMessageToDisplayForUser("Please select a role", response, model);
+        }
+        var role = roleService.getRole(currentlySelectedRole.get());
         var results = analysisService.scoreToCriteria(candidateInformation, role).stream()
                 .sorted(Comparator.comparing(GptClient.ScoringCriteriaResult::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));

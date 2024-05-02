@@ -3,7 +3,8 @@
         <label for="name">Role name: </label><input type="text" id="name" name="name"><br>
     </form>
     <button class="button-light button-enlarge"
-            hx-post="/roles/create" hx-include="[name='name']"
+            hx-post="/roles/create"
+            hx-include="[name='name']"
             hx-target="#role-display"
             hx-swap="outer-html"
     >Save

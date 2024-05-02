@@ -1,0 +1,23 @@
+<div id="select-criteria" class="categories-container">
+    <div th:text="${criteria.description}"></div>
+    <form th:attr="hx-post=@{|roles/save/${criteria.id}|}"
+          hx-swap="outerHTML"
+          hx-include="[value='value']"
+          hx-target="#role-display"
+    >
+        <label th:if="${criteria.needsInput}" for="value">Criteria value: </label><input th:if="${criteria.needsInput}"
+                                                                                         type="text" id="value"
+                                                                                         name="value"><br>
+        <label for="score">Score: </label><input type="text" id="score" name="score"><br>
+        <button class="button-light">Submit</button>
+    </form>
+    <div class="flex-container">
+        <button class="button-light"
+                hx-get="roles/categories"
+                hx-swap="outerHTML"
+                hx-target="#select-criteria"
+                hx-trigger="click"
+        >Back
+        </button>
+    </div>
+</div>

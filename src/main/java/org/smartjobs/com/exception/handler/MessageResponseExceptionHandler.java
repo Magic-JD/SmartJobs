@@ -1,8 +1,7 @@
 package org.smartjobs.com.exception.handler;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.smartjobs.com.exception.categories.UserResolvedExceptions.IncorrectAuthenticationException;
-import org.smartjobs.com.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
+import org.smartjobs.com.exception.categories.UserResolvedExceptions.*;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,4 +23,19 @@ public class MessageResponseExceptionHandler extends ResponseEntityExceptionHand
         return createUserErrorMessageToDisplayForUser("There is an issue with your login. Please log out and log in again.", response, model);
     }
 
+
+    @ExceptionHandler(value = NoValueProvidedException.class)
+    protected String handleNoValueProvidedException(HttpServletResponse response, Model model) {
+        return createUserErrorMessageToDisplayForUser("You must provide a score for the criteria.", response, model);
+    }
+
+    @ExceptionHandler(value = NoScoreProvidedException.class)
+    protected String handleNoScoreProvidedException(HttpServletResponse response, Model model) {
+        return createUserErrorMessageToDisplayForUser("You must provide a score for the criteria.", response, model);
+    }
+
+    @ExceptionHandler(value = ScoreIsNotNumberException.class)
+    protected String handleScoreNotNumberException(HttpServletResponse response, Model model) {
+        return createUserErrorMessageToDisplayForUser("The score must be a number.", response, model);
+    }
 }

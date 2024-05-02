@@ -1,4 +1,4 @@
-<div id="role-display" th:fragment="role" class="text-medium">
+<div th:role-id="${role.id}" id="role-display" th:fragment="role" class="text-medium">
     <p>This role is for the position <span th:text="${role.position}"></span></p>
     <div th:each="category : ${role.categories}">
         <p th:text="${category.name}"></p>

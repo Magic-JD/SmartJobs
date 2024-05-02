@@ -60,6 +60,8 @@ public class RolesController {
     @HxRequest
     @GetMapping("/display/{roleId}")
     public String displayRole(@PathVariable("roleId") long roleId, Model model) {
+        authService.getCurrentUsername();
+        roleService.setCurrentlySelectedRole(authService.getCurrentUsername(), roleId);
         var internalRole = roleService.getRole(roleId);
         return prepareRoleDisplay(model, internalRole);
     }
@@ -88,6 +90,28 @@ public class RolesController {
         return CATEGORY_CRITERIA_FRAGMENT;
     }
 
+    @HxRequest
+    @GetMapping("/select/{criteriaId}")
+    public String selectCriteria(@PathVariable("criteriaId") long criteriaId, Model model) {
+        var criteria = criteriaService.getCriteriaById(criteriaId);
+        model.addAttribute("criteria", criteria);
+        return SELECT_CRITERIA_FRAGMENT;
+    }
+
+    @HxRequest
+    @PostMapping("/save/{criteriaId}")
+    public String saveCriteria(@PathVariable("criteriaId") long criteriaId,
+                               @PathParam("value") String value,
+                               @PathParam("score") String score,
+                               Model model) {
+        var criteria = criteriaService.createRoleCriteria(criteriaId, value, score);
+        var username = authService.getCurrentUsername();
+        Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow();
+        roleService.addCriteriaToRole(roleId, criteria.id());
+        var role = roleService.getRole(roleId);
+        return prepareRoleDisplay(model, role);
+    }
+
     private String prepareRoleDisplay(Model model, org.smartjobs.com.service.role.data.Role internalRole) {
         var role = convertToControllerRole(internalRole);
         var categoryNames = Arrays.stream(CriteriaCategory.values()).map(CriteriaCategory::toString).sorted().toList();
@@ -97,7 +121,7 @@ public class RolesController {
     }
 
     private Role convertToControllerRole(org.smartjobs.com.service.role.data.Role internalRole) {
-        return new Role(internalRole.position(),
+        return new Role(internalRole.id(), internalRole.position(),
                 internalRole.scoringCriteria().stream()
                         .collect(Collectors.groupingBy(org.smartjobs.com.service.role.data.ScoringCriteria::category))
                         .entrySet().stream()
@@ -109,7 +133,7 @@ public class RolesController {
                         .sorted(Comparator.comparing(Category::name)).toList());
     }
 
-    private record Role(String position, List<Category> categories) {
+    private record Role(long id, String position, List<Category> categories) {
     }
 
     private record Category(String name, List<ScoringCriteria> criteria) {
