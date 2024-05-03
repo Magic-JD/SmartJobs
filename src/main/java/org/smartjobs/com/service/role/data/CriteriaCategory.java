@@ -6,7 +6,10 @@ import java.util.Arrays;
 
 public enum CriteriaCategory {
     SOFT_SKILLS("Soft Skills"),
-    HARD_SKILLS("Hard Skills");
+    HARD_SKILLS("Hard Skills"),
+    RELEVANT_EXPERIENCE("Relevant Experience"),
+    QUALIFICATIONS("Qualifications"),
+    PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION("Professional Engagement and Recognition");
 
     private final String name;
 
