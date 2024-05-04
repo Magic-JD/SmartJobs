@@ -9,6 +9,8 @@ import org.smartjobs.com.service.candidate.CandidateService;
 import org.smartjobs.com.service.candidate.data.CandidateData;
 import org.smartjobs.com.service.credit.CreditService;
 import org.smartjobs.com.service.file.FileService;
+import org.smartjobs.com.service.role.RoleService;
+import org.smartjobs.com.service.role.data.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,15 +31,17 @@ public class CandidateController {
     private final FileService fileService;
     private final CreditService creditService;
     private final AuthService authService;
+    private final RoleService roleService;
 
 
 
     @Autowired
-    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, AuthService authService) {
+    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, AuthService authService, RoleService roleService) {
         this.fileService = fileService;
         this.candidateService = candidateService;
         this.creditService = creditService;
         this.authService = authService;
+        this.roleService = roleService;
     }
 
     @HxRequest
@@ -89,8 +93,15 @@ public class CandidateController {
     @HxRequest
     @GetMapping("/number/selected")
     public String findNumberOfCandidatesSelected(Model model) {
+        String username = authService.getCurrentUsername();
+        var currentRole = roleService.getCurrentlySelectedRole(username)
+                .map(roleService::getRole)
+                .map(Role::position)
+                .orElse("NONE");
         int selectedCount = candidateService.findSelectedCandidateCount();
+
         model.addAttribute("selectedCount", selectedCount);
+        model.addAttribute("currentRole", currentRole);
         return CANDIDATE_COUNT_FRAGMENT;
     }
 

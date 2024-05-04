@@ -390,3 +390,19 @@ input[type=file]::file-selector-button:hover {
 }
 
 .categories-container {}
+
+.currently-selected {
+    font-weight: bold;
+}
+
+.button-minified {
+}
+
+.text-only {
+    color: var(--clr-text);
+    font-size: var(--fs-medium);
+    font-family: var(--ff-body);
+    display: block;
+    text-align: left;
+    justify-self: left;
+}

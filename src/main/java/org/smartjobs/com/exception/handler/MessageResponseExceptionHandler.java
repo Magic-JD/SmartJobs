@@ -26,7 +26,7 @@ public class MessageResponseExceptionHandler extends ResponseEntityExceptionHand
 
     @ExceptionHandler(value = NoValueProvidedException.class)
     protected String handleNoValueProvidedException(HttpServletResponse response, Model model) {
-        return createUserErrorMessageToDisplayForUser("You must provide a score for the criteria.", response, model);
+        return createUserErrorMessageToDisplayForUser("You must provide a value for the criteria.", response, model);
     }
 
     @ExceptionHandler(value = NoScoreProvidedException.class)
@@ -37,5 +37,10 @@ public class MessageResponseExceptionHandler extends ResponseEntityExceptionHand
     @ExceptionHandler(value = ScoreIsNotNumberException.class)
     protected String handleScoreNotNumberException(HttpServletResponse response, Model model) {
         return createUserErrorMessageToDisplayForUser("The score must be a number.", response, model);
+    }
+
+    @ExceptionHandler(value = NoRoleSelectedException.class)
+    protected String handleNoRoleSelectedException(HttpServletResponse response, Model model) {
+        return createUserErrorMessageToDisplayForUser("This operation requires a selected role.", response, model);
     }
 }

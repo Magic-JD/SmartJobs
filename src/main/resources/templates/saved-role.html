@@ -8,8 +8,9 @@
          th:each="role : ${savedRoles}"
     >
         <div class="right-nudged"
+             th:classappend="${currentlySelected == role.id} ? currently-selected : ''"
              th:text="${role.position}"
-             hx-swap="outerHTML"
+             hx-swap="innerHTML"
              hx-target="#role-display"
              hx-trigger="click"
              th:attr="hx-get=@{|/roles/display/${role.id}|}">
@@ -20,11 +21,11 @@
                 hx-target="closest div"
                 hx-trigger="click"
                 th:attr="hx-delete=@{|/roles/delete/${role.id}|}"
-        >Remove
+        >X
         </button>
     </div>
     <div class="flex-stack saved-role"
-         hx-swap="outerHTML"
+         hx-swap="innerHTML"
          hx-target="#role-display"
          hx-trigger="click"
          hx-get="/roles/template"

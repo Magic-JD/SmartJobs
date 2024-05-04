@@ -47,7 +47,7 @@ public class RoleDao {
         var criteria = roleCriteriaRepository.findAllByRoleId(id).stream()
                 .map(rc -> userCriteriaRepository.findById(rc.getCriteriaId())).map(Optional::orElseThrow).map(userCriteria -> {
                     Criteria defCrit = definedScoringCriteriaRepository.findById(userCriteria.getDefinedCriteriaId()).orElseThrow();
-                    return new ScoringCriteria(CriteriaCategory.getFromName(defCrit.getCategory()), defCrit.getCriteria() + (defCrit.isInput() ? ": " + userCriteria.getValue() : ""), userCriteria.getScore(), defCrit.getAiPrompt().replaceAll("X", userCriteria.getValue()));
+                    return new ScoringCriteria(userCriteria.getId(), CriteriaCategory.getFromName(defCrit.getCategory()), defCrit.getCriteria() + (defCrit.isInput() ? ": " + userCriteria.getValue() : ""), userCriteria.getScore(), defCrit.getAiPrompt().replaceAll("X", userCriteria.getValue()));
                 }).toList();
         return roleRepository.findById(id)
                 .map(role -> new org.smartjobs.com.service.role.data.Role(role.getId(), role.getPosition(), criteria))
@@ -60,5 +60,9 @@ public class RoleDao {
 
     public void addCriteriaToRole(long roleId, long criteriaId) {
         roleCriteriaRepository.save(RoleCriteria.builder().roleId(roleId).criteriaId(criteriaId).build());
+    }
+
+    public void removeCriteriaFromRole(long roleId, long criteriaId) {
+        roleCriteriaRepository.deleteByRoleAndCriteria(roleId, criteriaId);
     }
 }

@@ -13,9 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static org.smartjobs.com.constants.ThymeleafConstants.*;
 
@@ -40,6 +39,7 @@ public class RolesController {
     public String savedRoles(Model model) {
         var username = authService.getCurrentUsername();
         model.addAttribute("savedRoles", roleService.getUserRoles(username));
+        model.addAttribute("currentlySelected", roleService.getCurrentlySelectedRole(username).orElse(0L));
         return SAVED_ROLE_FRAGMENT;
     }
 
@@ -50,26 +50,36 @@ public class RolesController {
     }
 
     @HxRequest
-    @GetMapping("/categories")
-    public String getCategories(Model model) {
-        var categoryNames = Arrays.stream(CriteriaCategory.values()).map(CriteriaCategory::toString).sorted().toList();
-        model.addAttribute("categories", categoryNames);
-        return CATEGORIES_FRAGMENT;
-    }
-
-    @HxRequest
     @GetMapping("/display/{roleId}")
-    public String displayRole(@PathVariable("roleId") long roleId, Model model) {
+    public String displayRole(@PathVariable("roleId") long roleId, HttpServletResponse response, Model model) {
         authService.getCurrentUsername();
         roleService.setCurrentlySelectedRole(authService.getCurrentUsername(), roleId);
+        response.addHeader("HX-Trigger", "role-changed");
         var internalRole = roleService.getRole(roleId);
         return prepareRoleDisplay(model, internalRole);
     }
 
     @HxRequest
+    @GetMapping("/display")
+    public String displayCurrentlySelectedRole(Model model) {
+        String username = authService.getCurrentUsername();
+        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRole(username);
+        return currentlySelectedRole.map(roleId -> {
+            var internalRole = roleService.getRole(roleId);
+            return prepareRoleDisplay(model, internalRole);
+        }).orElse(EMPTY_FRAGMENT);
+
+    }
+
+    @HxRequest
     @DeleteMapping("/delete/{roleId}")
-    public String deleteRole(@PathVariable("roleId") long roleId) {
+    public String deleteRole(@PathVariable("roleId") long roleId, HttpServletResponse response) {
+        var username = authService.getCurrentUsername();
+        roleService.getCurrentlySelectedRole(username)
+                .filter(current -> current.equals(roleId))
+                .ifPresent(_ -> roleService.deleteCurrentlySelectedRole(username));
         roleService.deleteRole(roleId);
+        response.addHeader("HX-Trigger", "role-deleted");
         return EMPTY_FRAGMENT;
     }
 
@@ -91,6 +101,16 @@ public class RolesController {
     }
 
     @HxRequest
+    @DeleteMapping("/criteria/{criteriaId}")
+    public String deleteCriteria(@PathVariable("criteriaId") Long criteriaId) {
+        String username = authService.getCurrentUsername();
+        Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow();
+        roleService.removeCriteriaFromRole(roleId, criteriaId);
+        criteriaService.deleteUserCriteria(criteriaId);
+        return EMPTY_FRAGMENT;
+    }
+
+    @HxRequest
     @GetMapping("/select/{criteriaId}")
     public String selectCriteria(@PathVariable("criteriaId") long criteriaId, Model model) {
         var criteria = criteriaService.getCriteriaById(criteriaId);
@@ -103,13 +123,13 @@ public class RolesController {
     public String saveCriteria(@PathVariable("criteriaId") long criteriaId,
                                @PathParam("value") String value,
                                @PathParam("score") String score,
-                               Model model) {
-        var criteria = criteriaService.createRoleCriteria(criteriaId, value, score);
+                               HttpServletResponse response) {
+        var criteria = criteriaService.createUserCriteria(criteriaId, value, score);
         var username = authService.getCurrentUsername();
         Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow();
         roleService.addCriteriaToRole(roleId, criteria.id());
-        var role = roleService.getRole(roleId);
-        return prepareRoleDisplay(model, role);
+        response.addHeader("HX-Trigger", "role-updated");
+        return EMPTY_FRAGMENT;
     }
 
     private String prepareRoleDisplay(Model model, org.smartjobs.com.service.role.data.Role internalRole) {
@@ -121,16 +141,20 @@ public class RolesController {
     }
 
     private Role convertToControllerRole(org.smartjobs.com.service.role.data.Role internalRole) {
-        return new Role(internalRole.id(), internalRole.position(),
-                internalRole.scoringCriteria().stream()
-                        .collect(Collectors.groupingBy(org.smartjobs.com.service.role.data.ScoringCriteria::category))
-                        .entrySet().stream()
-                        .map(entry -> new Category(entry.getKey().toString(),
-                                entry.getValue()
-                                        .stream()
-                                        .map(sc -> new ScoringCriteria(sc.criteria(), sc.weighting()))
-                                        .sorted(Comparator.comparing(ScoringCriteria::description)).toList()))
-                        .sorted(Comparator.comparing(Category::name)).toList());
+        CriteriaCategory[] values = CriteriaCategory.values();
+        return new Role(
+                internalRole.id(),
+                internalRole.position(),
+                Arrays.stream(values).map(cc ->
+                                new Category(
+                                        cc.toString(),
+                                        internalRole.scoringCriteria()
+                                                .stream()
+                                                .filter(crit -> crit.category().equals(cc))
+                                                .map(crit -> new ScoringCriteria(crit.id(), crit.criteria(), crit.weighting()))
+                                                .toList()))
+                        .toList());
+
     }
 
     private record Role(long id, String position, List<Category> categories) {
@@ -139,7 +163,7 @@ public class RolesController {
     private record Category(String name, List<ScoringCriteria> criteria) {
     }
 
-    private record ScoringCriteria(String description, int weight) {
+    private record ScoringCriteria(long id, String description, int weight) {
     }
 
 }

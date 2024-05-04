@@ -28,6 +28,10 @@ public class RoleService {
         return selectedRoleDao.getCurrentlySelectedRole(username);
     }
 
+    public void deleteCurrentlySelectedRole(String username) {
+        selectedRoleDao.deleteCurrentlySelectedRole(username);
+    }
+
     public void setCurrentlySelectedRole(String username, long roleId) {
         selectedRoleDao.setSelectedRole(username, roleId);
     }
@@ -52,5 +56,9 @@ public class RoleService {
 
     public void addCriteriaToRole(long roleId, long criteriaId) {
         roleDao.addCriteriaToRole(roleId, criteriaId);
+    }
+
+    public void removeCriteriaFromRole(long roleId, long criteriaId) {
+        roleDao.removeCriteriaFromRole(roleId, criteriaId);
     }
 }

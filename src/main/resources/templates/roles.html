@@ -7,7 +7,9 @@
 <main>
     <div class="flex-container text-medium">
         <div hx-get="/roles/saved" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
-        <div id="role-display"></div>
+        <div id="role-display" hx-get="/roles/display" hx-swap="innerHtml" hx-target="this"
+             hx-trigger="load, role-deleted from:body, role-updated from:body"></div>
+        <div id=select-criteria class="categories-container"></div>
     </div>
 </main>
 <footer th:replace="footer"></footer>

@@ -1,2 +1,4 @@
-<div class="flex-container right-nudged"
-     th:text="|You have selected ${selectedCount} candidates to analyze. If you are happy with your selection, click Analyze Now|"></div>
+<div class="flex-stack right-nudged text-only" th:fragment="info-box">
+    <p class="text-only" th:text="|Role: ${currentRole}|"></p>
+    <p class="text-only" th:text="|Selected Candidates: ${selectedCount}|"></p>
+</div>

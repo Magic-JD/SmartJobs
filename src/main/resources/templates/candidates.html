@@ -6,6 +6,8 @@
 <div id="error"></div>
 <main>
     <div class="flex-container">
+        <div class="flex-container" hx-get="/candidate/number/selected" hx-swap="innerHTML" hx-target="this"
+             hx-trigger="load"></div>
         <a class="button-light button-enlarge right-pushed" th:href="@{/upload}">Upload Additional Candidates</a>
     </div>
     <div class="loading-container" hx-get="/candidate" hx-swap="outerHTML" hx-target="#table-placeholder"

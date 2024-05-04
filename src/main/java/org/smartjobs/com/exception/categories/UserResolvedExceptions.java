@@ -35,4 +35,11 @@ public class UserResolvedExceptions {
             super("Score is not number.");
         }
     }
+
+    public static class NoRoleSelectedException extends RuntimeException {
+
+        public NoRoleSelectedException() {
+            super("A role must be selected for this operation");
+        }
+    }
 }

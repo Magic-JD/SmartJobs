@@ -1,4 +1,4 @@
-<div id="role-display" th:fragment="role-template" class="text-medium">
+
     <form>
         <label for="name">Role name: </label><input type="text" id="name" name="name"><br>
     </form>
@@ -6,7 +6,6 @@
             hx-post="/roles/create"
             hx-include="[name='name']"
             hx-target="#role-display"
-            hx-swap="outer-html"
+            hx-swap="inner-html"
     >Save
     </button>
-</div>

@@ -27,7 +27,10 @@ public class SelectedRoleDao {
     }
 
     public Optional<Long> getCurrentlySelectedRole(String username) {
-        return Optional.ofNullable(repository.findByUsername(username).map(SelectedRole::getRoleId).orElseThrow(RuntimeException::new));
+        return repository.findByUsername(username).map(SelectedRole::getRoleId);
     }
 
+    public void deleteCurrentlySelectedRole(String username) {
+        repository.deleteByUsername(username);
+    }
 }

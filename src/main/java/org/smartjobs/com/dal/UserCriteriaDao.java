@@ -30,4 +30,7 @@ public class UserCriteriaDao {
                 .toList();
     }
 
+    public void deleteUserCriteria(Long criteriaId) {
+        repository.deleteById(criteriaId);
+    }
 }

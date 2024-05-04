@@ -34,7 +34,7 @@ public class CriteriaService {
         return cache.getDefinedScoringCriteriaById(criteriaId);
     }
 
-    public UserCriteria createRoleCriteria(long criteriaId, String value, String score) {
+    public UserCriteria createUserCriteria(long criteriaId, String value, String score) {
         DefinedScoringCriteria definedCriteria = cache.getDefinedScoringCriteriaById(criteriaId);
         if (!StringUtils.hasText(score)) {
             throw new NoScoreProvidedException();
@@ -50,6 +50,10 @@ public class CriteriaService {
         }
 
         return userCriteriaDao.createNewUserCriteria(criteriaId, value, scoreInt);
+    }
+
+    public void deleteUserCriteria(Long criteriaId) {
+        userCriteriaDao.deleteUserCriteria(criteriaId);
     }
 
     public record UserCriteria(long id, long definedCriteriaId, Optional<String> value, int score) {
