@@ -1,11 +1,11 @@
 
     <form>
         <label for="name">Role name: </label><input type="text" id="name" name="name"><br>
+        <button class="button-light button-enlarge"
+                hx-post="/roles/create"
+                hx-include="[name='name']"
+                hx-target="#role-display"
+                hx-swap="inner-html"
+        >Save
+        </button>
     </form>
-    <button class="button-light button-enlarge"
-            hx-post="/roles/create"
-            hx-include="[name='name']"
-            hx-target="#role-display"
-            hx-swap="inner-html"
-    >Save
-    </button>
