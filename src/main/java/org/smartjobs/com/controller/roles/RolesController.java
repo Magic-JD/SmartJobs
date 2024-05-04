@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.smartjobs.com.constants.EventConstants.*;
+import static org.smartjobs.com.constants.HtmxConstants.HX_TRIGGER;
 import static org.smartjobs.com.constants.ThymeleafConstants.*;
 
 @Controller
@@ -54,7 +56,7 @@ public class RolesController {
     public String displayRole(@PathVariable("roleId") long roleId, HttpServletResponse response, Model model) {
         authService.getCurrentUsername();
         roleService.setCurrentlySelectedRole(authService.getCurrentUsername(), roleId);
-        response.addHeader("HX-Trigger", "role-changed");
+        response.addHeader(HX_TRIGGER, ROLE_CHANGED);
         var internalRole = roleService.getRole(roleId);
         return prepareRoleDisplay(model, internalRole);
     }
@@ -79,7 +81,7 @@ public class RolesController {
                 .filter(current -> current.equals(roleId))
                 .ifPresent(_ -> roleService.deleteCurrentlySelectedRole(username));
         roleService.deleteRole(roleId);
-        response.addHeader("HX-Trigger", "role-deleted");
+        response.addHeader(HX_TRIGGER, ROLE_DELETED);
         return EMPTY_FRAGMENT;
     }
 
@@ -88,7 +90,7 @@ public class RolesController {
     public String createNewRole(@PathParam("position") String name, HttpServletResponse response, Model model) {
         var username = authService.getCurrentUsername();
         var internalRole = roleService.createRole(name, username);
-        response.addHeader("HX-Trigger", "role-changed");
+        response.addHeader(HX_TRIGGER, ROLE_CHANGED);
         return prepareRoleDisplay(model, internalRole);
     }
 
@@ -128,7 +130,7 @@ public class RolesController {
         var username = authService.getCurrentUsername();
         Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow();
         roleService.addCriteriaToRole(roleId, criteria.id());
-        response.addHeader("HX-Trigger", "role-updated");
+        response.addHeader(HX_TRIGGER, ROLE_UPDATED);
         return EMPTY_FRAGMENT;
     }
 

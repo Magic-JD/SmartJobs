@@ -23,6 +23,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 
+import static org.smartjobs.com.constants.EventConstants.CANDIDATE_COUNT_UPDATED;
+import static org.smartjobs.com.constants.HtmxConstants.HX_REDIRECT;
+import static org.smartjobs.com.constants.HtmxConstants.HX_TRIGGER;
 import static org.smartjobs.com.constants.ThymeleafConstants.*;
 
 @Controller
@@ -60,7 +63,7 @@ public class CandidateController {
         Long roleId = roleService.getCurrentlySelectedRole(currentUsername)
                 .orElseThrow(NoRoleSelectedException::new);
         candidateService.updateCandidateCvs(currentUsername, roleId, handledFiles);
-        response.addHeader("HX-Redirect", "/candidates");
+        response.addHeader(HX_REDIRECT, "/candidates");
         return EMPTY_FRAGMENT;
     }
 
@@ -85,7 +88,7 @@ public class CandidateController {
     public String deleteCandidate(@PathVariable long cvId, HttpServletResponse response) {
         String currentUsername = authService.getCurrentUsername();
         candidateService.deleteCandidate(currentUsername, cvId);
-        response.addHeader("HX-Trigger", "candidate-count-updated");
+        response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         return EMPTY_FRAGMENT;
     }
 
@@ -96,7 +99,7 @@ public class CandidateController {
         String username = authService.getCurrentUsername();
         Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow(NoRoleSelectedException::new);
         candidateService.deleteAllCandidates(currentUsername, roleId);
-        response.addHeader("HX-Trigger", "candidate-count-updated");
+        response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         model.addAttribute("candidates", Collections.emptyList());
         return CANDIDATE_TABLE_FRAGMENT;
     }
@@ -105,7 +108,7 @@ public class CandidateController {
     @PutMapping("/select/{cvId}")
     public String selectCandidate(@PathVariable long cvId, @PathParam("select") boolean select, Model model, HttpServletResponse response) {
         String currentUsername = authService.getCurrentUsername();
-        response.addHeader("HX-Trigger", "candidate-count-updated");
+        response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         return candidateService.toggleCandidateSelect(currentUsername, cvId, select).map(cvData -> {
             model.addAttribute("candidate", cvData);
             return SINGLE_CANDIDATE_ROW_FRAGMENT;
