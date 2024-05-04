@@ -30,15 +30,15 @@ public class CandidateService {
         this.cvDao = cvDao;
     }
 
-    public List<ProcessedCv> getFullCandidateInfo(String userName) {
-        return cvDao.getAllSelected();
+    public List<ProcessedCv> getFullCandidateInfo(String userName, Long roleId) {
+        return cvDao.getAllSelected(userName, roleId);
     }
 
-    public List<CandidateData> getCurrentCandidates(String userName) {
-        return cvDao.getAllNames();
+    public List<CandidateData> getCurrentCandidates(String userName, Long role) {
+        return cvDao.getAllNames(userName, role);
     }
 
-    public void updateCandidateCvs(String username, List<Optional<FileInformation>> fileInformationList) {
+    public void updateCandidateCvs(String username, Long roleId, List<Optional<FileInformation>> fileInformationList) {
         var processedCvs = ConcurrencyUtil.virtualThreadList(fileInformationList, fileInformation -> fileInformation.flatMap(this::processCv));
         List<ProcessedCv> list = processedCvs.stream()
                 .filter(Optional::isPresent)
@@ -47,7 +47,7 @@ public class CandidateService {
         if (processedCvs.isEmpty()) {
             return;
         }
-        cvDao.addCvsToRepository(list);
+        cvDao.addCvsToRepository(username, roleId, list);
     }
 
     public void deleteCandidate(String username, long cvId) {
@@ -74,7 +74,11 @@ public class CandidateService {
         return cvDao.updateCurrentlySelectedById(cvId, select);
     }
 
-    public int findSelectedCandidateCount() {
-        return cvDao.findSelectedCandidateCount();
+    public int findSelectedCandidateCount(String username, long currentRole) {
+        return cvDao.findSelectedCandidateCount(username, currentRole);
+    }
+
+    public void deleteAllCandidates(String username, Long roleId) {
+        cvDao.deleteAllCandidates(username, roleId);
     }
 }

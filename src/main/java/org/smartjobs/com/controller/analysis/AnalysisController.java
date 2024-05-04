@@ -3,6 +3,7 @@ package org.smartjobs.com.controller.analysis;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.smartjobs.com.client.gpt.GptClient;
+import org.smartjobs.com.exception.categories.UserResolvedExceptions;
 import org.smartjobs.com.service.analysis.AnalysisService;
 import org.smartjobs.com.service.auth.AuthService;
 import org.smartjobs.com.service.candidate.CandidateService;
@@ -54,7 +55,8 @@ public class AnalysisController {
     @GetMapping("/scoring")
     public String scoreAllCandidates(HttpServletResponse response, Model model) {
         String username = authService.getCurrentUsername();
-        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username);
+        var roleId = roleService.getCurrentlySelectedRole(username).orElseThrow(UserResolvedExceptions.NoRoleSelectedException::new);
+        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username, roleId);
         if (candidateInformation.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
         }

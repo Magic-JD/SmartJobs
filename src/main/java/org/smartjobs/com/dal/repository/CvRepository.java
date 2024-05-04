@@ -14,8 +14,8 @@ import java.util.Optional;
 public interface CvRepository extends JpaRepository<Cv, Long> {
 
     @Transactional
-    @Query("SELECT NEW org.smartjobs.com.service.candidate.data.CandidateData(c.id, c.candidateName, c.currentlySelected) FROM Cv c")
-    List<CandidateData> findAllProjectedAsCandidateData();
+    @Query("SELECT NEW org.smartjobs.com.service.candidate.data.CandidateData(c.id, c.candidateName, c.currentlySelected) FROM Cv c WHERE c.username = :username AND c.roleId = :roleId")
+    List<CandidateData> findAllProjectedAsCandidateData(String username, long roleId);
 
     boolean existsCvByFileHash(String fileHash);
 
@@ -29,8 +29,12 @@ public interface CvRepository extends JpaRepository<Cv, Long> {
     Optional<CandidateData> findCandidateDataById(@Param("id") long cvId);
 
     @Transactional
-    List<Cv> findByCurrentlySelected(boolean currentlySelected);
+    @Query("FROM Cv c WHERE c.currentlySelected = :currentlySelected AND c.username = :username AND c.roleId = :roleId")
+    List<Cv> findByCurrentlySelected(boolean currentlySelected, String username, Long roleId);
 
     @Transactional
-    int countByCurrentlySelected(boolean currentlySelected);
+    int countByCurrentlySelectedAndUsernameAndRoleId(boolean currentlySelected, String username, long roleId);
+
+    @Transactional
+    void deleteByUsernameAndRoleId(String username, Long roleId);
 }

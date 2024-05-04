@@ -26,23 +26,25 @@ public class CvDao {
     }
 
     @Transactional
-    public void addCvsToRepository(List<ProcessedCv> processedCvs) {
+    public void addCvsToRepository(String username, long roleId, List<ProcessedCv> processedCvs) {
         List<Cv> cvs = processedCvs.stream().map(cv -> Cv.builder()
                 .candidateName(cv.name())
                 .fileHash(cv.fileHash())
                 .currentlySelected(cv.currentlySelected())
                 .condensedText(cv.condensedDescription())
+                .username(username)
+                .roleId(roleId)
                 .build()).toList();
         logger.debug("Preparing to save candidate CVs as: {}", cvs);
         repository.saveAllAndFlush(cvs);
     }
 
-    public List<CandidateData> getAllNames() {
-        return repository.findAllProjectedAsCandidateData();
+    public List<CandidateData> getAllNames(String userName, Long roleId) {
+        return repository.findAllProjectedAsCandidateData(userName, roleId);
     }
 
-    public List<ProcessedCv> getAllSelected() {
-        return repository.findByCurrentlySelected(true)
+    public List<ProcessedCv> getAllSelected(String userName, Long roleId) {
+        return repository.findByCurrentlySelected(true, userName, roleId)
                 .stream()
                 .map(cv -> new ProcessedCv(
                         cv.getId(),
@@ -67,7 +69,11 @@ public class CvDao {
         return repository.findCandidateDataById(cvId);
     }
 
-    public int findSelectedCandidateCount() {
-        return repository.countByCurrentlySelected(true);
+    public int findSelectedCandidateCount(String username, long roleId) {
+        return repository.countByCurrentlySelectedAndUsernameAndRoleId(true, username, roleId);
+    }
+
+    public void deleteAllCandidates(String username, Long roleId) {
+        repository.deleteByUsernameAndRoleId(username, roleId);
     }
 }

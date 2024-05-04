@@ -2,7 +2,12 @@
      class="candidate-table flex-stack text-medium">
     <div class="candidate-row flex-container">
         <p class="candidate-display-left">Name</p>
-        <p class="candidate-display-right">Delete</p>
+        <button class="button-dark button-enlarge candidate-display-right"
+                hx-delete="/candidate/delete/all"
+                hx-target="#uploaded"
+                hx-swap="outerHTML"
+        >Delete All
+        </button>
     </div>
     <div class="candidate-row flex-container" th:each="candidate : ${candidates}">
         <p class="candidate-display-left" th:text="${candidate.name}">Value</p>

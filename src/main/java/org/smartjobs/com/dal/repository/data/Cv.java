@@ -27,4 +27,8 @@ public class Cv {
 
     @Setter
     private String candidateName;
+
+    private String username;
+
+    private Long roleId;
 }
