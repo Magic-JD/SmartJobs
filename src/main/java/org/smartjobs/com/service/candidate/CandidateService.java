@@ -2,7 +2,7 @@ package org.smartjobs.com.service.candidate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartjobs.com.client.gpt.GptClient;
+import org.smartjobs.com.client.gpt.AiClient;
 import org.smartjobs.com.dal.CvDao;
 import org.smartjobs.com.service.candidate.data.CandidateData;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
@@ -21,11 +21,11 @@ public class CandidateService {
 
     private static final Logger logger = LoggerFactory.getLogger(CandidateService.class);
 
-    private final GptClient client;
+    private final AiClient client;
     private final CvDao cvDao;
 
     @Autowired
-    public CandidateService(GptClient client, CvDao cvDao) {
+    public CandidateService(AiClient client, CvDao cvDao) {
         this.client = client;
         this.cvDao = cvDao;
     }

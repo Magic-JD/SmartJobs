@@ -46,7 +46,7 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                 userMessage(cvData));
     }
 
-    public static GptRequest scoreToCriteria(ProcessedCv cv, ScoringCriteria scoringCriteria) {
+    public static GptRequest scoreForCriteria(ProcessedCv cv, ScoringCriteria scoringCriteria) {
         return gpt(
                 systemMessage(STR. """
                         You are the master of scoring candidates. You will be given a scoring criteria and a number of points.

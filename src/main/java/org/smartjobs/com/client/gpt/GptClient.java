@@ -8,7 +8,6 @@ import org.smartjobs.com.client.gpt.response.GptResponse;
 import org.smartjobs.com.client.gpt.response.GptUsage;
 import org.smartjobs.com.exception.categories.ApplicationExceptions.GptClientConnectionFailure;
 import org.smartjobs.com.service.candidate.data.ProcessedCv;
-import org.smartjobs.com.service.role.data.Role;
 import org.smartjobs.com.service.role.data.ScoringCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,16 +19,13 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.smartjobs.com.constants.ProgramConstants.USER_BASE_SCORE;
-import static org.smartjobs.com.utils.ConcurrencyUtil.virtualThreadList;
 
 @Component
-public class GptClient {
+public class GptClient implements AiClient {
 
     private static final Logger logger = LoggerFactory.getLogger(GptClient.class);
     public static final String FAILED_GPT_CALL = "Failure calling GPT, code {}";
@@ -56,6 +52,7 @@ public class GptClient {
         this.apiKey = apiKey;
     }
 
+    @Override
     public Optional<String> extractCandidateName(String cvData) {
         GptRequest gptRequest = GptRequest.extractCandidateName(cvData.substring(0, Math.min(cvData.length(), 500)));
         var response = sendMessage(gptRequest);
@@ -64,6 +61,7 @@ public class GptClient {
                 .collect(Collectors.joining("\n")));
     }
 
+    @Override
     public Optional<String> anonymousCandidateDescription(String cvData) {
         GptRequest gptRequest = GptRequest.anonymousCandidateDescription(cvData);
         var response = sendMessage(gptRequest);
@@ -73,50 +71,39 @@ public class GptClient {
 
     }
 
-    public ScoringCriteriaResult scoreToCriteria(ProcessedCv ci, Role role) {
+    @Override
+    public Score scoreForCriteria(ProcessedCv ci, ScoringCriteria sc) {
+        GptRequest gptRequest = GptRequest.scoreForCriteria(ci, sc);
+        return sendMessage(gptRequest)
+                .flatMap(rp -> rp.choices().stream().map(choice -> choice.message().content()).findFirst())
+                .filter(rs -> {
+                    if (rs.contains("SCORE")) {
+                        return true;
+                    }
+                    logger.error("The returned response from GPT didn't contain SCORE -> {}", rs);
+                    return false;
+                })
+                .map(rs -> rs.split("SCORE"))
+                .flatMap(ra -> {
+                    String scoreString = ra[1].trim().replaceAll("[^0-9.]", "");
+                    if (scoreString.endsWith(".")) {
+                        scoreString = scoreString.substring(0, scoreString.length() - 1);
+                    }
+                    try {
+                        double percentage = Double.parseDouble(scoreString) / USER_BASE_SCORE;
+                        double candidateScore = percentage * sc.weighting();
+                        return Optional.of(new Score(sc.criteria(), ra[0].trim(), candidateScore));
+                    } catch (NumberFormatException e) {
+                        logger.error("The returned response from GPT was not a properly formatted number. The value was {}", scoreString);
+                        return Optional.empty();
+                    }
 
-        var maxPossibleScore = role.scoringCriteria().stream().mapToDouble(ScoringCriteria::weighting).sum();
-        var scoringCriteria = role.scoringCriteria();
-        var scoringResponses = virtualThreadList(scoringCriteria, sc -> {
-            GptRequest gptRequest = GptRequest.scoreToCriteria(ci, sc);
-            return sendMessage(gptRequest)
-                    .flatMap(rp -> rp.choices().stream().map(choice -> choice.message().content()).findFirst())
-                    .filter(rs -> {
-                        if (rs.contains("SCORE")) {
-                            return true;
-                        }
-                        logger.error("The returned response from GPT didn't contain SCORE -> {}", rs);
-                        return false;
-                    })
-                    .map(rs -> rs.split("SCORE"))
-                    .flatMap(ra -> {
-                        String scoreString = ra[1].trim().replaceAll("[^0-9.]", "");
-                        if (scoreString.endsWith(".")) {
-                            scoreString = scoreString.substring(0, scoreString.length() - 1);
-                        }
-                        try {
-                            double percentage = Double.parseDouble(scoreString) / USER_BASE_SCORE;
-                            double candidateScore = percentage * sc.weighting();
-                            return Optional.of(new ScoringCriteriaDisplay(sc.criteria(), ra[0].trim(), candidateScore, sc.weighting()));
-                        } catch (NumberFormatException e) {
-                            logger.error("The returned response from GPT was not a properly formatted number. The value was {}", scoreString);
-                            return Optional.empty();
-                        }
+                })
+                .orElse(new Score(sc.criteria(), "The score could not be calculated for this value", 0));
 
-                    })
-                    .orElse(new ScoringCriteriaDisplay(sc.criteria(), "The score could not be calculated for this value", 0, 0));
-        });
-        double totalScore = scoringResponses.stream()
-                .mapToDouble(ScoringCriteriaDisplay::score)
-                .sum();
-        return new ScoringCriteriaResult(UUID.randomUUID().toString(), ci.name(), (totalScore / maxPossibleScore) * 100, scoringResponses);
     }
 
-    public record ScoringCriteriaResult(String uuid, String name, double percentage,
-                                        List<ScoringCriteriaDisplay> scoringCriteria) {
-    }
-
-    public record ScoringCriteriaDisplay(String criteriaRequest, String justification, double score, int weight) {
+    public record Score(String criteriaRequest, String justification, double score) {
     }
 
     private Optional<GptResponse> sendMessage(GptRequest request) {
