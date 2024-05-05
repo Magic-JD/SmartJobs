@@ -19,8 +19,7 @@ logging:
   level:
     root: ERROR
     org:
-      smartjobs:
-        com: DEBUG
+      smartjobs: DEBUG
   org:
     springframework:
       boot:
