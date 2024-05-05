@@ -7,9 +7,7 @@ import org.smartjobs.adaptors.client.ai.request.GptRequest;
 import org.smartjobs.adaptors.client.ai.response.GptResponse;
 import org.smartjobs.adaptors.client.ai.response.GptUsage;
 import org.smartjobs.core.client.AiClient;
-import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.Score;
-import org.smartjobs.core.entities.ScoringCriteria;
 import org.smartjobs.core.exception.categories.ApplicationExceptions.GptClientConnectionFailure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,8 +53,8 @@ public class GptClient implements AiClient {
     }
 
     @Override
-    public Optional<String> extractCandidateName(String cvData) {
-        GptRequest gptRequest = GptRequest.extractCandidateName(cvData.substring(0, Math.min(cvData.length(), 500)));
+    public Optional<String> extractCandidateName(String cv) {
+        GptRequest gptRequest = GptRequest.extractCandidateName(cv.substring(0, Math.min(cv.length(), 500)));
         var response = sendMessage(gptRequest);
         return response.map(rp -> rp.choices().stream()
                 .map(choice -> choice.message().content())
@@ -64,8 +62,8 @@ public class GptClient implements AiClient {
     }
 
     @Override
-    public Optional<String> anonymousCandidateDescription(String cvData) {
-        GptRequest gptRequest = GptRequest.anonymousCandidateDescription(cvData);
+    public Optional<String> anonymizeCv(String cv) {
+        GptRequest gptRequest = GptRequest.anonymousCandidateDescription(cv);
         var response = sendMessage(gptRequest);
         return response.map(rp -> rp.choices().stream()
                 .map(choice -> choice.message().content())
@@ -74,8 +72,8 @@ public class GptClient implements AiClient {
     }
 
     @Override
-    public Score scoreForCriteria(ProcessedCv ci, ScoringCriteria sc) {
-        GptRequest gptRequest = GptRequest.scoreForCriteria(ci, sc);
+    public Optional<Score> scoreForCriteria(String cv, String criteria, int maxScore) {
+        GptRequest gptRequest = GptRequest.scoreForCriteria(cv, criteria);
         return sendMessage(gptRequest)
                 .flatMap(rp -> rp.choices().stream().map(choice -> choice.message().content()).findFirst())
                 .filter(rs -> {
@@ -93,15 +91,14 @@ public class GptClient implements AiClient {
                     }
                     try {
                         double percentage = Double.parseDouble(scoreString) / USER_BASE_SCORE;
-                        double candidateScore = percentage * sc.weighting();
-                        return Optional.of(new Score(sc.criteria(), ra[0].trim(), candidateScore, sc.weighting()));
+                        double candidateScore = percentage * maxScore;
+                        return Optional.of(new Score(ra[0].trim(), candidateScore));
                     } catch (NumberFormatException e) {
                         logger.error("The returned response from GPT was not a properly formatted number. The value was {}", scoreString);
                         return Optional.empty();
                     }
 
-                })
-                .orElse(new Score(sc.criteria(), "The score could not be calculated for this value", 0, 0));
+                });
 
     }
 

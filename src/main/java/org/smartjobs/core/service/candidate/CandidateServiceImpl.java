@@ -64,7 +64,7 @@ public class CandidateServiceImpl implements CandidateService {
             return Optional.empty();
         }
         var nameFuture = supplyAsync(() -> client.extractCandidateName(fileInformation.fileContent()));
-        var descriptionFuture = supplyAsync(() -> client.anonymousCandidateDescription(fileInformation.fileContent()));
+        var descriptionFuture = supplyAsync(() -> client.anonymizeCv(fileInformation.fileContent()));
         var name = nameFuture.join();
         var cvDescription = descriptionFuture.join();
         if (name.isEmpty() || cvDescription.isEmpty()) {

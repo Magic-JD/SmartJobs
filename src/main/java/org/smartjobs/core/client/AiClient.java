@@ -1,15 +1,13 @@
 package org.smartjobs.core.client;
 
-import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.Score;
-import org.smartjobs.core.entities.ScoringCriteria;
 
 import java.util.Optional;
 
 public interface AiClient {
-    Optional<String> extractCandidateName(String cvData);
+    Optional<String> extractCandidateName(String cv);
 
-    Optional<String> anonymousCandidateDescription(String cvData);
+    Optional<String> anonymizeCv(String cv);
 
-    Score scoreForCriteria(ProcessedCv ci, ScoringCriteria scoringCriteria);
+    Optional<Score> scoreForCriteria(String cv, String criteria, int maxScore);
 }

@@ -2,8 +2,6 @@ package org.smartjobs.adaptors.client.ai.request;
 
 import org.smartjobs.adaptors.client.ai.data.GptMessage;
 import org.smartjobs.adaptors.client.ai.data.GptModel;
-import org.smartjobs.core.entities.ProcessedCv;
-import org.smartjobs.core.entities.ScoringCriteria;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +44,7 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                 userMessage(cvData));
     }
 
-    public static GptRequest scoreForCriteria(ProcessedCv cv, ScoringCriteria scoringCriteria) {
+    public static GptRequest scoreForCriteria(String cv, String criteria) {
         return gpt(
                 systemMessage(STR. """
                         You are the master of scoring candidates. You will be given a scoring criteria and a number of points.
@@ -67,6 +65,6 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                         Example 2: The candidate does not have an advanced degree in Computer Science. SCORE 0
                         Example 3: The candidate fully meets the supplied criteria. SCORE 10
                         """ ),
-                userMessage(STR. "CV: \{ cv.condensedDescription() }. Scoring criteria: \{ scoringCriteria.criteria() }" ));
+                userMessage(STR. "CV: \{ cv }. Scoring criteria: \{ criteria }" ));
     }
 }

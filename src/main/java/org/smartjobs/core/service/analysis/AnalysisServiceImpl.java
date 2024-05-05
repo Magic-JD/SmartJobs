@@ -23,14 +23,24 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     @Override
-    public List<ScoringCriteriaResult> scoreToCriteria(List<ProcessedCv> candidateInformation, Role role) {
-        return virtualThreadList(candidateInformation, ci -> {
-            List<Score> lists = virtualThreadList(role.scoringCriteria(), sc -> client.scoreForCriteria(ci, sc));
-            double totalPossibleScore = role.scoringCriteria().stream().mapToInt(ScoringCriteria::weighting).sum();
-            double achievedScore = lists.stream().mapToDouble(Score::score).sum();
-            double percentage = achievedScore / totalPossibleScore * 100;
-            return new ScoringCriteriaResult(UUID.randomUUID().toString(), ci.name(), percentage, lists);
-        });
+    public List<CandidateScores> scoreToCriteria(List<ProcessedCv> candidateInformation, Role role) {
+        return virtualThreadList(candidateInformation, cv -> generateCandidateScore(cv, role.scoringCriteria()));
+    }
+
+    private CandidateScores generateCandidateScore(ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {
+        var results = virtualThreadList(scoringCriteria, criteria -> scoreForCriteria(cv, criteria));
+        double totalPossibleScore = scoringCriteria.stream()
+                .mapToInt(ScoringCriteria::weighting).sum();
+        double achievedScore = results.stream()
+                .mapToDouble(ScoredCriteria::score).sum();
+        double percentage = achievedScore / totalPossibleScore * 100;
+        return new CandidateScores(UUID.randomUUID().toString(), cv.name(), percentage, results);
+    }
+
+    private ScoredCriteria scoreForCriteria(ProcessedCv cv, ScoringCriteria criteria) {
+        return client.scoreForCriteria(cv.condensedDescription(), criteria.aiPrompt(), criteria.weighting())
+                .map(score -> new ScoredCriteria(criteria.criteria(), score.justification(), score.score(), criteria.weighting()))
+                .orElse(new ScoredCriteria(criteria.criteria(), "The score could not be calculated for this value", 0, 0));
     }
 
 

@@ -2,8 +2,8 @@ package org.smartjobs.adaptors.view.web.controller.analysis;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
-import org.smartjobs.core.entities.ScoringCriteriaResult;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.AuthService;
@@ -36,7 +36,7 @@ public class AnalysisController {
 
     private final RoleService roleService;
 
-    private final ConcurrentHashMap<String, ScoringCriteriaResult> cache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, CandidateScores> cache = new ConcurrentHashMap<>();
 
     @Autowired
     public AnalysisController(
@@ -66,7 +66,7 @@ public class AnalysisController {
         }
         var role = roleService.getRole(currentlySelectedRole.get());
         var results = analysisService.scoreToCriteria(candidateInformation, role).stream()
-                .sorted(Comparator.comparing(ScoringCriteriaResult::percentage).reversed()).toList();
+                .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
         model.addAttribute("results", results);
         return SCORING_FRAGMENT;
