@@ -8,7 +8,7 @@
         <version>3.2.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>org.smartjobs.com</groupId>
+    <groupId>org.smartjobs</groupId>
     <artifactId>smart-jobs</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -154,7 +154,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>org.smartjobs.com.Application</mainClass>
+                    <mainClass>org.smartjobs.Application</mainClass>
                     <layout>JAR</layout>
                 </configuration>
             </plugin>
