@@ -4,9 +4,12 @@
           hx-include="[value='value']"
           hx-target="#select-criteria"
     >
-        <label th:if="${criteria.needsInput}" for="value">Criteria value: </label><input th:if="${criteria.needsInput}"
+        <div class="flex-container"><label th:if="${criteria.needsInput}" for="value">Criteria value: </label><input
+                class="right-pushed"
+                th:if="${criteria.needsInput}"
                                                                                          type="text" id="value"
-                                                                                         name="value"><br>
-        <label for="score">Score: </label><input type="text" id="score" name="score"><br>
+                name="value"></div>
+        <div class="flex-container"><label for="score">Max Score: </label><input class="right-pushed" type="text"
+                                                                                 id="score" name="score"></div>
         <button class="button-light">Submit</button>
     </form>
