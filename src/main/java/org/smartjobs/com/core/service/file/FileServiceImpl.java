@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.smartjobs.com.core.entities.FileInformation;
 import org.smartjobs.com.core.exception.categories.AsynchronousExceptions.FileTypeNotSupportedException;
 import org.smartjobs.com.core.exception.categories.AsynchronousExceptions.TextExtractionException;
+import org.smartjobs.com.core.service.FileService;
 import org.smartjobs.com.core.service.file.data.FileType;
 import org.smartjobs.com.core.service.file.textextractor.PdfTextExtractor;
 import org.smartjobs.com.core.service.file.textextractor.TxtTextExtractor;
@@ -22,10 +23,11 @@ import java.util.Optional;
 import static org.smartjobs.com.core.service.file.data.FileType.*;
 
 @Service
-public class FileService {
+public class FileServiceImpl implements FileService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
+    @Override
     public Optional<FileInformation> handleFile(MultipartFile file) {
         logger.debug("Handling file {}", file.getOriginalFilename());
         var hashString = extractHash(file);

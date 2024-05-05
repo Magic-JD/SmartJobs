@@ -1,6 +1,7 @@
 package org.smartjobs.com.core.service.auth;
 
 import org.smartjobs.com.core.exception.categories.UserResolvedExceptions.IncorrectAuthenticationException;
+import org.smartjobs.com.core.service.AuthService;
 import org.smartjobs.com.core.service.auth.levels.AuthLevel;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,8 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 
 @Service
-public class AuthService {
+public class AuthServiceImpl implements AuthService {
 
+    @Override
     public String getCurrentUsername() {
         var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails userDetails) {
@@ -19,6 +21,7 @@ public class AuthService {
         throw new IncorrectAuthenticationException();
     }
 
+    @Override
     public AuthLevel userMaxAuthLevel() {
         return SecurityContextHolder.getContext()
                 .getAuthentication()

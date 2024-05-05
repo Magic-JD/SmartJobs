@@ -3,7 +3,6 @@ package org.smartjobs.com.adaptors.data;
 import org.smartjobs.com.adaptors.data.repository.UserCriteriaRepository;
 import org.smartjobs.com.adaptors.data.repository.data.UserCriteria;
 import org.smartjobs.com.core.dal.UserCriteriaDao;
-import org.smartjobs.com.core.service.criteria.CriteriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,15 +20,15 @@ public class UserCriteriaDaoImpl implements UserCriteriaDao {
     }
 
     @Override
-    public CriteriaService.UserCriteria createNewUserCriteria(long definedCriteriaId, String value, int score) {
+    public org.smartjobs.com.core.entities.UserCriteria createNewUserCriteria(long definedCriteriaId, String value, int score) {
         UserCriteria userCriteria = repository.saveAndFlush(UserCriteria.builder().definedCriteriaId(definedCriteriaId).value(value).score(score).build());
-        return new CriteriaService.UserCriteria(userCriteria.getId(), userCriteria.getDefinedCriteriaId(), Optional.ofNullable(userCriteria.getValue()), userCriteria.getScore());
+        return new org.smartjobs.com.core.entities.UserCriteria(userCriteria.getId(), userCriteria.getDefinedCriteriaId(), Optional.ofNullable(userCriteria.getValue()), userCriteria.getScore());
     }
 
     @Override
-    public List<CriteriaService.UserCriteria> selectUserCriteriaByIds(List<Long> ids) {
+    public List<org.smartjobs.com.core.entities.UserCriteria> selectUserCriteriaByIds(List<Long> ids) {
         return repository.findAllById(ids).stream()
-                .map(uc -> new CriteriaService.UserCriteria(uc.getId(), uc.getDefinedCriteriaId(), Optional.ofNullable(uc.getValue()), uc.getScore()))
+                .map(uc -> new org.smartjobs.com.core.entities.UserCriteria(uc.getId(), uc.getDefinedCriteriaId(), Optional.ofNullable(uc.getValue()), uc.getScore()))
                 .toList();
     }
 

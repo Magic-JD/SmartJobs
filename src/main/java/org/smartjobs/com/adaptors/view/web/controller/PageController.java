@@ -1,7 +1,7 @@
 package org.smartjobs.com.adaptors.view.web.controller;
 
 import org.smartjobs.com.adaptors.view.web.entities.NavElement;
-import org.smartjobs.com.core.service.auth.AuthService;
+import org.smartjobs.com.core.service.AuthService;
 import org.smartjobs.com.core.service.auth.levels.AuthLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

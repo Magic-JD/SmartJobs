@@ -2,6 +2,7 @@ package org.smartjobs.com.core.service.analysis;
 
 import org.smartjobs.com.core.client.AiClient;
 import org.smartjobs.com.core.entities.*;
+import org.smartjobs.com.core.service.AnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,16 +12,17 @@ import java.util.UUID;
 import static org.smartjobs.com.core.utils.ConcurrencyUtil.virtualThreadList;
 
 @Service
-public class AnalysisService {
+public class AnalysisServiceImpl implements AnalysisService {
 
     private final AiClient client;
 
 
     @Autowired
-    public AnalysisService(AiClient client) {
+    public AnalysisServiceImpl(AiClient client) {
         this.client = client;
     }
 
+    @Override
     public List<ScoringCriteriaResult> scoreToCriteria(List<ProcessedCv> candidateInformation, Role role) {
         return virtualThreadList(candidateInformation, ci -> {
             List<Score> lists = virtualThreadList(role.scoringCriteria(), sc -> client.scoreForCriteria(ci, sc));
