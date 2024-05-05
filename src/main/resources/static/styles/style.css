@@ -181,7 +181,7 @@ input[type=text] {
 }
 
 .button-dark {
-  background-color: var(--clr-background);
+  background-color: var(--clr-highlight);
   color: var(--clr-text);
   border: none;
   padding: 2px 7px;
@@ -208,7 +208,11 @@ input[type=text] {
   font-size: var(--fs-medium);
 }
 
-.button-header:hover {
+.button-header-dark {
+   background-color: var(--clr-background)
+}
+
+.button-header-light:hover {
     background-color: var(--clr-background)
 }
 
@@ -347,7 +351,7 @@ input[type=file]::file-selector-button {
 }
 
 input[type=file]::file-selector-button:hover {
-  background: var(--clr-background);
+  background: var(--clr-highlight);
   color: var(--clr-text);
 
 }

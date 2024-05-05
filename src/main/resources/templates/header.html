@@ -1,7 +1,8 @@
 <header th:fragment="header" class="primary-header flex-container highlight">
     <a class="text-medium icon-link" th:href="@{/}">Smart Jobs</a>
     <nav class="primary-navigation flex-container right-pushed">
-        <a class="button-dark right-pushed" th:each="navElement : ${navElements}" th:href="@{|/${navElement.link}|}"
+        <a class="button-dark right-pushed button-header-dark" th:each="navElement : ${navElements}"
+           th:href="@{|/${navElement.link}|}"
            th:text="${navElement.name}"></a>
         <a th:replace="${loggedIn} ? ~{logout-button} : ~{login-button}"></a>
     </nav>
