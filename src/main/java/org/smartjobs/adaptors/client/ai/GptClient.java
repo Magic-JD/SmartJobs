@@ -3,26 +3,24 @@ package org.smartjobs.adaptors.client.ai;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartjobs.adaptors.client.ai.config.GptConfig;
 import org.smartjobs.adaptors.client.ai.request.GptRequest;
 import org.smartjobs.adaptors.client.ai.response.GptResponse;
 import org.smartjobs.adaptors.client.ai.response.GptUsage;
+import org.smartjobs.adaptors.client.ai.response.ScoreParser;
 import org.smartjobs.core.client.AiClient;
 import org.smartjobs.core.entities.Score;
-import org.smartjobs.core.exception.categories.ApplicationExceptions.GptClientConnectionFailure;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.smartjobs.core.constants.ProgramConstants.USER_BASE_SCORE;
 
 @Component
 public class GptClient implements AiClient {
@@ -31,25 +29,20 @@ public class GptClient implements AiClient {
     public static final String FAILED_GPT_CALL = "Failure calling GPT, code {}";
 
     private final HttpClient client;
+    private final ScoreParser scoreParser;
     private final Gson gson;
-    private final URI clientUri;
+    private final URI uri;
     private final String apiKey;
+    private final int userBaseScore;
 
     @Autowired
-    public GptClient(
-            HttpClient client,
-            Gson gson,
-            @Value("${gpt.api.site}") String site,
-            @Value("${gpt.api.endpoint}") String endpoint,
-            @Value("${gpt.api.key}") String apiKey) {
+    public GptClient(HttpClient client, ScoreParser scoreParser, Gson gson, GptConfig config) {
         this.client = client;
+        this.scoreParser = scoreParser;
         this.gson = gson;
-        try {
-            this.clientUri = new URI(site + endpoint);
-        } catch (URISyntaxException e) {
-            throw new GptClientConnectionFailure(e);
-        }
-        this.apiKey = apiKey;
+        this.uri = config.getUri();
+        this.apiKey = config.getApiKey();
+        this.userBaseScore = config.getUserBaseScore();
     }
 
     @Override
@@ -73,32 +66,14 @@ public class GptClient implements AiClient {
 
     @Override
     public Optional<Score> scoreForCriteria(String cv, String criteria, int maxScore) {
-        GptRequest gptRequest = GptRequest.scoreForCriteria(cv, criteria);
+        GptRequest gptRequest = GptRequest.scoreForCriteria(cv, criteria, userBaseScore);
         return sendMessage(gptRequest)
                 .flatMap(rp -> rp.choices().stream().map(choice -> choice.message().content()).findFirst())
-                .filter(rs -> {
-                    if (rs.contains("SCORE")) {
-                        return true;
-                    }
-                    logger.error("The returned response from GPT didn't contain SCORE -> {}", rs);
-                    return false;
-                })
-                .map(rs -> rs.split("SCORE"))
-                .flatMap(ra -> {
-                    String scoreString = ra[1].trim().replaceAll("[^0-9.]", "");
-                    if (scoreString.endsWith(".")) {
-                        scoreString = scoreString.substring(0, scoreString.length() - 1);
-                    }
-                    try {
-                        double percentage = Double.parseDouble(scoreString) / USER_BASE_SCORE;
-                        double candidateScore = percentage * maxScore;
-                        return Optional.of(new Score(ra[0].trim(), candidateScore));
-                    } catch (NumberFormatException e) {
-                        logger.error("The returned response from GPT was not a properly formatted number. The value was {}", scoreString);
-                        return Optional.empty();
-                    }
-
-                });
+                .flatMap(scoreParser::parseScore)
+                .map(unadjustedScore -> new Score(
+                        unadjustedScore.justification(),
+                        (unadjustedScore.score() / userBaseScore) * maxScore)
+                );
 
     }
 
@@ -128,7 +103,7 @@ public class GptClient implements AiClient {
 
     private HttpRequest createRequest(GptRequest request) {
         return HttpRequest.newBuilder()
-                .uri(clientUri)
+                .uri(uri)
                 .header("Accept", "application/json")
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiKey)

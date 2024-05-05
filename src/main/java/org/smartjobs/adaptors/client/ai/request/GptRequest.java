@@ -8,7 +8,6 @@ import java.util.List;
 
 import static org.smartjobs.adaptors.client.ai.data.GptMessage.systemMessage;
 import static org.smartjobs.adaptors.client.ai.data.GptMessage.userMessage;
-import static org.smartjobs.core.constants.ProgramConstants.USER_BASE_SCORE;
 
 public record GptRequest(GptModel model, double temperature, double topP, List<GptMessage> messages) {
 
@@ -44,7 +43,7 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                 userMessage(cvData));
     }
 
-    public static GptRequest scoreForCriteria(String cv, String criteria) {
+    public static GptRequest scoreForCriteria(String cv, String criteria, int score) {
         return gpt(
                 systemMessage(STR. """
                         You are the master of scoring candidates. You will be given a scoring criteria and a number of points.
@@ -55,8 +54,8 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                         It must be focused on how well the candidate meets the given scoring criteria.
                         Then state the word SCORE
                         After that you must state the score.
-                        For the score you must rate the candidate out of \{ USER_BASE_SCORE }.
-                        The max amount you can give the candidate is \{ USER_BASE_SCORE }.
+                        For the score you must rate the candidate out of \{ score }.
+                        The max amount you can give the candidate is \{ score }.
                         If the candidate doesn't match the scoring criteria at all they should get no points.
                         You may only award points for factors that are mentioned in the criteria.
 

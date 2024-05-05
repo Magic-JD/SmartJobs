@@ -1,8 +1,8 @@
 gpt:
   api:
     key: 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
-    site: https://api.openai.com
-    endpoint: /v1/chat/completions
+    url: https://api.openai.com/v1/chat/completions
+    user-base-score: 10
 
 
 spring:
