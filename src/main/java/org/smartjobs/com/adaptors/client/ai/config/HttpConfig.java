@@ -1,4 +1,4 @@
-package org.smartjobs.com.core.config;
+package org.smartjobs.com.adaptors.client.ai.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

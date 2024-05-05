@@ -52,9 +52,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role createRole(String name, String userId) {
-        var role = roleDao.saveRole(userId, name);
-        selectedRoleDao.setSelectedRole(userId, role.getId());
-        return new Role(role.getId(), role.getPosition(), Collections.emptyList());
+        var roleId = roleDao.saveRole(userId, name);
+        selectedRoleDao.setSelectedRole(userId, roleId);
+        return new Role(roleId, name, Collections.emptyList());
     }
 
     @Override

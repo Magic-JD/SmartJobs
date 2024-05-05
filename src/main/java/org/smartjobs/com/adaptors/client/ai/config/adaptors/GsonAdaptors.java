@@ -1,4 +1,4 @@
-package org.smartjobs.com.core.config.adaptors;
+package org.smartjobs.com.adaptors.client.ai.config.adaptors;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

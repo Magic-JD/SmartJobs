@@ -42,8 +42,8 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public Role saveRole(String userId, String name) {
-        return roleRepository.saveAndFlush(Role.builder().userId(userId).position(name).build());
+    public long saveRole(String userId, String name) {
+        return roleRepository.saveAndFlush(Role.builder().userId(userId).position(name).build()).getId();
     }
 
     @Override

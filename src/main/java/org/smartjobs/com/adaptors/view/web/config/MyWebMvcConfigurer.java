@@ -1,4 +1,4 @@
-package org.smartjobs.com.core.config;
+package org.smartjobs.com.adaptors.view.web.config;
 
 import org.smartjobs.com.adaptors.view.web.interceptors.logging.LoggingInterceptor;
 import org.springframework.context.annotation.Configuration;
