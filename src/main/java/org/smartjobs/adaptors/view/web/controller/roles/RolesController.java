@@ -117,6 +117,7 @@ public class RolesController {
     public String selectCriteria(@PathVariable("criteriaId") long criteriaId, Model model) {
         var criteria = criteriaService.getCriteriaById(criteriaId);
         model.addAttribute("criteria", criteria);
+        model.addAttribute("placeholderText", criteria.inputExample().orElse(""));
         return SELECT_CRITERIA_FRAGMENT;
     }
 

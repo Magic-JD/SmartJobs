@@ -23,5 +23,5 @@ public class Criteria {
     private boolean input;
     private String aiPrompt;
     private boolean isBoolean;
-
+    private String inputExample;
 }
