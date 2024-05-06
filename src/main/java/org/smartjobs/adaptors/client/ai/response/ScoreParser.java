@@ -2,6 +2,7 @@ package org.smartjobs.adaptors.client.ai.response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartjobs.adaptors.client.ai.entity.Pass;
 import org.smartjobs.adaptors.client.ai.entity.UnadjustedScore;
 import org.springframework.stereotype.Component;
 
@@ -29,5 +30,26 @@ public class ScoreParser {
             logger.error("The returned response from GPT was not a properly formatted number. The value was {}", scoreString);
             return Optional.empty();
         }
+    }
+
+    public Optional<Pass> parsePass(String gptResponse) {
+        if (!gptResponse.contains("PASS")) {
+            logger.error("The returned response from GPT didn't contain PASS -> {}", gptResponse);
+            return Optional.empty();
+        }
+        String[] splitResponse = gptResponse.split("PASS");
+        String scoreString = splitResponse[1].trim().toLowerCase();
+        if (scoreString.endsWith(".")) {
+            scoreString = scoreString.substring(0, scoreString.length() - 1);
+        }
+        String justification = splitResponse[0].trim();
+        return Optional.ofNullable(switch (scoreString) {
+            case "true" -> new Pass(justification, true);
+            case "false" -> new Pass(justification, false);
+            default -> {
+                logger.error("The returned response from GPT was not a properly formatted boolean. The value was {}", scoreString);
+                yield null;
+            }
+        });
     }
 }

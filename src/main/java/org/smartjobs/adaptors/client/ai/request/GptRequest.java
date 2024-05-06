@@ -66,4 +66,25 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                         """ ),
                 userMessage(STR. "CV: \{ cv }. Scoring criteria: \{ criteria }" ));
     }
+
+
+    public static GptRequest passForCriteria(String cv, String criteria) {
+        return gpt(
+                systemMessage(STR."""
+                        You are the master of determining if candidates pass certain criteria.
+                        You will be given a criteria for and determine if it is true or false that the client meets that criteria.
+                        You must carefully examine the cv that you are provided with.
+                        As you examine that cv you must determine how well the candidate matches with the criteria.
+                        Output a maximum of two sentences explaining if it is true that the candidate met this criteria or if it is false.
+                        It must be focused on how well the candidate meets the given criteria.
+                        Then state the word PASS
+                        After that you must state true if the candidate passed, otherwise false.
+                        If the candidate doesn't match the scoring criteria at all then return false.
+
+                        Here are some examples of the correct output you should give:
+                        Example 1: The candidate does not have an advanced degree in Computer Science. PASS false
+                        Example 2: The candidate has an aws certification. PASS true
+                        """),
+                userMessage(STR. "CV: \{ cv }. Scoring criteria: \{ criteria }" ));
+    }
 }

@@ -33,14 +33,14 @@ public class AnalysisServiceImpl implements AnalysisService {
                 .mapToInt(ScoringCriteria::weighting).sum();
         double achievedScore = results.stream()
                 .mapToDouble(ScoredCriteria::score).sum();
-        double percentage = achievedScore / totalPossibleScore * 100;
+        double percentage = (achievedScore / totalPossibleScore) * 100;
         return new CandidateScores(UUID.randomUUID().toString(), cv.name(), percentage, results);
     }
 
     private ScoredCriteria scoreForCriteria(ProcessedCv cv, ScoringCriteria criteria) {
-        return client.scoreForCriteria(cv.condensedDescription(), criteria.aiPrompt(), criteria.weighting())
-                .map(score -> new ScoredCriteria(criteria.criteria(), score.justification(), score.score(), criteria.weighting()))
-                .orElse(new ScoredCriteria(criteria.criteria(), "The score could not be calculated for this value", 0, 0));
+        return client.scoreForCriteria(cv.condensedDescription(), criteria.scoringGuide(), criteria.weighting())
+                .map(score -> new ScoredCriteria(criteria.name(), score.justification(), score.score(), criteria.weighting()))
+                .orElse(new ScoredCriteria(criteria.name(), "The score could not be calculated for this value", 0, 0));
     }
 
 

@@ -153,7 +153,7 @@ public class RolesController {
                                         internalRole.scoringCriteria()
                                                 .stream()
                                                 .filter(crit -> crit.category().equals(cc))
-                                                .map(crit -> new ScoringCriteria(crit.id(), crit.criteria(), crit.weighting()))
+                                                .map(crit -> new ScoringCriteria(crit.id(), crit.name(), crit.weighting()))
                                                 .toList()))
                         .toList());
 

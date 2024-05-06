@@ -27,6 +27,6 @@ public class ThymeleafConstants {
     public static final String ROLE_FRAGMENT = "role";
     public static final String SAVED_ROLE_FRAGMENT = "saved-role";
     public static final String ROLE_TEMPLATE_FRAGMENT = "role-template";
-    public static final String CATEGORY_CRITERIA_FRAGMENT = "category-criteria";
-    public static final String SELECT_CRITERIA_FRAGMENT = "select-criteria";
+    public static final String CATEGORY_CRITERIA_FRAGMENT = "category-name";
+    public static final String SELECT_CRITERIA_FRAGMENT = "select-name";
 }

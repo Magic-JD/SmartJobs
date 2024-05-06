@@ -51,7 +51,13 @@ public class RoleDaoImpl implements RoleDao {
         var criteria = roleCriteriaRepository.findAllByRoleId(id).stream()
                 .map(rc -> userCriteriaRepository.findById(rc.getCriteriaId())).map(Optional::orElseThrow).map(userCriteria -> {
                     Criteria defCrit = definedScoringCriteriaRepository.findById(userCriteria.getDefinedCriteriaId()).orElseThrow();
-                    return new ScoringCriteria(userCriteria.getId(), CriteriaCategory.getFromName(defCrit.getCategory()), defCrit.getCriteria() + (defCrit.isInput() ? ": " + userCriteria.getValue() : ""), userCriteria.getScore(), defCrit.getAiPrompt().replaceAll("X", userCriteria.getValue()));
+                    return new ScoringCriteria(
+                            userCriteria.getId(),
+                            CriteriaCategory.getFromName(defCrit.getCategory()),
+                            defCrit.getCriteria() + (defCrit.isInput() ? ": " + userCriteria.getValue() : ""),
+                            defCrit.isBoolean(),
+                            userCriteria.getScore(),
+                            defCrit.getAiPrompt().replaceAll("X", userCriteria.getValue()));
                 }).toList();
         return roleRepository.findById(id)
                 .map(role -> new org.smartjobs.core.entities.Role(role.getId(), role.getPosition(), criteria))
