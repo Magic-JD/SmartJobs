@@ -1,10 +1,10 @@
 server:
-  port: 443
+  port: 8443
   ssl:
-    key-store: certificates/keystore.p12
+    key-store: classpath:certificates/keystore.p12
     key-store-password: MurderBeforeEvensong
-    keyStoreType: PKCS12
-    keyAlias: tomcat
+    key-store-type: PKCS12
+    key-alias: tomcat
 
 
 gpt:
