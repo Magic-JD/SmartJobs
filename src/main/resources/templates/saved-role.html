@@ -7,7 +7,7 @@
     <div class="flex-container saved-role"
          th:each="role : ${savedRoles}"
     >
-        <div class="right-nudged"
+        <button class="right-nudged hidden-button"
              th:classappend="${currentlySelected == role.id} ? currently-selected : ''"
              th:text="${role.position}"
              hx-swap="innerHTML"
@@ -15,7 +15,7 @@
              hx-trigger="click"
              th:attr="hx-get=@{|/roles/display/${role.id}|}">
 
-        </div>
+        </button>
         <button class="button-light right-pushed"
                 hx-swap="outerHTML"
                 hx-target="closest div"

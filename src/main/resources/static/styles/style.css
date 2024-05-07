@@ -9,6 +9,7 @@
     --ff-body: var(--ff-primary); 
     --ff-heading: var(--ff-primary);
 
+    --fs-mini: 0.75rem;
     --fs-small: 1.25rem;
     --fs-medium: 1.75rem;
     --fs-large: 3rem;
@@ -374,7 +375,7 @@ input[type=file]::file-selector-button:hover {
     padding: 20px
     width: 300px;
     border-radius: 8px;
-    z-index: 9999;
+    z-index: 110;
     padding: 8px 14px;
     animation: fadeOut 5s ease 3s forwards;
     box-shadow:
@@ -413,8 +414,6 @@ input[type=file]::file-selector-button:hover {
     margin-top: 20px;
 }
 
-.categories-container {}
-
 .currently-selected {
     font-weight: bold;
 }
@@ -429,4 +428,47 @@ input[type=file]::file-selector-button:hover {
     display: block;
     text-align: left;
     justify-self: left;
+}
+
+.tooltip {
+    z-index: 110;
+    position: absolute;
+    margin-left: 0px;
+    bottom: 125%;
+    left: 50%;
+    background-color: var(--clr-highlight);
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--clr-background);
+    padding: 10px 15px;
+    border-radius: 7px;
+    visibility: hidden;
+    opacity: 0;
+    font-size: var(--fs-mini);
+    width: max-content;
+    max-width: 200px;
+    white-space: pre-wrap;
+    transition: opacity 0.5s ease;
+}
+
+.tooltip-prompt {
+    transform: translateY(-50%);
+    position: relative;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.tooltip-prompt:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.hidden-button {
+    background-color: transparent;
+    border: none;
+    color: var(--clr-text);
+}
+
+.left-justified {
+    align-items: flex-start;
 }

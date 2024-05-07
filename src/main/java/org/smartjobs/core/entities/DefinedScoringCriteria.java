@@ -10,5 +10,7 @@ public record DefinedScoringCriteria(
         CriteriaCategory category,
         boolean needsInput,
         Optional<String> inputExample,
-        String aiPrompt) {
+        String aiPrompt,
+        String tooltip
+) {
 }

@@ -28,7 +28,8 @@ public class DefinedScoringCriteriaDaoImpl implements DefinedScoringCriteriaDao 
                         CriteriaCategory.getFromName(dsc.getCategory()),
                         dsc.isInput(),
                         Optional.ofNullable(dsc.getInputExample()),
-                        dsc.getAiPrompt()))
+                        dsc.getAiPrompt(),
+                        dsc.getTooltip()))
                 .toList();
     }
 }

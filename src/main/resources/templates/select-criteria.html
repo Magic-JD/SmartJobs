@@ -1,4 +1,10 @@
-    <div th:text="${criteria.description}"></div>
+<div class="flex-container">
+    <span th:text="${criteria.description}"></span>
+    <div>
+        <span class="tooltip-prompt">ⓘ<span class="tooltip" th:text="${criteria.tooltip}"></span>
+        </span>
+    </div>
+</div>
     <form th:attr="hx-post=@{|roles/save/${criteria.id}|}"
           hx-swap="innerHtml"
           hx-include="[value='value']"
