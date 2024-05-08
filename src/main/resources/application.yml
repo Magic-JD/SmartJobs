@@ -12,6 +12,7 @@ gpt:
     key: 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
     url: https://api.openai.com/v1/chat/completions
     user-base-score: 10
+    requests-per-minute: 200
 
 
 spring:

@@ -1,6 +1,8 @@
 package org.smartjobs.adaptors.client.ai;
 
 import com.google.gson.Gson;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartjobs.adaptors.client.ai.config.GptConfig;
@@ -18,6 +20,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,9 @@ public class GptClient implements AiClient {
     private final String apiKey;
     private final int userBaseScore;
 
+
+    private final Bucket bucket;
+
     @Autowired
     public GptClient(HttpClient client, ScoreParser scoreParser, Gson gson, GptConfig config) {
         this.client = client;
@@ -43,6 +49,13 @@ public class GptClient implements AiClient {
         this.uri = config.getUri();
         this.apiKey = config.getApiKey();
         this.userBaseScore = config.getUserBaseScore();
+        int maxRequestsPerMinute = config.getMaxRequestsPerMinute();
+        this.bucket = Bucket.builder()
+                .addLimit(Bandwidth.builder()
+                        .capacity(maxRequestsPerMinute / 2)
+                        .refillGreedy(maxRequestsPerMinute / 2, Duration.ofMinutes(1))
+                        .build())
+                .build();
     }
 
     @Override
@@ -86,12 +99,14 @@ public class GptClient implements AiClient {
                 .flatMap(scoreParser::parsePass)
                 .map(pass -> new Score(
                         pass.justification(),
-                        (pass.pass() ? 1 : 0) * maxScore)
+                        (pass.pass() ? 1d : 0d) * maxScore)
                 );
 
     }
 
     private Optional<GptResponse> sendMessage(GptRequest request) {
+        logger.info("Preparing to call gpt when available.");
+        bucket.asBlocking().consumeUninterruptibly(1);
         logger.trace("Calling GPT with request: {}", request);
         HttpRequest httpRequest = createRequest(request);
         try {
