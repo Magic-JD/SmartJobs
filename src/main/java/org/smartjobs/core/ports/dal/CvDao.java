@@ -1,4 +1,4 @@
-package org.smartjobs.core.dal;
+package org.smartjobs.core.ports.dal;
 
 import jakarta.transaction.Transactional;
 import org.smartjobs.core.entities.CandidateData;

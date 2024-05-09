@@ -83,7 +83,8 @@ public class CandidateController {
     @DeleteMapping("/delete/{cvId}")
     public String deleteCandidate(@PathVariable long cvId, HttpServletResponse response) {
         String currentUsername = authService.getCurrentUsername();
-        candidateService.deleteCandidate(currentUsername, cvId);
+        var selectedRole = roleService.getCurrentlySelectedRole(currentUsername).orElseThrow();
+        candidateService.deleteCandidate(currentUsername, selectedRole, cvId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         return EMPTY_FRAGMENT;
     }
@@ -105,7 +106,8 @@ public class CandidateController {
     public String selectCandidate(@PathVariable long cvId, @PathParam("select") boolean select, Model model, HttpServletResponse response) {
         String currentUsername = authService.getCurrentUsername();
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
-        return candidateService.toggleCandidateSelect(currentUsername, cvId, select).map(cvData -> {
+        long roleId = roleService.getCurrentlySelectedRole(currentUsername).orElseThrow();
+        return candidateService.toggleCandidateSelect(currentUsername, roleId, cvId, select).map(cvData -> {
             model.addAttribute("candidate", cvData);
             return SINGLE_CANDIDATE_ROW_FRAGMENT;
         }).orElse(EMPTY_FRAGMENT);

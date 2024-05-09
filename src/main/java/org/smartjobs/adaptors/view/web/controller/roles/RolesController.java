@@ -80,7 +80,7 @@ public class RolesController {
         roleService.getCurrentlySelectedRole(username)
                 .filter(current -> current.equals(roleId))
                 .ifPresent(_ -> roleService.deleteCurrentlySelectedRole(username));
-        roleService.deleteRole(roleId);
+        roleService.deleteRole(username, roleId);
         response.addHeader(HX_TRIGGER, ROLE_DELETED);
         return EMPTY_FRAGMENT;
     }

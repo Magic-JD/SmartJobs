@@ -1,8 +1,8 @@
 package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.DefinedScoringCriteriaRepository;
-import org.smartjobs.core.dal.DefinedScoringCriteriaDao;
 import org.smartjobs.core.entities.DefinedScoringCriteria;
+import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDao;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

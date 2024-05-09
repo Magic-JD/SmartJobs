@@ -1,4 +1,4 @@
-package org.smartjobs.core.dal;
+package org.smartjobs.core.ports.dal;
 
 import java.util.Optional;
 

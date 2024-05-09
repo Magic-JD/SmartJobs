@@ -2,14 +2,17 @@ package org.smartjobs.core.service.candidate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartjobs.core.client.AiClient;
-import org.smartjobs.core.dal.CvDao;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
+import org.smartjobs.core.ports.client.AiClient;
+import org.smartjobs.core.ports.dal.CvDao;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.utils.ConcurrencyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,17 +35,19 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<ProcessedCv> getFullCandidateInfo(String userName, Long roleId) {
-        return cvDao.getAllSelected(userName, roleId);
+    public List<ProcessedCv> getFullCandidateInfo(String username, long roleId) {
+        return cvDao.getAllSelected(username, roleId);
     }
 
     @Override
-    public List<CandidateData> getCurrentCandidates(String userName, Long role) {
-        return cvDao.getAllNames(userName, role);
+    @Cacheable(value = "cv-name", key = "{#username, #roleId}")
+    public List<CandidateData> getCurrentCandidates(String username, long roleId) {
+        return cvDao.getAllNames(username, roleId);
     }
 
     @Override
-    public void updateCandidateCvs(String username, Long roleId, List<Optional<FileInformation>> fileInformationList) {
+    @CacheEvict(value = "cv-name", key = "{#username, #roleId}")
+    public void updateCandidateCvs(String username, long roleId, List<Optional<FileInformation>> fileInformationList) {
         var processedCvs = ConcurrencyUtil.virtualThreadList(fileInformationList, fileInformation -> fileInformation.flatMap(this::processCv));
         List<ProcessedCv> list = processedCvs.stream()
                 .filter(Optional::isPresent)
@@ -55,7 +60,8 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public void deleteCandidate(String username, long cvId) {
+    @CacheEvict(value = "cv-name", key = "{#username, #currentRole}")
+    public void deleteCandidate(String username, long currentRole, long cvId) {
         cvDao.deleteByCvId(cvId);
     }
 
@@ -76,17 +82,26 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Optional<CandidateData> toggleCandidateSelect(String currentUsername, long cvId, boolean select) {
+    @Caching(evict = {
+            @CacheEvict(value = "cv-currently-selected", key = "{#currentUsername, #roleId}"),
+            @CacheEvict(value = "cv-name", key = "{#currentUsername, #roleId}")
+    })
+    public Optional<CandidateData> toggleCandidateSelect(String currentUsername, long roleId, long cvId, boolean select) {
         return cvDao.updateCurrentlySelectedById(cvId, select);
     }
 
     @Override
+    @Cacheable(value = "cv-currently-selected", key = "{#username, #currentRole}")
     public int findSelectedCandidateCount(String username, long currentRole) {
         return cvDao.findSelectedCandidateCount(username, currentRole);
     }
 
     @Override
-    public void deleteAllCandidates(String username, Long roleId) {
+    @Caching(evict = {
+            @CacheEvict(value = "cv-currently-selected", key = "{#username, #roleId}"),
+            @CacheEvict(value = "cv-name", key = "{#username, #roleId}")
+    })
+    public void deleteAllCandidates(String username, long roleId) {
         cvDao.deleteAllCandidates(username, roleId);
     }
 }

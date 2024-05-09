@@ -1,7 +1,7 @@
 package org.smartjobs.core.service.analysis;
 
-import org.smartjobs.core.client.AiClient;
 import org.smartjobs.core.entities.*;
+import org.smartjobs.core.ports.client.AiClient;
 import org.smartjobs.core.service.AnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -10,8 +10,8 @@ import org.smartjobs.adaptors.client.ai.request.GptRequest;
 import org.smartjobs.adaptors.client.ai.response.GptResponse;
 import org.smartjobs.adaptors.client.ai.response.GptUsage;
 import org.smartjobs.adaptors.client.ai.response.ScoreParser;
-import org.smartjobs.core.client.AiClient;
 import org.smartjobs.core.entities.Score;
+import org.smartjobs.core.ports.client.AiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -2,7 +2,7 @@ package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.SelectedRoleRepository;
 import org.smartjobs.adaptors.data.repository.data.SelectedRole;
-import org.smartjobs.core.dal.SelectedRoleDao;
+import org.smartjobs.core.ports.dal.SelectedRoleDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

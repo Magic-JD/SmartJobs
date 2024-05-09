@@ -1,8 +1,8 @@
 package org.smartjobs.core.cache;
 
-import org.smartjobs.core.dal.DefinedScoringCriteriaDao;
 import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.exception.categories.ApplicationExceptions.IncorrectIdForDefinedScoringCriteriaException;
+import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

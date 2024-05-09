@@ -1,7 +1,7 @@
 package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.CredentialRepository;
-import org.smartjobs.core.dal.CredentialDao;
+import org.smartjobs.core.ports.dal.CredentialDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

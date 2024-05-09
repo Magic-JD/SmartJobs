@@ -1,6 +1,6 @@
 package org.smartjobs.core.service.credit;
 
-import org.smartjobs.core.dal.CreditDao;
+import org.smartjobs.core.ports.dal.CreditDao;
 import org.smartjobs.core.service.CreditService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

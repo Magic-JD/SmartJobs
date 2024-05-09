@@ -1,12 +1,12 @@
 package org.smartjobs.core.service.criteria;
 
 import org.smartjobs.core.cache.ScoringCriteriaCache;
-import org.smartjobs.core.dal.UserCriteriaDao;
 import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.entities.UserCriteria;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoScoreProvidedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoValueProvidedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.ScoreIsNotNumberException;
+import org.smartjobs.core.ports.dal.UserCriteriaDao;
 import org.smartjobs.core.service.CriteriaService;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;

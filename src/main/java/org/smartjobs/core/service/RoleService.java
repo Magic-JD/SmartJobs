@@ -19,7 +19,7 @@ public interface RoleService {
 
     Role createRole(String name, String userId);
 
-    void deleteRole(long roleId);
+    void deleteRole(String name, long roleId);
 
     void addCriteriaToRole(long roleId, long criteriaId);
 

@@ -1,4 +1,4 @@
-package org.smartjobs.core.client;
+package org.smartjobs.core.ports.client;
 
 import org.smartjobs.core.entities.Score;
 

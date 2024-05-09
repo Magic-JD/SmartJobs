@@ -2,7 +2,7 @@ package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.UserCriteriaRepository;
 import org.smartjobs.adaptors.data.repository.data.UserCriteria;
-import org.smartjobs.core.dal.UserCriteriaDao;
+import org.smartjobs.core.ports.dal.UserCriteriaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
