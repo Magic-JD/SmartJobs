@@ -12,7 +12,7 @@ import static org.smartjobs.adaptors.client.ai.data.GptMessage.userMessage;
 public record GptRequest(GptModel model, double temperature, double topP, List<GptMessage> messages) {
 
     private static GptRequest gpt(GptMessage... messages) {
-        return new GptRequest(GptModel.GPT_3_5, 0.0, 0.1, Arrays.stream(messages).toList());
+        return new GptRequest(GptModel.GPT_4_TURBO, 0.0, 0.1, Arrays.stream(messages).toList());
     }
 
     public static GptRequest extractCandidateName(String cvData) {

@@ -92,7 +92,6 @@ public class GptClient implements AiClient {
 
     @Override
     public Optional<Score> passForCriteria(String cv, String criteria, int maxScore) {
-
         GptRequest gptRequest = GptRequest.passForCriteria(cv, criteria);
         return sendMessage(gptRequest)
                 .flatMap(rp -> rp.choices().stream().map(choice -> choice.message().content()).findFirst())

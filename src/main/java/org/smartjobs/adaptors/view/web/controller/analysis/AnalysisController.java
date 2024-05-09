@@ -74,15 +74,17 @@ public class AnalysisController {
 
     @HxRequest
     @GetMapping("/result/details/{resultUuid}")
-    public String retrieveResultDetails(@PathVariable String resultUuid, Model model) {
+    public String retrieveResultDetails(@PathVariable String resultUuid, Model model, HttpServletResponse response) {
         model.addAttribute("result", cache.get(resultUuid));
+        response.addHeader("Cache-Control", "private, max-age=6000");
         return RESULT_DETAILS_FRAGMENT;
     }
 
     @HxRequest
     @DeleteMapping("/result/details/{resultUuid}")
-    public String removeResultDetails(@PathVariable String resultUuid, Model model) {
+    public String removeResultDetails(@PathVariable String resultUuid, Model model, HttpServletResponse response) {
         model.addAttribute("result", cache.get(resultUuid));
+        response.addHeader("Cache-Control", "private, max-age=6000");
         return RESULT_COLLAPSED_FRAGMENT;
     }
 }
