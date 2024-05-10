@@ -59,10 +59,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @CacheEvict(value = "role-display", key = "#name")
-    public Role createRole(String name, String userId) {
-        var roleId = roleDao.saveRole(userId, name);
-        selectedRoleDao.setSelectedRole(userId, roleId);
+    @Caching(evict = {
+            @CacheEvict(value = "role-display", key = "#username"),
+            @CacheEvict(value = "current-role", key = "#username")
+    })
+    public Role createRole(String name, String username) {
+        var roleId = roleDao.saveRole(username, name);
+        selectedRoleDao.setSelectedRole(username, roleId);
         return new Role(roleId, name, Collections.emptyList());
     }
 
