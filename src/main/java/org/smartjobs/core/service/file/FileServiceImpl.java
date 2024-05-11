@@ -1,8 +1,7 @@
 package org.smartjobs.core.service.file;
 
 import jakarta.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.exception.categories.AsynchronousExceptions.FileTypeNotSupportedException;
 import org.smartjobs.core.exception.categories.AsynchronousExceptions.TextExtractionException;
@@ -23,16 +22,16 @@ import java.util.Optional;
 import static org.smartjobs.core.service.file.data.FileType.*;
 
 @Service
+@Slf4j
 public class FileServiceImpl implements FileService {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
     @Override
     public Optional<FileInformation> handleFile(MultipartFile file) {
-        logger.debug("Handling file {}", file.getOriginalFilename());
+        log.debug("Handling file {}", file.getOriginalFilename());
         var hashString = extractHash(file);
         return hashString.flatMap(hash -> {
-            logger.debug("File hash {}", hash);
+            log.debug("File hash {}", hash);
             FileType fileType = switch (getFileExtension(file.getOriginalFilename()).orElse("unsupported")) {
                 case "pdf" -> PDF;
                 case "txt" -> TXT;
@@ -40,10 +39,10 @@ public class FileServiceImpl implements FileService {
             };
             try {
                 String text = extractText(file, fileType);
-                logger.debug("File information {} extracted from {}", text, file.getOriginalFilename());
+                log.debug("File information {} extracted from {}", text, file.getOriginalFilename());
                 return Optional.of(new FileInformation(hash, text));
             } catch (TextExtractionException e) {
-                logger.error("Failed to resolve the file due to {}", e.getMessage());
+                log.error("Failed to resolve the file due to {}", e.getMessage());
                 return Optional.empty();
             }
         });
@@ -57,7 +56,7 @@ public class FileServiceImpl implements FileService {
             byte[] digest = md5.digest(uploadBytes);
             return Optional.of(new BigInteger(1, digest).toString(16));
         } catch (IOException | NoSuchAlgorithmException e) {
-            logger.error("Could not extract hash for file {}", file.getOriginalFilename());
+            log.error("Could not extract hash for file {}", file.getOriginalFilename());
             return Optional.empty();
         }
     }

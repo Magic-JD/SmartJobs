@@ -1,8 +1,7 @@
 package org.smartjobs.adaptors.data;
 
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.adaptors.data.repository.CvRepository;
 import org.smartjobs.adaptors.data.repository.data.Cv;
 import org.smartjobs.core.entities.CandidateData;
@@ -15,9 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class CvDaoImpl implements CvDao {
 
-    private static final Logger logger = LoggerFactory.getLogger(CvDaoImpl.class);
 
     private final CvRepository repository;
 
@@ -37,7 +36,7 @@ public class CvDaoImpl implements CvDao {
                 .username(username)
                 .roleId(roleId)
                 .build()).toList();
-        logger.debug("Preparing to save candidate CVs as: {}", cvs);
+        log.debug("Preparing to save candidate CVs as: {}", cvs);
         repository.saveAllAndFlush(cvs);
     }
 
