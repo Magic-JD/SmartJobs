@@ -84,4 +84,17 @@ public class CvDaoImpl implements CvDao {
     public void deleteAllCandidates(String username, Long roleId) {
         repository.deleteByUsernameAndRoleId(username, roleId);
     }
+
+    @Override
+    @Transactional
+    public Optional<ProcessedCv> getByHash(String hash) {
+        return repository.findByFileHash(hash).stream().findAny()
+                .map(cv -> new ProcessedCv(
+                        cv.getId(),
+                        cv.getCandidateName(),
+                        cv.getCurrentlySelected(),
+                        cv.getFileHash(),
+                        cv.getCondensedText()));
+
+    }
 }

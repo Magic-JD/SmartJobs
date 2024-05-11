@@ -8,21 +8,17 @@
     <div class="flex-container">
         <div class="flex-container" hx-get="/candidate/number/selected" hx-swap="innerHTML" hx-target="this"
              hx-trigger="load"></div>
-        <button class="button-light button-enlarge right-pushed"
-                hx-get="/analysis/scoring"
-                hx-swap="innerHTML"
-                hx-target="#scoring"
-                hx-trigger="click"
-                hx-indicator="#loading-icon"
-                type="button">Analyze Now
-        </button>
     </div>
     <div xmlns:th="http://www.w3.org/1999/xhtml">
     </div>
-    <div id="scoring" class="candidate-table flex-stack">
-        <div class="candidate-row flex-container">
-            <p class="candidate-display-left">Name</p>
-            <p class="candidate-display-right">Percent</p>
+    <div id="scoring" class="candidate-table flex-stack"
+         hx-get="/analysis/scoring"
+         hx-swap="innerHTML"
+         hx-target="#scoring"
+         hx-trigger="load"
+         hx-indicator="#loading-icon">
+        <div class="text-large" hx-ext="sse" sse-connect="/sse/register" sse-swap="progress-analysis"
+             hx-swap="innerHtml" hx-target="this">Analyzed: 0/X
         </div>
         <img id="loading-icon" class='htmx-indicator' th:src="@{/images/loading.gif}"/>
     </div>

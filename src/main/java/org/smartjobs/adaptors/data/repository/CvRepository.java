@@ -37,4 +37,6 @@ public interface CvRepository extends JpaRepository<Cv, Long> {
 
     @Transactional
     void deleteByUsernameAndRoleId(String username, Long roleId);
+
+    List<Cv> findByFileHash(String fileHash);
 }

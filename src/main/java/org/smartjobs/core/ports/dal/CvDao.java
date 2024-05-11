@@ -24,4 +24,6 @@ public interface CvDao {
     int findSelectedCandidateCount(String username, long roleId);
 
     void deleteAllCandidates(String username, Long roleId);
+
+    Optional<ProcessedCv> getByHash(String hash);
 }

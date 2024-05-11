@@ -60,13 +60,12 @@ public class PageController {
 
     private void setAllowedNavigationForUser(Model model) {
         AuthLevel authLevel = authService.userMaxAuthLevel();
-        switch (authLevel) {
+        switch (authLevel) { //The switch statement should be preferred for enums - forced update when new enum added
             case ADMIN, USER -> model.addAllAttributes(Map.of(
                     "loggedIn", true,
                     "navElements", List.of(
                             new NavElement(ROLES_PAGE, "Roles", false),
-                            new NavElement(CANDIDATE_PAGE, "Candidates", false),
-                            new NavElement(ANALYSIS_PAGE, "Analyze", false))));
+                            new NavElement(CANDIDATE_PAGE, "Candidates", false))));
             case ROLE_ANONYMOUS -> model.addAllAttributes(Map.of(
                     "loggedIn", false,
                     "navElements", Collections.emptyList()));

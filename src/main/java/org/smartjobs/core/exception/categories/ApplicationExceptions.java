@@ -29,4 +29,10 @@ public class ApplicationExceptions {
             super(STR. "No role could be found for id \{ id }" );
         }
     }
+
+    public static class HashKnownButCvNotFound extends RuntimeException {
+        public HashKnownButCvNotFound(String hash) {
+            super(STR. "The hash \{ hash } was found in the database but the matching cv was not." );
+        }
+    }
 }

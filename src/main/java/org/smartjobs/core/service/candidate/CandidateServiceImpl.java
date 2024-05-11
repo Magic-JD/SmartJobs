@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
+import org.smartjobs.core.exception.categories.ApplicationExceptions.HashKnownButCvNotFound;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.CvDao;
 import org.smartjobs.core.service.CandidateService;
+import org.smartjobs.core.service.SseService;
 import org.smartjobs.core.utils.ConcurrencyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
@@ -23,13 +26,16 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 @Slf4j
 public class CandidateServiceImpl implements CandidateService {
 
-    private final AiService client;
+    private final AiService aiService;
     private final CvDao cvDao;
+    private final SseService sseService;
+
 
     @Autowired
-    public CandidateServiceImpl(AiService client, CvDao cvDao) {
-        this.client = client;
+    public CandidateServiceImpl(AiService aiService, CvDao cvDao, SseService sseService) {
+        this.aiService = aiService;
         this.cvDao = cvDao;
+        this.sseService = sseService;
     }
 
     @Override
@@ -49,7 +55,14 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-name", key = "{#username, #roleId}")
     })
     public void updateCandidateCvs(String username, long roleId, List<Optional<FileInformation>> fileInformationList) {
-        var processedCvs = ConcurrencyUtil.virtualThreadList(fileInformationList, fileInformation -> fileInformation.flatMap(this::processCv));
+        var counter = new AtomicInteger(0);
+        var total = fileInformationList.size();
+
+        var processedCvs = ConcurrencyUtil.virtualThreadList(fileInformationList, fileInformation -> {
+            var processedCv = fileInformation.flatMap(this::processCv);
+            sseService.send(username, "progress-upload", STR. "<div>Uploaded: \{ counter.incrementAndGet() }/\{ total }</div>" );
+            return processedCv;
+        });
         List<ProcessedCv> list = processedCvs.stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -61,17 +74,26 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    @CacheEvict(value = "cv-name", key = "{#username, #currentRole}")
+    @Caching(evict = {
+            @CacheEvict(value = "cv-currently-selected", key = "{#username, #currentRole}"),
+            @CacheEvict(value = "cv-name", key = "{#username, #currentRole}")
+    })
     public void deleteCandidate(String username, long currentRole, long cvId) {
         cvDao.deleteByCvId(cvId);
     }
 
     private Optional<ProcessedCv> processCv(FileInformation fileInformation) {
-        if (cvDao.knownHash(fileInformation.fileHash())) {
-            return Optional.empty();
+        String hash = fileInformation.fileHash();
+        if (cvDao.knownHash(hash)) {
+            Optional<ProcessedCv> byHash = cvDao.getByHash(hash);
+            byHash.map(pc -> new ProcessedCv(null, pc.name(), true, pc.fileHash(), pc.condensedDescription()));
+            if (byHash.isEmpty()) {
+                throw new HashKnownButCvNotFound(hash);
+            }
+            return byHash;
         }
-        var nameFuture = supplyAsync(() -> client.extractCandidateName(fileInformation.fileContent()));
-        var descriptionFuture = supplyAsync(() -> client.anonymizeCv(fileInformation.fileContent()));
+        var nameFuture = supplyAsync(() -> aiService.extractCandidateName(fileInformation.fileContent()));
+        var descriptionFuture = supplyAsync(() -> aiService.anonymizeCv(fileInformation.fileContent()));
         var name = nameFuture.join();
         var cvDescription = descriptionFuture.join();
         if (name.isEmpty() || cvDescription.isEmpty()) {
@@ -80,7 +102,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
             return Optional.empty();
         } else {
-            return Optional.of(new ProcessedCv(null, name.get(), true, fileInformation.fileHash(), cvDescription.get()));
+            return Optional.of(new ProcessedCv(null, name.get(), true, hash, cvDescription.get()));
         }
     }
 

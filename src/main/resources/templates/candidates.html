@@ -8,7 +8,8 @@
     <div class="flex-container">
         <div class="flex-container" hx-get="/candidate/number/selected" hx-swap="innerHTML" hx-target="this"
              hx-trigger="load, candidate-count-updated from:body"></div>
-        <a class="button-light button-enlarge right-pushed" th:href="@{/upload}">Upload Additional Candidates</a>
+        <a class="button-dark button-enlarge right-pushed" th:href="@{/upload}">Upload Additional Candidates</a>
+        <a class="button-light button-enlarge right-pushed" th:href="@{/analyze}">Analyze Selected Candidates</a>
     </div>
     <div class="loading-container" hx-get="/candidate" hx-swap="outerHTML" hx-target="#table-placeholder"
          hx-trigger="load"

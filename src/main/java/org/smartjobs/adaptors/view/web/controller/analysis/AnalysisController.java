@@ -2,6 +2,7 @@ package org.smartjobs.adaptors.view.web.controller.analysis;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
@@ -26,6 +27,7 @@ import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 import static org.smartjobs.adaptors.view.web.exception.message.ExceptionMessage.createUserErrorMessageToDisplayForUser;
 
 @Controller
+@Slf4j
 @RequestMapping("/analysis")
 public class AnalysisController {
 
@@ -65,7 +67,7 @@ public class AnalysisController {
             return createUserErrorMessageToDisplayForUser("Please select a role", response, model);
         }
         var role = roleService.getRole(currentlySelectedRole.get());
-        var results = analysisService.scoreToCriteria(candidateInformation, role).stream()
+        var results = analysisService.scoreToCriteria(username, candidateInformation, role).stream()
                 .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
         model.addAttribute("results", results);
@@ -85,4 +87,5 @@ public class AnalysisController {
         model.addAttribute("result", cache.get(resultUuid));
         return RESULT_COLLAPSED_FRAGMENT;
     }
+
 }

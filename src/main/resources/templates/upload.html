@@ -14,6 +14,9 @@
         </label>
         <input class="text-medium" accept=".txt, .pdf" id="files" multiple name="files" type="file">
         <button type="submit" class="button-light button-enlarge">Upload Files</button>
+        <div class="text-large" hx-ext="sse" sse-connect="/sse/register" sse-swap="progress-upload" hx-swap="innerHtml"
+             hx-target="this">Uploaded: 0/X
+        </div>
         <img class='htmx-indicator' th:src="@{/images/loading.gif}"/>
     </form>
 </main>
