@@ -1,31 +1,47 @@
 package org.smartjobs.adaptors.service.ai.gpt.config;
 
-import lombok.Getter;
-import org.smartjobs.core.exception.categories.ApplicationExceptions;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import org.smartjobs.adaptors.service.ai.gpt.config.adaptors.GsonAdaptors;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptRole;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.time.Duration;
 
-@Component
-@Getter
+@Configuration
 public class GptConfig {
 
-    private final URI uri;
-    private final String apiKey;
-    private final int userBaseScore;
-    private final int maxRequestsPerMinute;
+    @Bean
+    public HttpClient httpClient() {
+        return HttpClient
+                .newBuilder()
+                .build();
+    }
 
-    public GptConfig(@Value("${gpt.api.user-base-score}") int userBaseScore, @Value("${gpt.api.url}") String url,
-                     @Value("${gpt.api.key}") String apiKey, @Value("${gpt.api.requests-per-minute}") int maxRequestsPerMinute) {
-        try {
-            this.uri = new URI(url);
-        } catch (URISyntaxException e) {
-            throw new ApplicationExceptions.GptClientConnectionFailure(e, url);
-        }
-        this.apiKey = apiKey;
-        this.userBaseScore = userBaseScore;
-        this.maxRequestsPerMinute = maxRequestsPerMinute;
+    @Bean
+    public Gson gson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(GptModel.class, new GsonAdaptors.GptModelTypeAdapter())
+                .registerTypeAdapter(GptRole.class, new GsonAdaptors.GptRoleTypeAdapter())
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
+
+    }
+
+    @Bean
+    public Bucket bucket(@Value("${gpt.api.requests-per-minute}") int maxRequestsPerMinute) {
+        return Bucket.builder()
+                .addLimit(Bandwidth.builder()
+                        .capacity(1)
+                        .refillGreedy(maxRequestsPerMinute, Duration.ofMinutes(1))
+                        .build())
+                .build();
     }
 }

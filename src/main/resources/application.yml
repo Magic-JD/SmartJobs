@@ -12,6 +12,8 @@ gpt:
     url: https://api.openai.com/v1/chat/completions
     user-base-score: 10
     requests-per-minute: 600
+    max-retries: 3
+    initial-timeout-seconds: 8
 
 
 cache:

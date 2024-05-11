@@ -2,7 +2,6 @@ package org.smartjobs.adaptors.service.ai;
 
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.adaptors.service.ai.gpt.GptClient;
-import org.smartjobs.adaptors.service.ai.gpt.config.GptConfig;
 import org.smartjobs.adaptors.service.ai.gpt.request.GptRequest;
 import org.smartjobs.adaptors.service.ai.gpt.response.GptResponse;
 import org.smartjobs.adaptors.service.ai.gpt.response.GptUsage;
@@ -10,6 +9,7 @@ import org.smartjobs.adaptors.service.ai.gpt.response.ScoreParser;
 import org.smartjobs.core.entities.Score;
 import org.smartjobs.core.ports.client.AiService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -29,10 +29,10 @@ public class GptService implements AiService {
 
 
     @Autowired
-    public GptService(GptClient client, ScoreParser scoreParser, GptConfig config) {
+    public GptService(GptClient client, ScoreParser scoreParser, @Value("${gpt.api.user-base-score}") int userBaseScore) {
         this.client = client;
         this.scoreParser = scoreParser;
-        this.userBaseScore = config.getUserBaseScore();
+        this.userBaseScore = userBaseScore;
     }
 
     @Override
