@@ -1,9 +1,9 @@
-package org.smartjobs.adaptors.client.ai.response;
+package org.smartjobs.adaptors.service.ai.gpt.response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartjobs.adaptors.client.ai.entity.Pass;
-import org.smartjobs.adaptors.client.ai.entity.UnadjustedScore;
+import org.smartjobs.adaptors.service.ai.gpt.entity.Pass;
+import org.smartjobs.adaptors.service.ai.gpt.entity.UnadjustedScore;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

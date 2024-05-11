@@ -1,11 +1,11 @@
-package org.smartjobs.adaptors.client.ai.config;
+package org.smartjobs.adaptors.service.ai.gpt.config;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.smartjobs.adaptors.client.ai.config.adaptors.GsonAdaptors;
-import org.smartjobs.adaptors.client.ai.data.GptModel;
-import org.smartjobs.adaptors.client.ai.data.GptRole;
+import org.smartjobs.adaptors.service.ai.gpt.config.adaptors.GsonAdaptors;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

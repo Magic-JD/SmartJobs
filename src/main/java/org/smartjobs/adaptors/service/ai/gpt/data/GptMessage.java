@@ -1,4 +1,4 @@
-package org.smartjobs.adaptors.client.ai.data;
+package org.smartjobs.adaptors.service.ai.gpt.data;
 
 public record GptMessage(GptRole role, String content) {
     public static GptMessage systemMessage(String message) {

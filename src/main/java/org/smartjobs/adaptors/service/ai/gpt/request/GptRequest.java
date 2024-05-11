@@ -1,13 +1,13 @@
-package org.smartjobs.adaptors.client.ai.request;
+package org.smartjobs.adaptors.service.ai.gpt.request;
 
-import org.smartjobs.adaptors.client.ai.data.GptMessage;
-import org.smartjobs.adaptors.client.ai.data.GptModel;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptMessage;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.smartjobs.adaptors.client.ai.data.GptMessage.systemMessage;
-import static org.smartjobs.adaptors.client.ai.data.GptMessage.userMessage;
+import static org.smartjobs.adaptors.service.ai.gpt.data.GptMessage.systemMessage;
+import static org.smartjobs.adaptors.service.ai.gpt.data.GptMessage.userMessage;
 
 public record GptRequest(GptModel model, double temperature, double topP, List<GptMessage> messages) {
 

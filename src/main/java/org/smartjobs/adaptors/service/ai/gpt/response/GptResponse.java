@@ -1,6 +1,6 @@
-package org.smartjobs.adaptors.client.ai.response;
+package org.smartjobs.adaptors.service.ai.gpt.response;
 
-import org.smartjobs.adaptors.client.ai.data.GptModel;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.smartjobs.adaptors.client.ai.config;
+package org.smartjobs.adaptors.service.ai.gpt.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +10,8 @@ public class HttpConfig {
 
     @Bean
     public HttpClient httpClient() {
-        return HttpClient.newHttpClient();
+        return HttpClient
+                .newBuilder()
+                .build();
     }
 }

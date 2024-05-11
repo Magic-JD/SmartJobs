@@ -1,11 +1,10 @@
 package org.smartjobs.core.service.candidate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
-import org.smartjobs.core.ports.client.AiClient;
+import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.CvDao;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.utils.ConcurrencyUtil;
@@ -21,15 +20,14 @@ import java.util.Optional;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 @Service
+@Slf4j
 public class CandidateServiceImpl implements CandidateService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CandidateServiceImpl.class);
-
-    private final AiClient client;
+    private final AiService client;
     private final CvDao cvDao;
 
     @Autowired
-    public CandidateServiceImpl(AiClient client, CvDao cvDao) {
+    public CandidateServiceImpl(AiService client, CvDao cvDao) {
         this.client = client;
         this.cvDao = cvDao;
     }
@@ -46,7 +44,10 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    @CacheEvict(value = "cv-name", key = "{#username, #roleId}")
+    @Caching(evict = {
+            @CacheEvict(value = "cv-currently-selected", key = "{#username, #roleId}"),
+            @CacheEvict(value = "cv-name", key = "{#username, #roleId}")
+    })
     public void updateCandidateCvs(String username, long roleId, List<Optional<FileInformation>> fileInformationList) {
         var processedCvs = ConcurrencyUtil.virtualThreadList(fileInformationList, fileInformation -> fileInformation.flatMap(this::processCv));
         List<ProcessedCv> list = processedCvs.stream()
@@ -74,7 +75,9 @@ public class CandidateServiceImpl implements CandidateService {
         var name = nameFuture.join();
         var cvDescription = descriptionFuture.join();
         if (name.isEmpty() || cvDescription.isEmpty()) {
-            logger.error("Either CV position {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
+            if (log.isErrorEnabled()) {
+                log.error("Either CV position {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
+            }
             return Optional.empty();
         } else {
             return Optional.of(new ProcessedCv(null, name.get(), true, fileInformation.fileHash(), cvDescription.get()));

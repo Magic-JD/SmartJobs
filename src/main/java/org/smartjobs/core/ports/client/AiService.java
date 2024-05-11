@@ -4,7 +4,7 @@ import org.smartjobs.core.entities.Score;
 
 import java.util.Optional;
 
-public interface AiClient {
+public interface AiService {
     Optional<String> extractCandidateName(String cv);
 
     Optional<String> anonymizeCv(String cv);

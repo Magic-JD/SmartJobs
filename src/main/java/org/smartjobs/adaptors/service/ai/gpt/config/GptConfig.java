@@ -1,4 +1,4 @@
-package org.smartjobs.adaptors.client.ai.config;
+package org.smartjobs.adaptors.service.ai.gpt.config;
 
 import lombok.Getter;
 import org.smartjobs.core.exception.categories.ApplicationExceptions;

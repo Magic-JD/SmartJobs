@@ -1,4 +1,4 @@
-package org.smartjobs.adaptors.client.ai.entity;
+package org.smartjobs.adaptors.service.ai.gpt.entity;
 
 public record Pass(String justification, boolean pass) {
 }

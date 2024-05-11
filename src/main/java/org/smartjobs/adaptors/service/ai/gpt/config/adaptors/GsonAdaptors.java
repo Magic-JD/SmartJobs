@@ -1,10 +1,10 @@
-package org.smartjobs.adaptors.client.ai.config.adaptors;
+package org.smartjobs.adaptors.service.ai.gpt.config.adaptors;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import org.smartjobs.adaptors.client.ai.data.GptModel;
-import org.smartjobs.adaptors.client.ai.data.GptRole;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptRole;
 
 import java.io.IOException;
 

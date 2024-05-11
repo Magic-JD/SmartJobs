@@ -1,4 +1,4 @@
-package org.smartjobs.adaptors.client.ai.data;
+package org.smartjobs.adaptors.service.ai.gpt.data;
 
 import lombok.Getter;
 
