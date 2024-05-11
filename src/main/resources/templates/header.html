@@ -1,6 +1,14 @@
 <header th:fragment="header" class="primary-header flex-container highlight">
     <a class="text-medium icon-link" th:href="@{/}">Smart Jobs</a>
     <nav class="primary-navigation flex-container right-pushed">
+        <div th:if="${credits >= 0}"
+             class="text-small left-nudged"
+             th:text="|Credit: ${credits}|"
+             hx-ext="sse"
+             sse-connect="/sse/register"
+             sse-swap="credit"
+             hx-swap="innerHtml"
+             hx-target="this"></div>
         <a class="button-dark right-pushed button-header-dark" th:each="navElement : ${navElements}"
            th:href="@{|/${navElement.link}|}"
            th:text="${navElement.name}"></a>

@@ -2,6 +2,7 @@ package org.smartjobs.adaptors.view.web.controller;
 
 import org.smartjobs.adaptors.view.web.entities.NavElement;
 import org.smartjobs.core.service.AuthService;
+import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.auth.levels.AuthLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,10 +20,12 @@ public class PageController {
 
 
     private final AuthService authService;
+    private final CreditService creditService;
 
     @Autowired
-    public PageController(AuthService authService) {
+    public PageController(AuthService authService, CreditService creditService) {
         this.authService = authService;
+        this.creditService = creditService;
     }
 
 
@@ -62,11 +65,13 @@ public class PageController {
         AuthLevel authLevel = authService.userMaxAuthLevel();
         switch (authLevel) { //The switch statement should be preferred for enums - forced update when new enum added
             case ADMIN, USER -> model.addAllAttributes(Map.of(
+                    "credits", creditService.userCredit(authService.getCurrentUsername()),
                     "loggedIn", true,
                     "navElements", List.of(
                             new NavElement(ROLES_PAGE, "Roles", false),
                             new NavElement(CANDIDATE_PAGE, "Candidates", false))));
             case ROLE_ANONYMOUS -> model.addAllAttributes(Map.of(
+                    "credits", -1,
                     "loggedIn", false,
                     "navElements", Collections.emptyList()));
 
