@@ -19,8 +19,8 @@ public class GptProperties {
 
     public GptProperties(@Value("${gpt.api.url}") String url,
                          @Value("${gpt.api.key}") String apiKey,
-                         @Value("${gpt.api.max-retries") int maxRetries,
-                         @Value("${gpt.api.initial-timeout-seconds") int initialTimeoutSeconds
+                         @Value("${gpt.api.max-retries}") int maxRetries,
+                         @Value("${gpt.api.initial-timeout-seconds}") int initialTimeoutSeconds
     ) {
         try {
             this.uri = new URI(url);
