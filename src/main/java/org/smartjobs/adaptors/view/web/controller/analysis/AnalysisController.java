@@ -6,10 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
-import org.smartjobs.core.service.AnalysisService;
-import org.smartjobs.core.service.AuthService;
-import org.smartjobs.core.service.CandidateService;
-import org.smartjobs.core.service.RoleService;
+import org.smartjobs.core.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +35,8 @@ public class AnalysisController {
 
     private final RoleService roleService;
 
+    private final CreditService creditService;
+
     private final ConcurrentHashMap<String, CandidateScores> cache = new ConcurrentHashMap<>();
 
     @Autowired
@@ -45,11 +44,13 @@ public class AnalysisController {
             CandidateService candidateService,
             AnalysisService analysisService,
             AuthService authService,
-            RoleService roleService) {
+            RoleService roleService,
+            CreditService creditService) {
         this.candidateService = candidateService;
         this.analysisService = analysisService;
         this.authService = authService;
         this.roleService = roleService;
+        this.creditService = creditService;
     }
 
 
@@ -65,6 +66,9 @@ public class AnalysisController {
         Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRole(username);
         if (currentlySelectedRole.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please select a role", response, model);
+        }
+        if (!creditService.debitAndVerify(username, candidateInformation.size())) {
+            return createUserErrorMessageToDisplayForUser("Please purchase more credits", response, model);
         }
         var role = roleService.getRole(currentlySelectedRole.get());
         var results = analysisService.scoreToCriteria(username, candidateInformation, role).stream()

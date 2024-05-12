@@ -23,4 +23,9 @@ public class CreditDaoImpl implements CreditDao {
                 .mapToInt(Integer::intValue)
                 .sum();
     }
+
+    @Override
+    public void event(String username, int amount, String type) {
+        repository.save(new Credit(null, username, amount, type));
+    }
 }
