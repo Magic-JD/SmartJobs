@@ -41,7 +41,7 @@ public class SseServiceImpl implements SseService {
         emitters.forEach(emitter -> {
             try {
                 emitter.send(SseEmitter.event().name(messageName).data(content));
-            } catch (IOException e) {
+            } catch (IOException | IllegalStateException e) {
                 log.error("Update {} never reached user {}", messageName, username);
             }
         });
