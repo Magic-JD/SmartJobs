@@ -49,16 +49,16 @@ public class CandidateController {
     @HxRequest
     @PostMapping("/upload")
     public String uploadFile(@RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
-        String currentUsername = authService.getCurrentUsername();
-        if (!creditService.userHasEnoughCredits(currentUsername)) {
+        String username = authService.getCurrentUsername();
+        if (!creditService.debitAndVerify(username, files.length)) {
             throw new NotEnoughCreditException();
         }
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
                 .toList();
-        Long roleId = roleService.getCurrentlySelectedRole(currentUsername)
+        Long roleId = roleService.getCurrentlySelectedRole(username)
                 .orElseThrow(NoRoleSelectedException::new);
-        candidateService.updateCandidateCvs(currentUsername, roleId, handledFiles);
+        candidateService.updateCandidateCvs(username, roleId, handledFiles);
         response.addHeader(HX_REDIRECT, "/candidates");
         return EMPTY_FRAGMENT;
     }
