@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head th:replace="head"></head>
-<body class="background wrapper" id="mainBody">
-<header th:replace="header"></header>
-<div id="error"></div>
-<main>
+
     <form class="flex-stack gappy"
           hx-encoding="multipart/form-data"
           hx-post="/candidate/upload"
+          hx-target="closest main"
+          hx-swap="innerHtmlfac"
           id="upload-form">
         <label for="files" class="drop-container" id="dropcontainer">
             <span class="drop-title text-large">Drop files here<br>or</span>
@@ -19,9 +15,6 @@
         </div>
         <img class='htmx-indicator' th:src="@{/images/loading.gif}"/>
     </form>
-</main>
-<footer th:replace="footer"></footer>
-</body>
 <script>
     const dropContainer = document.getElementById("dropcontainer")
   const fileInput = document.getElementById("files")
@@ -45,4 +38,3 @@
     fileInput.files = e.dataTransfer.files
   })
 </script>
-</html>

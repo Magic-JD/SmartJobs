@@ -1,28 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head th:replace="head"></head>
-<body class="background wrapper" id="mainBody">
-<header th:replace="header"></header>
-<div id="error"></div>
-<main class="text-medium">
-    <div class="flex-container">
-        <div class="flex-container" hx-get="/candidate/number/selected" hx-swap="innerHTML" hx-target="this"
-             hx-trigger="load"></div>
+<div class="flex-container">
+    <div class="flex-container" hx-get="/candidate/number/selected" hx-swap="innerHTML" hx-target="this"
+         hx-trigger="load"></div>
+</div>
+<div xmlns:th="http://www.w3.org/1999/xhtml">
+</div>
+<div class="candidate-table flex-stack text-medium" hx-get="/analysis/scoring"
+     hx-indicator="#loading-icon"
+     hx-swap="innerHTML"
+     hx-target="#scoring"
+     hx-trigger="load"
+     id="scoring">
+    <div class="text-large" hx-ext="sse" hx-swap="innerHtml" hx-target="this"
+         sse-connect="/sse/register" sse-swap="progress-analysis">Analyzed: 0/X
     </div>
-    <div xmlns:th="http://www.w3.org/1999/xhtml">
-    </div>
-    <div id="scoring" class="candidate-table flex-stack"
-         hx-get="/analysis/scoring"
-         hx-swap="innerHTML"
-         hx-target="#scoring"
-         hx-trigger="load"
-         hx-indicator="#loading-icon">
-        <div class="text-large" hx-ext="sse" sse-connect="/sse/register" sse-swap="progress-analysis"
-             hx-swap="innerHtml" hx-target="this">Analyzed: 0/X
-        </div>
-        <img id="loading-icon" class='htmx-indicator' th:src="@{/images/loading.gif}"/>
-    </div>
-</main>
-<footer th:replace="footer"></footer>
-</body>
-</html>
+    <img class='htmx-indicator' id="loading-icon" th:src="@{/images/loading.gif}"/>
+</div>

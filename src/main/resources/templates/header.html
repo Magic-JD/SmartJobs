@@ -13,7 +13,10 @@
             <div th:text="|Credit: ${credits}|"></div>
         </div>
         <a class="button-dark right-pushed button-header-dark" th:each="navElement : ${navElements}"
-           th:href="@{|/${navElement.link}|}"
+           th:attr="hx-get=@{|/${navElement.link}|}"
+           hx-swap="innerHtml"
+           hx-target="next main"
+           hx-trigger="click"
            th:text="${navElement.name}"></a>
         <a th:replace="${loggedIn} ? ~{logout-button} : ~{login-button}"></a>
     </nav>

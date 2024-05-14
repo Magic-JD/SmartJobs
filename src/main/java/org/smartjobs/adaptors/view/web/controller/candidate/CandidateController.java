@@ -25,7 +25,6 @@ import java.util.Comparator;
 import java.util.Optional;
 
 import static org.smartjobs.adaptors.view.web.constants.EventConstants.CANDIDATE_COUNT_UPDATED;
-import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.HX_REDIRECT;
 import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.HX_TRIGGER;
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 
@@ -62,8 +61,7 @@ public class CandidateController {
         Long roleId = roleService.getCurrentlySelectedRole(username)
                 .orElseThrow(NoRoleSelectedException::new);
         candidateService.updateCandidateCvs(username, roleId, handledFiles);
-        response.addHeader(HX_REDIRECT, "/candidates");
-        return EMPTY_FRAGMENT;
+        return CANDIDATE_PAGE;
     }
 
 

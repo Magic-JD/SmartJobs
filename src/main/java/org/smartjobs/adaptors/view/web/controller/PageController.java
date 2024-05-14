@@ -36,25 +36,21 @@ public class PageController {
 
     @GetMapping("/analyze")
     public String getAnalysisPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        setAllowedNavigationForUser(userDetails, model);
         return ANALYSIS_PAGE;
     }
 
     @GetMapping("/candidates")
     public String getCandidatesPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        setAllowedNavigationForUser(userDetails, model);
         return CANDIDATE_PAGE;
     }
 
     @GetMapping("/upload")
     public String getUploadPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        setAllowedNavigationForUser(userDetails, model);
         return UPLOAD_PAGE;
     }
 
     @GetMapping("/roles")
     public String getRolesPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        setAllowedNavigationForUser(userDetails, model);
         return ROLES_PAGE;
 
     }
