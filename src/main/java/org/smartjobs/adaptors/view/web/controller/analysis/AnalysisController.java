@@ -6,8 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
-import org.smartjobs.core.service.*;
+import org.smartjobs.core.service.AnalysisService;
+import org.smartjobs.core.service.CandidateService;
+import org.smartjobs.core.service.CreditService;
+import org.smartjobs.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +36,6 @@ public class AnalysisController {
 
     private final CandidateService candidateService;
     private final AnalysisService analysisService;
-    private final AuthService authService;
 
     private final RoleService roleService;
 
@@ -43,12 +47,10 @@ public class AnalysisController {
     public AnalysisController(
             CandidateService candidateService,
             AnalysisService analysisService,
-            AuthService authService,
             RoleService roleService,
             CreditService creditService) {
         this.candidateService = candidateService;
         this.analysisService = analysisService;
-        this.authService = authService;
         this.roleService = roleService;
         this.creditService = creditService;
     }
@@ -56,8 +58,8 @@ public class AnalysisController {
 
     @HxRequest
     @GetMapping("/scoring")
-    public String scoreAllCandidates(HttpServletResponse response, Model model) {
-        String username = authService.getCurrentUsername();
+    public String scoreAllCandidates(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response, Model model) {
+        String username = userDetails.getUsername();
         var roleId = roleService.getCurrentlySelectedRole(username).orElseThrow(UserResolvedExceptions.NoRoleSelectedException::new);
         List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username, roleId);
         if (candidateInformation.isEmpty()) {

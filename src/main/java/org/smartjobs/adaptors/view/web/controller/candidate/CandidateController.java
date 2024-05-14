@@ -7,8 +7,13 @@ import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
-import org.smartjobs.core.service.*;
+import org.smartjobs.core.service.CandidateService;
+import org.smartjobs.core.service.CreditService;
+import org.smartjobs.core.service.FileService;
+import org.smartjobs.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,24 +37,22 @@ public class CandidateController {
     private final CandidateService candidateService;
     private final FileService fileService;
     private final CreditService creditService;
-    private final AuthService authService;
     private final RoleService roleService;
 
 
 
     @Autowired
-    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, AuthService authService, RoleService roleService) {
+    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, RoleService roleService) {
         this.fileService = fileService;
         this.candidateService = candidateService;
         this.creditService = creditService;
-        this.authService = authService;
         this.roleService = roleService;
     }
 
     @HxRequest
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
-        String username = authService.getCurrentUsername();
+    public String uploadFile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
+        String username = userDetails.getUsername();
         if (!creditService.debitAndVerify(username, files.length)) {
             throw new NotEnoughCreditException();
         }
@@ -66,8 +69,8 @@ public class CandidateController {
 
     @HxRequest
     @GetMapping()
-    public String getAllCandidates(Model model) {
-        String currentUsername = authService.getCurrentUsername();
+    public String getAllCandidates(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        String currentUsername = userDetails.getUsername();
         var selectedRoleOptional = roleService.getCurrentlySelectedRole(currentUsername);
         if (selectedRoleOptional.isEmpty()) {
             return EMPTY_FRAGMENT;
@@ -81,8 +84,8 @@ public class CandidateController {
 
     @HxRequest
     @DeleteMapping("/delete/{cvId}")
-    public String deleteCandidate(@PathVariable long cvId, HttpServletResponse response) {
-        String currentUsername = authService.getCurrentUsername();
+    public String deleteCandidate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable long cvId, HttpServletResponse response) {
+        String currentUsername = userDetails.getUsername();
         var selectedRole = roleService.getCurrentlySelectedRole(currentUsername).orElseThrow();
         candidateService.deleteCandidate(currentUsername, selectedRole, cvId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
@@ -91,9 +94,9 @@ public class CandidateController {
 
     @HxRequest
     @DeleteMapping("/delete/all")
-    public String deleteAllCandidates(Model model, HttpServletResponse response) {
-        String currentUsername = authService.getCurrentUsername();
-        String username = authService.getCurrentUsername();
+    public String deleteAllCandidates(@AuthenticationPrincipal UserDetails userDetails, Model model, HttpServletResponse response) {
+        String currentUsername = userDetails.getUsername();
+        String username = userDetails.getUsername();
         Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow(NoRoleSelectedException::new);
         candidateService.deleteAllCandidates(currentUsername, roleId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
@@ -103,8 +106,8 @@ public class CandidateController {
 
     @HxRequest
     @PutMapping("/select/{cvId}")
-    public String selectCandidate(@PathVariable long cvId, @PathParam("select") boolean select, Model model, HttpServletResponse response) {
-        String currentUsername = authService.getCurrentUsername();
+    public String selectCandidate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable long cvId, @PathParam("select") boolean select, Model model, HttpServletResponse response) {
+        String currentUsername = userDetails.getUsername();
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         long roleId = roleService.getCurrentlySelectedRole(currentUsername).orElseThrow();
         return candidateService.toggleCandidateSelect(currentUsername, roleId, cvId, select).map(cvData -> {
@@ -116,8 +119,8 @@ public class CandidateController {
 
     @HxRequest
     @GetMapping("/number/selected")
-    public String findNumberOfCandidatesSelected(Model model) {
-        String username = authService.getCurrentUsername();
+    public String findNumberOfCandidatesSelected(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        String username = userDetails.getUsername();
         Optional<Role> role = roleService.getCurrentlySelectedRole(username)
                 .map(roleService::getRole);
         var currentRole = role

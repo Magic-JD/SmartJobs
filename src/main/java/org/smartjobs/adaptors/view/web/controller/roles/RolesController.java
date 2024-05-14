@@ -3,11 +3,12 @@ package org.smartjobs.adaptors.view.web.controller.roles;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
-import org.smartjobs.core.service.AuthService;
 import org.smartjobs.core.service.CriteriaService;
 import org.smartjobs.core.service.RoleService;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,20 +27,18 @@ public class RolesController {
 
 
     private final RoleService roleService;
-    private final AuthService authService;
     private final CriteriaService criteriaService;
 
     @Autowired
-    public RolesController(RoleService roleService, AuthService authService, CriteriaService criteriaService) {
+    public RolesController(RoleService roleService, CriteriaService criteriaService) {
         this.roleService = roleService;
-        this.authService = authService;
         this.criteriaService = criteriaService;
     }
 
     @HxRequest
     @GetMapping("/saved")
-    public String savedRoles(Model model) {
-        var username = authService.getCurrentUsername();
+    public String savedRoles(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        var username = userDetails.getUsername();
         model.addAttribute("savedRoles", roleService.getUserRoles(username));
         model.addAttribute("currentlySelected", roleService.getCurrentlySelectedRole(username).orElse(0L));
         return SAVED_ROLE_FRAGMENT;
@@ -53,9 +52,9 @@ public class RolesController {
 
     @HxRequest
     @GetMapping("/display/{roleId}")
-    public String displayRole(@PathVariable("roleId") long roleId, HttpServletResponse response, Model model) {
-        authService.getCurrentUsername();
-        roleService.setCurrentlySelectedRole(authService.getCurrentUsername(), roleId);
+    public String displayRole(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("roleId") long roleId, HttpServletResponse response, Model model) {
+        userDetails.getUsername();
+        roleService.setCurrentlySelectedRole(userDetails.getUsername(), roleId);
         response.addHeader(HX_TRIGGER, ROLE_CHANGED);
         var internalRole = roleService.getRole(roleId);
         return prepareRoleDisplay(model, internalRole);
@@ -63,8 +62,8 @@ public class RolesController {
 
     @HxRequest
     @GetMapping("/display")
-    public String displayCurrentlySelectedRole(Model model) {
-        String username = authService.getCurrentUsername();
+    public String displayCurrentlySelectedRole(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        String username = userDetails.getUsername();
         Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRole(username);
         return currentlySelectedRole.map(roleId -> {
             var internalRole = roleService.getRole(roleId);
@@ -75,8 +74,8 @@ public class RolesController {
 
     @HxRequest
     @DeleteMapping("/delete/{roleId}")
-    public String deleteRole(@PathVariable("roleId") long roleId, HttpServletResponse response) {
-        var username = authService.getCurrentUsername();
+    public String deleteRole(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("roleId") long roleId, HttpServletResponse response) {
+        var username = userDetails.getUsername();
         roleService.getCurrentlySelectedRole(username)
                 .filter(current -> current.equals(roleId))
                 .ifPresent(_ -> roleService.deleteCurrentlySelectedRole(username));
@@ -87,8 +86,8 @@ public class RolesController {
 
     @HxRequest
     @PostMapping("/create")
-    public String createNewRole(@PathParam("position") String name, HttpServletResponse response, Model model) {
-        var username = authService.getCurrentUsername();
+    public String createNewRole(@AuthenticationPrincipal UserDetails userDetails, @PathParam("position") String name, HttpServletResponse response, Model model) {
+        var username = userDetails.getUsername();
         var internalRole = roleService.createRole(name, username);
         response.addHeader(HX_TRIGGER, ROLE_CHANGED);
         return prepareRoleDisplay(model, internalRole);
@@ -96,7 +95,7 @@ public class RolesController {
 
     @HxRequest
     @GetMapping("/criteria/{category}")
-    public String criteriaForCategory(@PathVariable("category") String category, Model model) {
+    public String criteriaForCategory(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("category") String category, Model model) {
         var criteria = criteriaService.getScoringCriteriaForCategory(CriteriaCategory.getFromName(category));
         model.addAttribute("criteria", criteria);
         return CATEGORY_CRITERIA_FRAGMENT;
@@ -104,8 +103,8 @@ public class RolesController {
 
     @HxRequest
     @DeleteMapping("/criteria/{criteriaId}")
-    public String deleteCriteria(@PathVariable("criteriaId") Long criteriaId) {
-        String username = authService.getCurrentUsername();
+    public String deleteCriteria(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("criteriaId") Long criteriaId) {
+        String username = userDetails.getUsername();
         Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow();
         roleService.removeCriteriaFromRole(roleId, criteriaId);
         criteriaService.deleteUserCriteria(criteriaId);
@@ -114,7 +113,7 @@ public class RolesController {
 
     @HxRequest
     @GetMapping("/select/{criteriaId}")
-    public String selectCriteria(@PathVariable("criteriaId") long criteriaId, Model model) {
+    public String selectCriteria(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("criteriaId") long criteriaId, Model model) {
         var criteria = criteriaService.getCriteriaById(criteriaId);
         model.addAttribute("criteria", criteria);
         model.addAttribute("placeholderText", criteria.inputExample().orElse(""));
@@ -123,12 +122,12 @@ public class RolesController {
 
     @HxRequest
     @PostMapping("/save/{criteriaId}")
-    public String saveCriteria(@PathVariable("criteriaId") long criteriaId,
+    public String saveCriteria(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("criteriaId") long criteriaId,
                                @PathParam("value") String value,
                                @PathParam("score") String score,
                                HttpServletResponse response) {
         var criteria = criteriaService.createUserCriteria(criteriaId, value, score);
-        var username = authService.getCurrentUsername();
+        var username = userDetails.getUsername();
         Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow();
         roleService.addCriteriaToRole(roleId, criteria.id());
         response.addHeader(HX_TRIGGER, ROLE_UPDATED);
