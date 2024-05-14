@@ -85,8 +85,8 @@ public class CandidateServiceImpl implements CandidateService {
     private Optional<ProcessedCv> processCv(FileInformation fileInformation) {
         String hash = fileInformation.fileHash();
         if (cvDao.knownHash(hash)) {
-            Optional<ProcessedCv> byHash = cvDao.getByHash(hash);
-            byHash.map(pc -> new ProcessedCv(null, pc.name(), true, pc.fileHash(), pc.condensedDescription()));
+            Optional<ProcessedCv> byHash = cvDao.getByHash(hash)
+                    .map(pc -> new ProcessedCv(null, pc.name(), true, pc.fileHash(), pc.condensedDescription()));
             if (byHash.isEmpty()) {
                 throw new HashKnownButCvNotFound(hash);
             }
