@@ -18,6 +18,6 @@
            hx-target="next main"
            hx-trigger="click"
            th:text="${navElement.name}"></a>
-        <a th:replace="${loggedIn} ? ~{logout-button} : ~{login-button}"></a>
+        <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
     </nav>
 </header>

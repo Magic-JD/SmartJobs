@@ -68,7 +68,7 @@ public class GptClientImpl implements GptClient {
             log.error(FAILED_GPT_CALL, statusCode, response.body());
             return Optional.empty();
         } catch (IOException | InterruptedException | ServiceCallException e) {
-            log.error("Call {} failed to get a valid response from the server due to exception {}.", callNumber, e.getMessage());
+            log.error("Call {} failed to get a valid response from the server due to exception {} with message {}.", callNumber, e.getClass(), e.getMessage());
             if (callNumber >= maxRetries) {
                 log.error("After all retries, the request could not be processed.");
                 log.trace("Failed error message: {}", gptRequest);

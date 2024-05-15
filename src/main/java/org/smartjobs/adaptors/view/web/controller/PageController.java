@@ -67,7 +67,7 @@ public class PageController {
                 "credits", creditService.userCredit(userDetails.getUsername()),
                 "loggedIn", true,
                 "navElements", List.of(
-                        new NavElement(ROLES_PAGE, "Roles", false),
-                        new NavElement(CANDIDATE_PAGE, "Candidates", false))));
+                        new NavElement("roles", "Roles", false),
+                        new NavElement("candidates", "Candidates", false))));
     }
 }

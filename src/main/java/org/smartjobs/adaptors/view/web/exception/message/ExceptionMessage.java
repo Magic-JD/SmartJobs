@@ -1,11 +1,11 @@
 package org.smartjobs.adaptors.view.web.exception.message;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 
-import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.HX_RESWAP;
-import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.HX_RETARGET;
+import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.*;
+import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.ERROR_BOX;
+import static org.springframework.http.HttpStatus.OK;
 
 public class ExceptionMessage {
 
@@ -16,8 +16,8 @@ public class ExceptionMessage {
     public static String createUserErrorMessageToDisplayForUser(String message, HttpServletResponse response, Model model) {
         model.addAttribute("errorMessage", message);
         response.addHeader(HX_RETARGET, "#error");
-        response.addHeader(HX_RESWAP, "outerHTML");
-        response.setStatus(HttpStatus.OK.value());
-        return "error-box";
+        response.addHeader(HX_RESWAP, OUTER_HTML);
+        response.setStatus(OK.value());
+        return ERROR_BOX;
     }
 }
