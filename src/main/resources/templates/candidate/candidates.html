@@ -1,6 +1,5 @@
 <div class="flex-container">
-    <div class="flex-container" hx-get="/candidate/number/selected" hx-swap="innerHTML" hx-target="this"
-         hx-trigger="load, candidate-count-updated from:body"></div>
+    <div th:replace="candidate/candidate-count"></div>
     <a class="button-dark button-enlarge right-pushed"
        hx-get="/upload"
        hx-swap="innerHtml"

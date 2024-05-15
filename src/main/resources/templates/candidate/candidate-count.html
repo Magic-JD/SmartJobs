@@ -1,4 +1,9 @@
-<div class="flex-stack right-nudged text-only" th:fragment="info-box">
+<div class="flex-stack right-nudged text-only"
+     th:fragment="info-box"
+     hx-get="/candidate/number/selected"
+     hx-swap="outerHTML"
+     hx-target="this"
+     hx-trigger="candidate-count-updated from:body">
     <p class="text-only" th:text="|Role: ${currentRole}|"></p>
     <p class="text-only" th:text="|Selected Candidates: ${selectedCount}|"></p>
 </div>

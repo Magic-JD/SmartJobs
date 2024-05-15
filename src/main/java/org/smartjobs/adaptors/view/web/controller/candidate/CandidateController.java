@@ -7,10 +7,7 @@ import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
-import org.smartjobs.core.service.CandidateService;
-import org.smartjobs.core.service.CreditService;
-import org.smartjobs.core.service.FileService;
-import org.smartjobs.core.service.RoleService;
+import org.smartjobs.core.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,21 +34,24 @@ public class CandidateController {
     private final FileService fileService;
     private final CreditService creditService;
     private final RoleService roleService;
+    private final SseService sseService;
 
 
 
     @Autowired
-    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, RoleService roleService) {
+    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, RoleService roleService, SseService sseService) {
         this.fileService = fileService;
         this.candidateService = candidateService;
         this.creditService = creditService;
         this.roleService = roleService;
+        this.sseService = sseService;
     }
 
     @HxRequest
     @PostMapping("/upload")
     public String uploadFile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
         String username = userDetails.getUsername();
+        sseService.send(username, "progress-upload", STR. "<div>Uploaded: 0/\{ files.length }</div>" );
         if (!creditService.debitAndVerify(username, files.length)) {
             throw new NotEnoughCreditException();
         }
