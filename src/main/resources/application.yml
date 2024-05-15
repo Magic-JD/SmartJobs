@@ -13,7 +13,7 @@ gpt:
     user-base-score: 10
     requests-per-minute: 600
     max-retries: 3
-    initial-timeout-seconds: 10
+    initial-timeout-seconds: 20
 
 
 cache:
