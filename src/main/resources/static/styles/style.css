@@ -42,7 +42,7 @@ html:focus-within {
 }
 
 main {
-    padding-top: 140px;
+    padding-top: 70px;
 }
 
 /* Set core body defaults */
@@ -140,6 +140,10 @@ input[type=text] {
     width: 100%;
     height: 70px;
     z-index: 100;
+}
+
+.top-padding{
+    height: 70px;
 }
 
 .flex-container {
@@ -406,7 +410,7 @@ input[type=file]::file-selector-button:hover {
     margin-right: 40px;
     height: 80vh;
     border-right: 1px solid;
-    border-top: 1px solid;
+    padding-top: 70px
 }
 
 .saved-role {

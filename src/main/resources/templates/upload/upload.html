@@ -1,20 +1,20 @@
-
-    <form class="flex-stack gappy"
-          hx-encoding="multipart/form-data"
-          hx-post="/candidate/upload"
-          hx-target="closest main"
-          hx-swap="innerHTML"
-          id="upload-form">
-        <label for="files" class="drop-container" id="dropcontainer">
-            <span class="drop-title text-large">Drop files here<br>or</span>
-        </label>
-        <input class="text-medium" accept=".txt, .pdf" id="files" multiple name="files" type="file">
-        <button type="submit" class="button-light button-enlarge">Upload Files</button>
-        <div class="text-large" hx-ext="sse" sse-connect="/sse/register" sse-swap="progress-upload" hx-swap="innerHtml"
-             hx-target="this">Uploaded: 0/X
-        </div>
-        <img class='htmx-indicator' th:src="@{/images/loading.gif}"/>
-    </form>
+<div class="top-padding"></div>
+<form class="flex-stack gappy"
+      hx-encoding="multipart/form-data"
+      hx-post="/candidate/upload"
+      hx-swap="innerHTML"
+      hx-target="closest main"
+      id="upload-form">
+    <label class="drop-container" for="files" id="dropcontainer">
+        <span class="drop-title text-large">Drop files here<br>or</span>
+    </label>
+    <input accept=".txt, .pdf" class="text-medium" id="files" multiple name="files" type="file">
+    <button class="button-light button-enlarge" type="submit">Upload Files</button>
+    <div class="text-large" hx-ext="sse" hx-swap="innerHtml" hx-target="this" sse-connect="/sse/register"
+         sse-swap="progress-upload">Uploaded: 0/X
+    </div>
+    <img class='htmx-indicator' th:src="@{/images/loading.gif}"/>
+</form>
 <script>
     const dropContainer = document.getElementById("dropcontainer")
   const fileInput = document.getElementById("files")
