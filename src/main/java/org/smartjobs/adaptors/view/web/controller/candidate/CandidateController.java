@@ -39,7 +39,11 @@ public class CandidateController {
 
 
     @Autowired
-    public CandidateController(FileService fileService, CandidateService candidateService, CreditService creditService, RoleService roleService, SseService sseService) {
+    public CandidateController(FileService fileService,
+                               CandidateService candidateService,
+                               CreditService creditService,
+                               RoleService roleService,
+                               SseService sseService) {
         this.fileService = fileService;
         this.candidateService = candidateService;
         this.creditService = creditService;
@@ -60,10 +64,17 @@ public class CandidateController {
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
                 .toList();
-        Long roleId = roleService.getCurrentlySelectedRoleId(username)
-                .orElseThrow(NoRoleSelectedException::new);
-        candidateService.updateCandidateCvs(username, roleId, handledFiles);
-        getRoleAndCount(userDetails, model);
+        var role = roleService.getCurrentlySelectedRole(username);
+        role.ifPresent(r -> candidateService.updateCandidateCvs(username, r.id(), handledFiles));
+        var currentRole = role
+                .map(Role::position)
+                .orElse("NONE");
+        int selectedCount = role
+                .map(r -> candidateService.findSelectedCandidateCount(username, r.id()))
+                .orElse(0);
+
+        model.addAttribute("selectedCount", selectedCount);
+        model.addAttribute("currentRole", currentRole);
         return CANDIDATE_PAGE;
     }
 
@@ -121,21 +132,18 @@ public class CandidateController {
     @HxRequest
     @GetMapping("/number/selected")
     public String findNumberOfCandidatesSelected(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        getRoleAndCount(userDetails, model);
-        return CANDIDATE_COUNT_FRAGMENT;
-    }
-
-    private void getRoleAndCount(UserDetails userDetails, Model model) {
         String username = userDetails.getUsername();
-        Optional<Role> role = roleService.getCurrentlySelectedRoleId(username)
-                .map(roleService::getRole);
+        Optional<Role> role = roleService.getCurrentlySelectedRole(username);
         var currentRole = role
                 .map(Role::position)
                 .orElse("NONE");
-        int selectedCount = role.map(role1 -> candidateService.findSelectedCandidateCount(username, role1.id())).orElse(0);
+        int selectedCount = role
+                .map(r -> candidateService.findSelectedCandidateCount(username, r.id()))
+                .orElse(0);
 
         model.addAttribute("selectedCount", selectedCount);
         model.addAttribute("currentRole", currentRole);
+        return CANDIDATE_COUNT_FRAGMENT;
     }
 
 }
