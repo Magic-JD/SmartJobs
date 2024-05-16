@@ -159,13 +159,13 @@ public class RolesController {
 
     }
 
-    private record Role(long id, String position, List<Category> categories) {
+    public record Role(long id, String position, List<Category> categories) {
     }
 
-    private record Category(String name, List<ScoringCriteria> criteria) {
+    public record Category(String name, List<ScoringCriteria> criteria) {
     }
 
-    private record ScoringCriteria(long id, String description, int weight) {
+    public record ScoringCriteria(long id, String description, int weight) {
     }
 
 }

@@ -1,7 +1,5 @@
 <div class="flex-container text-medium">
-    <div hx-get="/roles/saved" hx-swap="outerHTML" hx-target="this" hx-trigger="load"></div>
-    <div hx-get="/roles/display" hx-swap="innerHtml" hx-target="this"
-         hx-trigger="load, role-deleted from:body, role-updated from:body"
-         id="role-display"></div>
+    <div th:replace="role/saved-role"></div>
+    <div th:replace="role/role"></div>
     <div class="categories-container right-nudged" id=select-criteria></div>
 </div>

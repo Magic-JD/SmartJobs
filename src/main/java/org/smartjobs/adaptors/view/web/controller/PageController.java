@@ -1,10 +1,13 @@
 package org.smartjobs.adaptors.view.web.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+import org.smartjobs.adaptors.view.web.controller.roles.RolesController;
 import org.smartjobs.adaptors.view.web.entities.NavElement;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.RoleService;
+import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,10 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.text.DecimalFormat;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 
@@ -64,7 +64,29 @@ public class PageController {
     }
 
     @GetMapping("/roles")
-    public String getRolesPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+    public String getRolesPage(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response, Model model) {
+        var username = userDetails.getUsername();
+        model.addAttribute("savedRoles", roleService.getUserRoles(username));
+        Long currentlySelected = roleService.getCurrentlySelectedRole(username).orElse(0L);
+        var internalRole = roleService.getRole(currentlySelected);
+        CriteriaCategory[] values = CriteriaCategory.values();
+        var role = new RolesController.Role(
+                internalRole.id(),
+                internalRole.position(),
+                Arrays.stream(values).map(cc ->
+                                new RolesController.Category(
+                                        cc.toString(),
+                                        internalRole.scoringCriteria()
+                                                .stream()
+                                                .filter(crit -> crit.category().equals(cc))
+                                                .map(crit -> new RolesController.ScoringCriteria(crit.id(), crit.name(), crit.weighting()))
+                                                .toList()))
+                        .toList());
+
+        var categoryNames = Arrays.stream(CriteriaCategory.values()).map(CriteriaCategory::toString).sorted().toList();
+        model.addAttribute("currentlySelected", currentlySelected);
+        model.addAttribute("role", role);
+        model.addAttribute("categories", categoryNames);
         return ROLES_PAGE;
 
     }

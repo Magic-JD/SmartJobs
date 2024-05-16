@@ -10,8 +10,8 @@
         <button class="right-nudged hidden-button"
              th:classappend="${currentlySelected == role.id} ? currently-selected : ''"
              th:text="${role.position}"
-             hx-swap="innerHTML"
-             hx-target="#role-display"
+                hx-swap="outerHTML"
+                hx-target="#role"
              hx-trigger="click"
              th:attr="hx-get=@{|/roles/display/${role.id}|}">
 
@@ -26,7 +26,7 @@
     </div>
     <div class="flex-stack saved-role"
          hx-swap="innerHTML"
-         hx-target="#role-display"
+         hx-target="#role"
          hx-trigger="click"
          hx-get="/roles/template"
     >

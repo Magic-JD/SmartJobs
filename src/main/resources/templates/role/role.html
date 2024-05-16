@@ -1,3 +1,8 @@
+<div hx-get="/roles/display" hx-swap="outerHtml" hx-target="this"
+     hx-trigger="role-deleted from:body, role-updated from:body"
+     th:fragment="role"
+     id="role"
+>
 <p>This role is for the position <span th:text="${role.position}"></span></p>
     <div th:each="category : ${role.categories}">
         <div class="flex-container">
@@ -23,3 +28,4 @@
         <div id="select-criteria" hx-swap-oob="innerHtml">
         </div>
     </div>
+</div>
