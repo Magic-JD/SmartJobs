@@ -13,7 +13,7 @@
     <div class="text-large" hx-ext="sse" hx-swap="innerHtml" hx-target="this" sse-connect="/sse/register"
          sse-swap="progress-upload">Uploaded: 0/X
     </div>
-    <img class='htmx-indicator' th:src="@{/images/loading.gif}"/>
+    <img alt="loading" class='htmx-indicator' th:src="@{/images/loading.gif}"/>
 </form>
 <script>
     const dropContainer = document.getElementById("dropcontainer")
