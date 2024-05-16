@@ -3,6 +3,7 @@
      th:fragment="role"
      id="role"
 >
+    <div th:if="${role != null}">
 <p>This role is for the position <span th:text="${role.position}"></span></p>
     <div th:each="category : ${role.categories}">
         <div class="flex-container">
@@ -27,5 +28,6 @@
         </div>
         <div id="select-criteria" hx-swap-oob="innerHtml">
         </div>
+    </div>
     </div>
 </div>

@@ -61,20 +61,15 @@ public class CandidateController {
         if (!creditService.debitAndVerify(username, files.length)) {
             throw new NotEnoughCreditException();
         }
+        var role = roleService.getCurrentlySelectedRole(username).orElseThrow(NoRoleSelectedException::new);
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
                 .toList();
-        var role = roleService.getCurrentlySelectedRole(username);
-        role.ifPresent(r -> candidateService.updateCandidateCvs(username, r.id(), handledFiles));
-        var currentRole = role
-                .map(Role::position)
-                .orElse("NONE");
-        int selectedCount = role
-                .map(r -> candidateService.findSelectedCandidateCount(username, r.id()))
-                .orElse(0);
+        candidateService.updateCandidateCvs(username, role.id(), handledFiles);
+        int selectedCount = candidateService.findSelectedCandidateCount(username, role.id());
 
         model.addAttribute("selectedCount", selectedCount);
-        model.addAttribute("currentRole", currentRole);
+        model.addAttribute("currentRole", role);
         return CANDIDATE_PAGE;
     }
 

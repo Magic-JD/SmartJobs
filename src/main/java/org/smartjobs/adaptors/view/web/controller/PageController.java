@@ -88,7 +88,7 @@ public class PageController {
         var categoryNames = Arrays.stream(CriteriaCategory.values()).map(CriteriaCategory::toString).sorted().toList();
         model.addAttribute("savedRoles", roleService.getUserRoles(username));
         model.addAttribute("currentlySelected", currentlySelected);
-        model.addAttribute("role", role.orElseThrow());
+        model.addAttribute("role", role.orElse(null));
         model.addAttribute("categories", categoryNames);
         return ROLES_PAGE;
 
