@@ -5,15 +5,19 @@ import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.SseService;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
+
 @Service
 public class CreditServiceImpl implements CreditService {
 
     private final CreditDao creditDao;
     private final SseService sseService;
+    private final DecimalFormat decimalFormat;
 
-    public CreditServiceImpl(CreditDao creditDao, SseService sseService) {
+    public CreditServiceImpl(CreditDao creditDao, SseService sseService, DecimalFormat decimalFormat) {
         this.creditDao = creditDao;
         this.sseService = sseService;
+        this.decimalFormat = decimalFormat;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class CreditServiceImpl implements CreditService {
         creditDao.event(username, amount * -1, "DEBIT");
         int remainingCredits = userCredit(username);
         if (remainingCredits >= 0) {
-            sseService.send(username, "credit", STR. "<div>Credit: \{ remainingCredits }</div>" );
+            sseService.send(username, "credit", STR. "Credit: \{ decimalFormat.format(remainingCredits) }" );
             return true;
         } else {
             creditDao.event(username, amount, "REFUND");

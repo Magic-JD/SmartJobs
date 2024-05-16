@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +27,14 @@ public class PageController {
     private final CreditService creditService;
     private final RoleService roleService;
     private final CandidateService candidateService;
+    private final DecimalFormat decimalFormat;
 
     @Autowired
-    public PageController(CreditService creditService, RoleService roleService, CandidateService candidateService) {
+    public PageController(CreditService creditService, RoleService roleService, CandidateService candidateService, DecimalFormat decimalFormat) {
         this.creditService = creditService;
         this.roleService = roleService;
         this.candidateService = candidateService;
+        this.decimalFormat = decimalFormat;
     }
 
 
@@ -69,13 +72,12 @@ public class PageController {
     private void setAllowedNavigationForUser(UserDetails userDetails, Model model) {
         if (userDetails == null) {
             model.addAllAttributes(Map.of(
-                    "credits", -1,
                     "loggedIn", false,
                     "navElements", Collections.emptyList()));
             return;
         }
         model.addAllAttributes(Map.of(
-                "credits", creditService.userCredit(userDetails.getUsername()),
+                "credits", decimalFormat.format(creditService.userCredit(userDetails.getUsername())),
                 "loggedIn", true,
                 "navElements", List.of(
                         new NavElement("roles", "Roles", false),

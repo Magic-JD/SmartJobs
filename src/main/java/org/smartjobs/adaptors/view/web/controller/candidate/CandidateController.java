@@ -49,7 +49,9 @@ public class CandidateController {
 
     @HxRequest
     @PostMapping("/upload")
-    public String uploadFile(@AuthenticationPrincipal UserDetails userDetails, @RequestParam(name = "files") MultipartFile[] files, HttpServletResponse response) {
+    public String uploadFile(@AuthenticationPrincipal UserDetails userDetails,
+                             @RequestParam(name = "files") MultipartFile[] files,
+                             Model model) {
         String username = userDetails.getUsername();
         sseService.send(username, "progress-upload", STR. "<div>Uploaded: 0/\{ files.length }</div>" );
         if (!creditService.debitAndVerify(username, files.length)) {
@@ -61,6 +63,7 @@ public class CandidateController {
         Long roleId = roleService.getCurrentlySelectedRole(username)
                 .orElseThrow(NoRoleSelectedException::new);
         candidateService.updateCandidateCvs(username, roleId, handledFiles);
+        getRoleAndCount(userDetails, model);
         return CANDIDATE_PAGE;
     }
 
@@ -118,6 +121,11 @@ public class CandidateController {
     @HxRequest
     @GetMapping("/number/selected")
     public String findNumberOfCandidatesSelected(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        getRoleAndCount(userDetails, model);
+        return CANDIDATE_COUNT_FRAGMENT;
+    }
+
+    private void getRoleAndCount(UserDetails userDetails, Model model) {
         String username = userDetails.getUsername();
         Optional<Role> role = roleService.getCurrentlySelectedRole(username)
                 .map(roleService::getRole);
@@ -128,7 +136,6 @@ public class CandidateController {
 
         model.addAttribute("selectedCount", selectedCount);
         model.addAttribute("currentRole", currentRole);
-        return CANDIDATE_COUNT_FRAGMENT;
     }
 
 }

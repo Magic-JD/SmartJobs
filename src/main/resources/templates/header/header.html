@@ -1,7 +1,7 @@
 <header th:fragment="header" class="primary-header flex-container highlight">
     <a class="text-medium icon-link" th:href="@{/}">Smart Jobs</a>
     <nav class="primary-navigation flex-container right-pushed">
-        <div th:if="${credits >= 0}"
+        <div th:if="${credits != null}"
              class="text-small left-nudged"
              hx-ext="sse"
              sse-connect="/sse/register"
