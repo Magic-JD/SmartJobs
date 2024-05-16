@@ -40,7 +40,7 @@ public class RolesController {
     public String savedRoles(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         var username = userDetails.getUsername();
         model.addAttribute("savedRoles", roleService.getUserRoles(username));
-        model.addAttribute("currentlySelected", roleService.getCurrentlySelectedRole(username).orElse(0L));
+        model.addAttribute("currentlySelected", roleService.getCurrentlySelectedRoleId(username).orElse(0L));
         return SAVED_ROLE_FRAGMENT;
     }
 
@@ -64,7 +64,7 @@ public class RolesController {
     @GetMapping("/display")
     public String displayCurrentlySelectedRole(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         String username = userDetails.getUsername();
-        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRole(username);
+        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRoleId(username);
         return currentlySelectedRole.map(roleId -> {
             var internalRole = roleService.getRole(roleId);
             return prepareRoleDisplay(model, internalRole);
@@ -76,7 +76,7 @@ public class RolesController {
     @DeleteMapping("/delete/{roleId}")
     public String deleteRole(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("roleId") long roleId, HttpServletResponse response) {
         var username = userDetails.getUsername();
-        roleService.getCurrentlySelectedRole(username)
+        roleService.getCurrentlySelectedRoleId(username)
                 .filter(current -> current.equals(roleId))
                 .ifPresent(_ -> roleService.deleteCurrentlySelectedRole(username));
         roleService.deleteRole(username, roleId);
@@ -105,7 +105,7 @@ public class RolesController {
     @DeleteMapping("/criteria/{criteriaId}")
     public String deleteCriteria(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("criteriaId") Long criteriaId) {
         String username = userDetails.getUsername();
-        Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow();
+        Long roleId = roleService.getCurrentlySelectedRoleId(username).orElseThrow();
         roleService.removeCriteriaFromRole(roleId, criteriaId);
         criteriaService.deleteUserCriteria(criteriaId);
         return EMPTY_FRAGMENT;
@@ -128,7 +128,7 @@ public class RolesController {
                                HttpServletResponse response) {
         var criteria = criteriaService.createUserCriteria(criteriaId, value, score);
         var username = userDetails.getUsername();
-        Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow();
+        Long roleId = roleService.getCurrentlySelectedRoleId(username).orElseThrow();
         roleService.addCriteriaToRole(roleId, criteria.id());
         response.addHeader(HX_TRIGGER, ROLE_UPDATED);
         return EMPTY_FRAGMENT;

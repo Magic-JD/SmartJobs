@@ -40,6 +40,7 @@ public class SpringCachingConfig implements CachingConfigurer {
                 "cv-name",
                 "role",
                 "current-role",
+                "current-role-id",
                 "cv-currently-selected",
                 "role-display"
         );

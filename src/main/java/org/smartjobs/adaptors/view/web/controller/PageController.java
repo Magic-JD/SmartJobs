@@ -66,11 +66,10 @@ public class PageController {
     @GetMapping("/roles")
     public String getRolesPage(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response, Model model) {
         var username = userDetails.getUsername();
-        model.addAttribute("savedRoles", roleService.getUserRoles(username));
-        Long currentlySelected = roleService.getCurrentlySelectedRole(username).orElse(0L);
-        var internalRole = roleService.getRole(currentlySelected);
+        Optional<Role> currentlySelectedRole = roleService.getCurrentlySelectedRole(username);
+        Long currentlySelected = currentlySelectedRole.map(Role::id).orElse(0L);
         CriteriaCategory[] values = CriteriaCategory.values();
-        var role = new RolesController.Role(
+        var role = currentlySelectedRole.map(internalRole -> new RolesController.Role(
                 internalRole.id(),
                 internalRole.position(),
                 Arrays.stream(values).map(cc ->
@@ -80,12 +79,16 @@ public class PageController {
                                                 .stream()
                                                 .filter(crit -> crit.category().equals(cc))
                                                 .map(crit -> new RolesController.ScoringCriteria(crit.id(), crit.name(), crit.weighting()))
-                                                .toList()))
-                        .toList());
+                                                .toList()
+                                )
+                        )
+                        .toList())
+        );
 
         var categoryNames = Arrays.stream(CriteriaCategory.values()).map(CriteriaCategory::toString).sorted().toList();
+        model.addAttribute("savedRoles", roleService.getUserRoles(username));
         model.addAttribute("currentlySelected", currentlySelected);
-        model.addAttribute("role", role);
+        model.addAttribute("role", role.orElseThrow());
         model.addAttribute("categories", categoryNames);
         return ROLES_PAGE;
 
@@ -108,7 +111,7 @@ public class PageController {
 
     private void addInfoBoxInfo(UserDetails userDetails, Model model) {
         String username = userDetails.getUsername();
-        Optional<Role> role = roleService.getCurrentlySelectedRole(username)
+        Optional<Role> role = roleService.getCurrentlySelectedRoleId(username)
                 .map(roleService::getRole);
         var currentRole = role
                 .map(Role::position)

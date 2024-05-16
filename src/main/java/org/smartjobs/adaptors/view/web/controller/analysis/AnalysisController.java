@@ -60,12 +60,12 @@ public class AnalysisController {
     @GetMapping("/scoring")
     public String scoreAllCandidates(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response, Model model) {
         String username = userDetails.getUsername();
-        var roleId = roleService.getCurrentlySelectedRole(username).orElseThrow(UserResolvedExceptions.NoRoleSelectedException::new);
+        var roleId = roleService.getCurrentlySelectedRoleId(username).orElseThrow(UserResolvedExceptions.NoRoleSelectedException::new);
         List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username, roleId);
         if (candidateInformation.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
         }
-        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRole(username);
+        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRoleId(username);
         if (currentlySelectedRole.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please select a role", response, model);
         }

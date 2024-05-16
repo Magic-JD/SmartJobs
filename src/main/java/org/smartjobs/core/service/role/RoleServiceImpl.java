@@ -3,7 +3,6 @@ package org.smartjobs.core.service.role;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.RoleDisplay;
 import org.smartjobs.core.ports.dal.RoleDao;
-import org.smartjobs.core.ports.dal.SelectedRoleDao;
 import org.smartjobs.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,30 +19,40 @@ public class RoleServiceImpl implements RoleService {
 
     private final RoleDao roleDao;
 
-    private final SelectedRoleDao selectedRoleDao;
 
     @Autowired
-    public RoleServiceImpl(RoleDao roleDao, SelectedRoleDao selectedRoleDao) {
+    public RoleServiceImpl(RoleDao roleDao) {
         this.roleDao = roleDao;
-        this.selectedRoleDao = selectedRoleDao;
+    }
+
+    @Override
+    @Cacheable("current-role-id")
+    public Optional<Long> getCurrentlySelectedRoleId(String username) {
+        return roleDao.getCurrentlySelectedRoleById(username);
     }
 
     @Override
     @Cacheable("current-role")
-    public Optional<Long> getCurrentlySelectedRole(String username) {
-        return selectedRoleDao.getCurrentlySelectedRole(username);
+    public Optional<Role> getCurrentlySelectedRole(String username) {
+        return roleDao.getCurrentlySelectedRole(username);
     }
 
     @Override
-    @CacheEvict("current-role")
+    @Caching(evict = {
+            @CacheEvict(value = "current-role-id"),
+            @CacheEvict(value = "current-role")
+    })
     public void deleteCurrentlySelectedRole(String username) {
-        selectedRoleDao.deleteCurrentlySelectedRole(username);
+        roleDao.deleteCurrentlySelectedRole(username);
     }
 
     @Override
-    @CacheEvict(value = "current-role", key = "#username")
+    @Caching(evict = {
+            @CacheEvict(value = "current-role-id", key = "#username"),
+            @CacheEvict(value = "current-role", key = "#username")
+    })
     public void setCurrentlySelectedRole(String username, long roleId) {
-        selectedRoleDao.setSelectedRole(username, roleId);
+        roleDao.setSelectedRole(username, roleId);
     }
 
     @Override
@@ -61,11 +70,12 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = "role-display", key = "#username"),
+            @CacheEvict(value = "current-role-id", key = "#username"),
             @CacheEvict(value = "current-role", key = "#username")
     })
     public Role createRole(String name, String username) {
         var roleId = roleDao.saveRole(username, name);
-        selectedRoleDao.setSelectedRole(username, roleId);
+        roleDao.setSelectedRole(username, roleId);
         return new Role(roleId, name, Collections.emptyList());
     }
 

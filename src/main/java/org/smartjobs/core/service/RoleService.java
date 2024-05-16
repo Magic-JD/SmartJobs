@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoleService {
-    Optional<Long> getCurrentlySelectedRole(String username);
+    Optional<Long> getCurrentlySelectedRoleId(String username);
+
+    Optional<Role> getCurrentlySelectedRole(String username);
 
     void deleteCurrentlySelectedRole(String username);
 

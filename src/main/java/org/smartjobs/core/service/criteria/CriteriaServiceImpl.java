@@ -7,7 +7,7 @@ import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoScorePro
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoValueProvidedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.ScoreIsNotNumberException;
 import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDao;
-import org.smartjobs.core.ports.dal.UserCriteriaDao;
+import org.smartjobs.core.ports.dal.RoleDao;
 import org.smartjobs.core.service.CriteriaService;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +19,12 @@ import java.util.List;
 @Service
 public class CriteriaServiceImpl implements CriteriaService {
 
-    private final UserCriteriaDao userCriteriaDao;
+    private final RoleDao roleDao;
     private final DefinedScoringCriteriaDao definedScoringCriteriaDao;
 
     @Autowired
-    public CriteriaServiceImpl(UserCriteriaDao userCriteriaDao, DefinedScoringCriteriaDao definedScoringCriteriaDao) {
-        this.userCriteriaDao = userCriteriaDao;
+    public CriteriaServiceImpl(RoleDao roleDao, DefinedScoringCriteriaDao definedScoringCriteriaDao) {
+        this.roleDao = roleDao;
         this.definedScoringCriteriaDao = definedScoringCriteriaDao;
     }
 
@@ -58,12 +58,12 @@ public class CriteriaServiceImpl implements CriteriaService {
             throw new NoValueProvidedException();
         }
 
-        return userCriteriaDao.createNewUserCriteria(criteriaId, value, scoreInt);
+        return roleDao.createNewUserCriteria(criteriaId, value, scoreInt);
     }
 
     @Override
     public void deleteUserCriteria(Long criteriaId) {
-        userCriteriaDao.deleteUserCriteria(criteriaId);
+        roleDao.deleteUserCriteria(criteriaId);
     }
 
     private List<DefinedScoringCriteria> getAllDefinedScoringCriteria() {

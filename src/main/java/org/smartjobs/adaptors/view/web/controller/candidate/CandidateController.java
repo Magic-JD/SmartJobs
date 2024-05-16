@@ -60,7 +60,7 @@ public class CandidateController {
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
                 .toList();
-        Long roleId = roleService.getCurrentlySelectedRole(username)
+        Long roleId = roleService.getCurrentlySelectedRoleId(username)
                 .orElseThrow(NoRoleSelectedException::new);
         candidateService.updateCandidateCvs(username, roleId, handledFiles);
         getRoleAndCount(userDetails, model);
@@ -72,7 +72,7 @@ public class CandidateController {
     @GetMapping()
     public String getAllCandidates(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         String currentUsername = userDetails.getUsername();
-        var selectedRoleOptional = roleService.getCurrentlySelectedRole(currentUsername);
+        var selectedRoleOptional = roleService.getCurrentlySelectedRoleId(currentUsername);
         if (selectedRoleOptional.isEmpty()) {
             return EMPTY_FRAGMENT;
         }
@@ -87,7 +87,7 @@ public class CandidateController {
     @DeleteMapping("/delete/{cvId}")
     public String deleteCandidate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable long cvId, HttpServletResponse response) {
         String currentUsername = userDetails.getUsername();
-        var selectedRole = roleService.getCurrentlySelectedRole(currentUsername).orElseThrow();
+        var selectedRole = roleService.getCurrentlySelectedRoleId(currentUsername).orElseThrow();
         candidateService.deleteCandidate(currentUsername, selectedRole, cvId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         return EMPTY_FRAGMENT;
@@ -98,7 +98,7 @@ public class CandidateController {
     public String deleteAllCandidates(@AuthenticationPrincipal UserDetails userDetails, Model model, HttpServletResponse response) {
         String currentUsername = userDetails.getUsername();
         String username = userDetails.getUsername();
-        Long roleId = roleService.getCurrentlySelectedRole(username).orElseThrow(NoRoleSelectedException::new);
+        Long roleId = roleService.getCurrentlySelectedRoleId(username).orElseThrow(NoRoleSelectedException::new);
         candidateService.deleteAllCandidates(currentUsername, roleId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         model.addAttribute("candidates", Collections.emptyList());
@@ -110,7 +110,7 @@ public class CandidateController {
     public String selectCandidate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable long cvId, @PathParam("select") boolean select, Model model, HttpServletResponse response) {
         String currentUsername = userDetails.getUsername();
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
-        long roleId = roleService.getCurrentlySelectedRole(currentUsername).orElseThrow();
+        long roleId = roleService.getCurrentlySelectedRoleId(currentUsername).orElseThrow();
         return candidateService.toggleCandidateSelect(currentUsername, roleId, cvId, select).map(cvData -> {
             model.addAttribute("candidate", cvData);
             return SINGLE_CANDIDATE_ROW_FRAGMENT;
@@ -127,7 +127,7 @@ public class CandidateController {
 
     private void getRoleAndCount(UserDetails userDetails, Model model) {
         String username = userDetails.getUsername();
-        Optional<Role> role = roleService.getCurrentlySelectedRole(username)
+        Optional<Role> role = roleService.getCurrentlySelectedRoleId(username)
                 .map(roleService::getRole);
         var currentRole = role
                 .map(Role::position)
