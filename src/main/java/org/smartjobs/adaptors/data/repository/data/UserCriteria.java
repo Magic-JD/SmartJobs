@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Entity
@@ -20,7 +21,9 @@ public class UserCriteria {
 
     private Long definedCriteriaId;
 
+    @Nullable
     private String value;
+
     private Integer score;
 
 }
