@@ -14,11 +14,11 @@ public interface CandidateService {
 
     void updateCandidateCvs(long userId, long roleId, List<Optional<FileInformation>> fileInformationList);
 
-    void deleteCandidate(long userId, long currentRole, long cvId);
+    void deleteCandidate(long userId, long currentRole, long roleId);
 
     Optional<CandidateData> toggleCandidateSelect(long userId, long roleId, long cvId, boolean select);
 
-    int findSelectedCandidateCount(long userId, long currentRole);
+    int findSelectedCandidateCount(long userId, long roleId);
 
     void deleteAllCandidates(long userId, long roleId);
 }

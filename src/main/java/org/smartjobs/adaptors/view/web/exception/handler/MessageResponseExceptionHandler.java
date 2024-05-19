@@ -48,4 +48,9 @@ public class MessageResponseExceptionHandler extends ResponseEntityExceptionHand
     protected String handleRoleCriteriaLimitReachedException(RuntimeException ex, HttpServletResponse response, Model model) {
         return createUserErrorMessageToDisplayForUser(ex.getMessage(), response, model);
     }
+
+    @ExceptionHandler(value = RoleHasNoCriteriaException.class)
+    protected String handleRoleHasNoCriteriaException(HttpServletResponse response, Model model) {
+        return createUserErrorMessageToDisplayForUser("There is no criteria selected for this role. Please select at least one criteria.", response, model);
+    }
 }

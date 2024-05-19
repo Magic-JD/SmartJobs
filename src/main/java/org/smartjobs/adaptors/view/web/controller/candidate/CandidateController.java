@@ -90,11 +90,11 @@ public class CandidateController {
     }
 
     @HxRequest
-    @DeleteMapping("/delete/{cvId}")
-    public String deleteCandidate(@AuthenticationPrincipal User user, @PathVariable long cvId, HttpServletResponse response) {
+    @DeleteMapping("/delete/{candidateId}")
+    public String deleteCandidate(@AuthenticationPrincipal User user, @PathVariable long candidateId, HttpServletResponse response) {
         var userId = user.getId();
         var selectedRole = roleService.getCurrentlySelectedRoleId(userId).orElseThrow();
-        candidateService.deleteCandidate(userId, selectedRole, cvId);
+        candidateService.deleteCandidate(userId, selectedRole, candidateId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         return EMPTY_FRAGMENT;
     }

@@ -16,7 +16,7 @@ public interface CvDao {
 
     List<ProcessedCv> getAllSelected(long userId, long roleId);
 
-    void deleteByCandidateId(long cvId);
+    void deleteByCandidateId(long candidateId);
 
     boolean knownHash(String fileHash);
 

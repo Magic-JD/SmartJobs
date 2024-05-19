@@ -1,10 +1,13 @@
 package org.smartjobs.core.service.analysis;
 
 import org.smartjobs.core.entities.*;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleHasNoCriteriaException;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.SseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,16 +21,24 @@ public class AnalysisServiceImpl implements AnalysisService {
 
     private final AiService client;
     private final SseService sseService;
+    private final int maxRoleCriteriaCount;
 
 
     @Autowired
-    public AnalysisServiceImpl(AiService client, SseService sseService) {
+    public AnalysisServiceImpl(AiService client, SseService sseService, @Value("${role.max.criteria}") int maxRoleCriteriaCount) {
         this.client = client;
         this.sseService = sseService;
+        this.maxRoleCriteriaCount = maxRoleCriteriaCount;
     }
 
     @Override
     public List<CandidateScores> scoreToCriteria(long userId, List<ProcessedCv> candidateInformation, Role role) {
+        if (role.scoringCriteria().isEmpty()) {
+            throw new RoleHasNoCriteriaException();
+        }
+        if (role.scoringCriteria().size() > maxRoleCriteriaCount) {
+            throw new RoleCriteriaLimitReachedException(maxRoleCriteriaCount);
+        }
         var counter = new AtomicInteger(0);
         var total = candidateInformation.size();
         return virtualThreadList(candidateInformation, cv -> {

@@ -64,7 +64,7 @@ public class CvDaoImpl implements CvDao {
     @Override
     public List<CandidateData> getAllNames(long userId, long roleId) {
         return candidateRepository.findAllByUserIdAndRoleId(userId, roleId).stream()
-                .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getCurrentlySelected()))
+                .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected()))
                 .toList();
     }
 
@@ -82,8 +82,8 @@ public class CvDaoImpl implements CvDao {
     }
 
     @Override
-    public void deleteByCandidateId(long cvId) {
-        cvRepository.deleteById(cvId);
+    public void deleteByCandidateId(long candidateId) {
+        candidateRepository.deleteById(candidateId);
     }
 
 
@@ -95,7 +95,7 @@ public class CvDaoImpl implements CvDao {
     @Override
     public Optional<CandidateData> updateCurrentlySelectedById(long cvId, boolean select) {
         return candidateRepository.updateCurrentlySelectedById(cvId, select)
-                .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getCurrentlySelected()));
+                .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected()));
     }
 
     @Override
@@ -121,6 +121,6 @@ public class CvDaoImpl implements CvDao {
 
     @Override
     public List<CandidateData> getByDataId(Long id) {
-        return candidateRepository.findAllByCvId(id).stream().map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getCurrentlySelected())).toList();
+        return candidateRepository.findAllByCvId(id).stream().map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected())).toList();
     }
 }

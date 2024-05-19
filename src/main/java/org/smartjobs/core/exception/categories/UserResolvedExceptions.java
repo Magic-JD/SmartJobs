@@ -49,4 +49,11 @@ public class UserResolvedExceptions {
             super(STR. "The criteria limit is \{ criteriaLimit } - Please remove existing criteria before adding more." );
         }
     }
+
+    public static class RoleHasNoCriteriaException extends RuntimeException {
+
+        public RoleHasNoCriteriaException() {
+            super("There is no criteria selected for this role. Please select at least one criteria.");
+        }
+    }
 }

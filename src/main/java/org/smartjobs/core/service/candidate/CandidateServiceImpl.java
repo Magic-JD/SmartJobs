@@ -60,7 +60,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         var processedCvs = ConcurrencyUtil.virtualThreadList(
                 fileInformationList,
-                fileInformation -> processAndUpdateProgress(userId, fileInformation, counter, total)
+                fileInformation -> processAndUpdateProgress(userId, roleId, fileInformation, counter, total)
         );
 
         List<ProcessedCv> list = processedCvs.stream()
@@ -70,13 +70,13 @@ public class CandidateServiceImpl implements CandidateService {
         cvDao.addCvsToRepository(userId, roleId, list);
     }
 
-    private Optional<ProcessedCv> processAndUpdateProgress(long userId, Optional<FileInformation> fileInformation, AtomicInteger counter, int total) {
-        var processedCv = fileInformation.flatMap(fi -> this.processCv(fi, userId));
+    private Optional<ProcessedCv> processAndUpdateProgress(long userId, long roleId, Optional<FileInformation> fileInformation, AtomicInteger counter, int total) {
+        var processedCv = fileInformation.flatMap(fi -> this.processCv(fi, userId, roleId));
         sseService.send(userId, "progress-upload", STR. "<div>Uploaded: \{ counter.incrementAndGet() }/\{ total }</div>" );
         return processedCv;
     }
 
-    private Optional<ProcessedCv> processCv(FileInformation fileInformation, long userId) {
+    private Optional<ProcessedCv> processCv(FileInformation fileInformation, long userId, long roleId) {
         String hash = fileInformation.fileHash();
         Optional<CvData> coreData = cvDao.getByHash(hash);
         if (coreData.isPresent()) {
@@ -87,7 +87,7 @@ public class CandidateServiceImpl implements CandidateService {
                 return nameFuture.join().map(name -> new ProcessedCv(null, name, true, cvData.fileHash(), cvData.condensedDescription()));
             } else {
                 String name = candidateData.getFirst().name();
-                var existingRowForUser = candidateData.stream().filter(cd -> cd.userId() == userId).findFirst();
+                var existingRowForUser = candidateData.stream().filter(cd -> cd.userId() == userId && cd.roleId() == roleId).findFirst();
                 if (existingRowForUser.isPresent()) {
                     CandidateData currentData = existingRowForUser.get();
                     if (!currentData.currentlySelected()) {
@@ -114,11 +114,11 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "cv-currently-selected", key = "{#userId, #currentRole}"),
-            @CacheEvict(value = "cv-name", key = "{#userId, #currentRole}")
+            @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
+            @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
     })
-    public void deleteCandidate(long userId, long currentRole, long cvId) {
-        cvDao.deleteByCandidateId(cvId);
+    public void deleteCandidate(long userId, long roleId, long candidateId) {
+        cvDao.deleteByCandidateId(candidateId);
     }
 
     @Override
@@ -131,9 +131,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    @Cacheable(value = "cv-currently-selected", key = "{#userId, #currentRole}")
-    public int findSelectedCandidateCount(long userId, long currentRole) {
-        return cvDao.findSelectedCandidateCount(userId, currentRole);
+    @Cacheable(value = "cv-currently-selected", key = "{#userId, #roleId}")
+    public int findSelectedCandidateCount(long userId, long roleId) {
+        return cvDao.findSelectedCandidateCount(userId, roleId);
     }
 
     @Override
