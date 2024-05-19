@@ -8,17 +8,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CandidateService {
-    List<ProcessedCv> getFullCandidateInfo(String userName, long roleId);
+    List<ProcessedCv> getFullCandidateInfo(long userId, long roleId);
 
-    List<CandidateData> getCurrentCandidates(String userName, long role);
+    List<CandidateData> getCurrentCandidates(long userId, long role);
 
-    void updateCandidateCvs(String username, long roleId, List<Optional<FileInformation>> fileInformationList);
+    void updateCandidateCvs(long userId, long roleId, List<Optional<FileInformation>> fileInformationList);
 
-    void deleteCandidate(String username, long currentRole, long cvId);
+    void deleteCandidate(long userId, long currentRole, long cvId);
 
-    Optional<CandidateData> toggleCandidateSelect(String currentUsername, long currentRole, long cvId, boolean select);
+    Optional<CandidateData> toggleCandidateSelect(long userId, long roleId, long cvId, boolean select);
 
-    int findSelectedCandidateCount(String username, long currentRole);
+    int findSelectedCandidateCount(long userId, long currentRole);
 
-    void deleteAllCandidates(String username, long roleId);
+    void deleteAllCandidates(long userId, long roleId);
 }

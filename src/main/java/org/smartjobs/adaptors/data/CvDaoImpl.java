@@ -27,13 +27,13 @@ public class CvDaoImpl implements CvDao {
 
     @Override
     @Transactional
-    public void addCvsToRepository(String username, long roleId, List<ProcessedCv> processedCvs) {
+    public void addCvsToRepository(long userId, long roleId, List<ProcessedCv> processedCvs) {
         List<Cv> cvs = processedCvs.stream().map(cv -> Cv.builder()
                 .candidateName(cv.name())
                 .fileHash(cv.fileHash())
                 .currentlySelected(cv.currentlySelected())
                 .condensedText(cv.condensedDescription())
-                .username(username)
+                .userId(userId)
                 .roleId(roleId)
                 .build()).toList();
         log.debug("Preparing to save candidate CVs as: {}", cvs);
@@ -41,13 +41,13 @@ public class CvDaoImpl implements CvDao {
     }
 
     @Override
-    public List<CandidateData> getAllNames(String userName, Long roleId) {
-        return repository.findAllProjectedAsCandidateData(userName, roleId);
+    public List<CandidateData> getAllNames(long userId, long roleId) {
+        return repository.findAllProjectedAsCandidateData(userId, roleId);
     }
 
     @Override
-    public List<ProcessedCv> getAllSelected(String userName, Long roleId) {
-        return repository.findByCurrentlySelected(true, userName, roleId)
+    public List<ProcessedCv> getAllSelected(long userId, long roleId) {
+        return repository.findByCurrentlySelected(true, userId, roleId)
                 .stream()
                 .map(cv -> new ProcessedCv(
                         cv.getId(),
@@ -76,13 +76,13 @@ public class CvDaoImpl implements CvDao {
     }
 
     @Override
-    public int findSelectedCandidateCount(String username, long roleId) {
-        return repository.countByCurrentlySelectedAndUsernameAndRoleId(true, username, roleId);
+    public int findSelectedCandidateCount(long userId, long roleId) {
+        return repository.countByCurrentlySelectedAndUsernameAndRoleId(true, userId, roleId);
     }
 
     @Override
-    public void deleteAllCandidates(String username, Long roleId) {
-        repository.deleteByUsernameAndRoleId(username, roleId);
+    public void deleteAllCandidates(long userId, long roleId) {
+        repository.deleteByUsernameAndRoleId(userId, roleId);
     }
 
     @Override

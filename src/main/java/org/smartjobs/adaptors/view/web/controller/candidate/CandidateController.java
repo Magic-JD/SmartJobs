@@ -5,12 +5,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.Role;
+import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
 import org.smartjobs.core.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -53,20 +53,20 @@ public class CandidateController {
 
     @HxRequest
     @PostMapping("/upload")
-    public String uploadFile(@AuthenticationPrincipal UserDetails userDetails,
+    public String uploadFile(@AuthenticationPrincipal User user,
                              @RequestParam(name = "files") MultipartFile[] files,
                              Model model) {
-        String username = userDetails.getUsername();
-        sseService.send(username, "progress-upload", STR. "<div>Uploaded: 0/\{ files.length }</div>" );
-        if (!creditService.debitAndVerify(username, files.length)) {
+        var userId = user.getId();
+        sseService.send(userId, "progress-upload", STR. "<div>Uploaded: 0/\{ files.length }</div>" );
+        if (!creditService.debitAndVerify(userId, files.length)) {
             throw new NotEnoughCreditException();
         }
-        var role = roleService.getCurrentlySelectedRole(username).orElseThrow(NoRoleSelectedException::new);
+        var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(NoRoleSelectedException::new);
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
                 .toList();
-        candidateService.updateCandidateCvs(username, role.id(), handledFiles);
-        int selectedCount = candidateService.findSelectedCandidateCount(username, role.id());
+        candidateService.updateCandidateCvs(userId, role.id(), handledFiles);
+        int selectedCount = candidateService.findSelectedCandidateCount(userId, role.id());
 
         model.addAttribute("selectedCount", selectedCount);
         model.addAttribute("currentRole", role);
@@ -76,14 +76,14 @@ public class CandidateController {
 
     @HxRequest
     @GetMapping()
-    public String getAllCandidates(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        String currentUsername = userDetails.getUsername();
-        var selectedRoleOptional = roleService.getCurrentlySelectedRoleId(currentUsername);
+    public String getAllCandidates(@AuthenticationPrincipal User user, Model model) {
+        var userId = user.getId();
+        var selectedRoleOptional = roleService.getCurrentlySelectedRoleId(userId);
         if (selectedRoleOptional.isEmpty()) {
             return EMPTY_FRAGMENT;
         }
         var selectedRole = selectedRoleOptional.get();
-        var candidates = candidateService.getCurrentCandidates(currentUsername, selectedRole).stream()
+        var candidates = candidateService.getCurrentCandidates(userId, selectedRole).stream()
                 .sorted(Comparator.comparing(CandidateData::name)).toList();
         model.addAttribute("candidates", candidates);
         return CANDIDATE_TABLE_FRAGMENT;
@@ -91,21 +91,20 @@ public class CandidateController {
 
     @HxRequest
     @DeleteMapping("/delete/{cvId}")
-    public String deleteCandidate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable long cvId, HttpServletResponse response) {
-        String currentUsername = userDetails.getUsername();
-        var selectedRole = roleService.getCurrentlySelectedRoleId(currentUsername).orElseThrow();
-        candidateService.deleteCandidate(currentUsername, selectedRole, cvId);
+    public String deleteCandidate(@AuthenticationPrincipal User user, @PathVariable long cvId, HttpServletResponse response) {
+        var userId = user.getId();
+        var selectedRole = roleService.getCurrentlySelectedRoleId(userId).orElseThrow();
+        candidateService.deleteCandidate(userId, selectedRole, cvId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         return EMPTY_FRAGMENT;
     }
 
     @HxRequest
     @DeleteMapping("/delete/all")
-    public String deleteAllCandidates(@AuthenticationPrincipal UserDetails userDetails, Model model, HttpServletResponse response) {
-        String currentUsername = userDetails.getUsername();
-        String username = userDetails.getUsername();
-        Long roleId = roleService.getCurrentlySelectedRoleId(username).orElseThrow(NoRoleSelectedException::new);
-        candidateService.deleteAllCandidates(currentUsername, roleId);
+    public String deleteAllCandidates(@AuthenticationPrincipal User user, Model model, HttpServletResponse response) {
+        var userId = user.getId();
+        Long roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(NoRoleSelectedException::new);
+        candidateService.deleteAllCandidates(userId, roleId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         model.addAttribute("candidates", Collections.emptyList());
         return CANDIDATE_TABLE_FRAGMENT;
@@ -113,11 +112,11 @@ public class CandidateController {
 
     @HxRequest
     @PutMapping("/select/{cvId}")
-    public String selectCandidate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable long cvId, @PathParam("select") boolean select, Model model, HttpServletResponse response) {
-        String currentUsername = userDetails.getUsername();
+    public String selectCandidate(@AuthenticationPrincipal User user, @PathVariable long cvId, @PathParam("select") boolean select, Model model, HttpServletResponse response) {
+        var userId = user.getId();
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
-        long roleId = roleService.getCurrentlySelectedRoleId(currentUsername).orElseThrow();
-        return candidateService.toggleCandidateSelect(currentUsername, roleId, cvId, select).map(cvData -> {
+        long roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow();
+        return candidateService.toggleCandidateSelect(userId, roleId, cvId, select).map(cvData -> {
             model.addAttribute("candidate", cvData);
             return SINGLE_CANDIDATE_ROW_FRAGMENT;
         }).orElse(EMPTY_FRAGMENT);
@@ -126,14 +125,14 @@ public class CandidateController {
 
     @HxRequest
     @GetMapping("/number/selected")
-    public String findNumberOfCandidatesSelected(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        String username = userDetails.getUsername();
-        Optional<Role> role = roleService.getCurrentlySelectedRole(username);
+    public String findNumberOfCandidatesSelected(@AuthenticationPrincipal User user, Model model) {
+        var userId = user.getId();
+        Optional<Role> role = roleService.getCurrentlySelectedRole(userId);
         var currentRole = role
                 .map(Role::position)
                 .orElse("NONE");
         int selectedCount = role
-                .map(r -> candidateService.findSelectedCandidateCount(username, r.id()))
+                .map(r -> candidateService.findSelectedCandidateCount(userId, r.id()))
                 .orElse(0);
 
         model.addAttribute("selectedCount", selectedCount);

@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface CreditRepository extends JpaRepository<Credit, Long> {
 
-    List<Credit> findByUsername(String username);
+    List<Credit> findByUserId(long userId);
 
 }

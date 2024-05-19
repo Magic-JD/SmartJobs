@@ -27,14 +27,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Cacheable("current-role-id")
-    public Optional<Long> getCurrentlySelectedRoleId(String username) {
-        return roleDao.getCurrentlySelectedRoleById(username);
+    public Optional<Long> getCurrentlySelectedRoleId(long userId) {
+        return roleDao.getCurrentlySelectedRoleById(userId);
     }
 
     @Override
     @Cacheable("current-role")
-    public Optional<Role> getCurrentlySelectedRole(String username) {
-        return roleDao.getCurrentlySelectedRole(username);
+    public Optional<Role> getCurrentlySelectedRole(long userId) {
+        return roleDao.getCurrentlySelectedRole(userId);
     }
 
     @Override
@@ -42,8 +42,8 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "current-role-id"),
             @CacheEvict(value = "current-role")
     })
-    public void deleteCurrentlySelectedRole(String username) {
-        roleDao.deleteCurrentlySelectedRole(username);
+    public void deleteCurrentlySelectedRole(long userId) {
+        roleDao.deleteCurrentlySelectedRole(userId);
     }
 
     @Override
@@ -51,8 +51,8 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "current-role-id", key = "#username"),
             @CacheEvict(value = "current-role", key = "#username")
     })
-    public void setCurrentlySelectedRole(String username, long roleId) {
-        roleDao.setSelectedRole(username, roleId);
+    public void setCurrentlySelectedRole(long userId, long roleId) {
+        roleDao.setSelectedRole(userId, roleId);
     }
 
     @Override
@@ -63,8 +63,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Cacheable("role-display")
-    public List<RoleDisplay> getUserRoles(String username) {
-        return roleDao.getUserRoles(username);
+    public List<RoleDisplay> getUserRoles(long userId) {
+        return roleDao.getUserRoles(userId);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "current-role-id", key = "#username"),
             @CacheEvict(value = "current-role", key = "#username")
     })
-    public Role createRole(String name, String username) {
+    public Role createRole(String name, long username) {
         var roleId = roleDao.saveRole(username, name);
         roleDao.setSelectedRole(username, roleId);
         return new Role(roleId, name, Collections.emptyList());
@@ -84,7 +84,7 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "role", key = "#roleId"),
             @CacheEvict(value = "role-display", key = "#candidateName")
     })
-    public void deleteRole(String candidateName, long roleId) {
+    public void deleteRole(long candidateName, long roleId) {
         roleDao.delete(roleId);
     }
 

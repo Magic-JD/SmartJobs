@@ -17,15 +17,15 @@ public class CreditDaoImpl implements CreditDao {
     }
 
     @Override
-    public int getUserCredits(String username) {
-        return repository.findByUsername(username).stream()
+    public int getUserCredits(long userId) {
+        return repository.findByUserId(userId).stream()
                 .map(Credit::getBalance)
                 .mapToInt(Integer::intValue)
                 .sum();
     }
 
     @Override
-    public void event(String username, int amount, String type) {
-        repository.save(new Credit(null, username, amount, type));
+    public void event(long userId, int amount, String type) {
+        repository.save(new Credit(null, userId, amount, type));
     }
 }

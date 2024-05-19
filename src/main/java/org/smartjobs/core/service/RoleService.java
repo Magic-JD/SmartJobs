@@ -7,21 +7,21 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoleService {
-    Optional<Long> getCurrentlySelectedRoleId(String username);
+    Optional<Long> getCurrentlySelectedRoleId(long userId);
 
-    Optional<Role> getCurrentlySelectedRole(String username);
+    Optional<Role> getCurrentlySelectedRole(long userId);
 
-    void deleteCurrentlySelectedRole(String username);
+    void deleteCurrentlySelectedRole(long userId);
 
-    void setCurrentlySelectedRole(String username, long roleId);
+    void setCurrentlySelectedRole(long userId, long roleId);
 
     Role getRole(long id);
 
-    List<RoleDisplay> getUserRoles(String username);
+    List<RoleDisplay> getUserRoles(long userId);
 
-    Role createRole(String name, String userId);
+    Role createRole(String name, long userId);
 
-    void deleteRole(String name, long roleId);
+    void deleteRole(long userId, long roleId);
 
     void addCriteriaToRole(long roleId, long criteriaId);
 

@@ -27,12 +27,12 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     @Override
-    public List<CandidateScores> scoreToCriteria(String username, List<ProcessedCv> candidateInformation, Role role) {
+    public List<CandidateScores> scoreToCriteria(long userId, List<ProcessedCv> candidateInformation, Role role) {
         var counter = new AtomicInteger(0);
         var total = candidateInformation.size();
         return virtualThreadList(candidateInformation, cv -> {
             CandidateScores candidateScores = generateCandidateScore(cv, role.scoringCriteria());
-            sseService.send(username, "progress-analysis", STR. "<div>Analyzed: \{ counter.incrementAndGet() }/\{ total }</div>" );
+            sseService.send(userId, "progress-analysis", STR. "<div>Analyzed: \{ counter.incrementAndGet() }/\{ total }</div>" );
             return candidateScores;
         });
     }

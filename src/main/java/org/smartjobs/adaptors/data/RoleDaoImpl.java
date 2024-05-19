@@ -32,14 +32,14 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public List<RoleDisplay> getUserRoles(String username) {
-        return roleRepository.findByUserId(username).stream()
+    public List<RoleDisplay> getUserRoles(long userId) {
+        return roleRepository.findByUserId(userId).stream()
                 .map(role -> new RoleDisplay(role.getId(), role.getPosition()))
                 .toList();
     }
 
     @Override
-    public long saveRole(String userId, String name) {
+    public long saveRole(long userId, String name) {
         return roleRepository.saveAndFlush(Role.builder().userId(userId).position(name).build()).getId();
     }
 
@@ -47,7 +47,7 @@ public class RoleDaoImpl implements RoleDao {
     public org.smartjobs.core.entities.Role getRoleById(long id) {
         var criteria = roleCriteriaRepository.findAllByRoleId(id).stream()
                 .map(rc -> userCriteriaRepository.findById(rc.getCriteriaId())).map(Optional::orElseThrow).map(userCriteria -> {
-                    Criteria defCrit = definedScoringCriteriaRepository.findById(userCriteria.getDefinedCriteriaId()).orElseThrow();
+                    DefinedCriteria defCrit = definedScoringCriteriaRepository.findById(userCriteria.getDefinedCriteriaId()).orElseThrow();
                     String aiPrompt = defCrit.getAiPrompt();
                     return new ScoringCriteria(
                             userCriteria.getId(),
@@ -78,28 +78,28 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public void setSelectedRole(String username, Long roleId) {
-        selectedRoleRepository.saveAndFlush(selectedRoleRepository.findByUsername(username)
+    public void setSelectedRole(long userId, long roleId) {
+        selectedRoleRepository.saveAndFlush(selectedRoleRepository.findByUsername(userId)
                 .map(sr -> {
                     sr.setRoleId(roleId);
                     return sr;
                 })
-                .orElse(SelectedRole.builder().username(username).roleId(roleId).build()));
+                .orElse(SelectedRole.builder().userId(userId).roleId(roleId).build()));
     }
 
     @Override
-    public Optional<Long> getCurrentlySelectedRoleById(String username) {
-        return selectedRoleRepository.findByUsername(username).map(SelectedRole::getRoleId);
+    public Optional<Long> getCurrentlySelectedRoleById(long userId) {
+        return selectedRoleRepository.findByUsername(userId).map(SelectedRole::getRoleId);
     }
 
     @Override
-    public void deleteCurrentlySelectedRole(String username) {
-        selectedRoleRepository.deleteByUsername(username);
+    public void deleteCurrentlySelectedRole(long userId) {
+        selectedRoleRepository.deleteByUserId(userId);
     }
 
     @Override
-    public Optional<org.smartjobs.core.entities.Role> getCurrentlySelectedRole(String username) {
-        return selectedRoleRepository.findByUsername(username)
+    public Optional<org.smartjobs.core.entities.Role> getCurrentlySelectedRole(long userId) {
+        return selectedRoleRepository.findByUsername(userId)
                 .map(SelectedRole::getRoleId)
                 .map(this::getRoleById);
     }
@@ -111,7 +111,7 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public void deleteUserCriteria(Long criteriaId) {
+    public void deleteUserCriteria(long criteriaId) {
         userCriteriaRepository.deleteById(criteriaId);
     }
 }

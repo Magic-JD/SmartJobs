@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoleDao {
-    List<RoleDisplay> getUserRoles(String username);
+    List<RoleDisplay> getUserRoles(long userId);
 
-    long saveRole(String userId, String name);
+    long saveRole(long userId, String name);
 
     Role getRoleById(long id);
 
@@ -20,15 +20,15 @@ public interface RoleDao {
 
     void removeCriteriaFromRole(long roleId, long criteriaId);
 
-    void setSelectedRole(String username, Long roleId);
+    void setSelectedRole(long userId, long roleId);
 
-    Optional<Long> getCurrentlySelectedRoleById(String username);
+    Optional<Long> getCurrentlySelectedRoleById(long userId);
 
-    void deleteCurrentlySelectedRole(String username);
+    void deleteCurrentlySelectedRole(long userId);
 
-    Optional<Role> getCurrentlySelectedRole(String username);
+    Optional<Role> getCurrentlySelectedRole(long userId);
 
     UserCriteria createNewUserCriteria(long definedCriteriaId, String value, int score);
 
-    void deleteUserCriteria(Long criteriaId);
+    void deleteUserCriteria(long criteriaId);
 }

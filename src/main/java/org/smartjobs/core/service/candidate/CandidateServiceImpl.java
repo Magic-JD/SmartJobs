@@ -39,40 +39,40 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public List<ProcessedCv> getFullCandidateInfo(String username, long roleId) {
-        return cvDao.getAllSelected(username, roleId);
+    public List<ProcessedCv> getFullCandidateInfo(long userId, long roleId) {
+        return cvDao.getAllSelected(userId, roleId);
     }
 
     @Override
-    @Cacheable(value = "cv-name", key = "{#username, #roleId}")
-    public List<CandidateData> getCurrentCandidates(String username, long roleId) {
-        return cvDao.getAllNames(username, roleId);
+    @Cacheable(value = "cv-name", key = "{#userId, #roleId}")
+    public List<CandidateData> getCurrentCandidates(long userId, long roleId) {
+        return cvDao.getAllNames(userId, roleId);
     }
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "cv-currently-selected", key = "{#username, #roleId}"),
-            @CacheEvict(value = "cv-name", key = "{#username, #roleId}")
+            @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
+            @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
     })
-    public void updateCandidateCvs(String username, long roleId, List<Optional<FileInformation>> fileInformationList) {
+    public void updateCandidateCvs(long userId, long roleId, List<Optional<FileInformation>> fileInformationList) {
         var counter = new AtomicInteger(0);
         var total = fileInformationList.size();
 
         var processedCvs = ConcurrencyUtil.virtualThreadList(
                 fileInformationList,
-                fileInformation -> processAndUpdateProgress(username, fileInformation, counter, total)
+                fileInformation -> processAndUpdateProgress(userId, fileInformation, counter, total)
         );
 
         List<ProcessedCv> list = processedCvs.stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
-        cvDao.addCvsToRepository(username, roleId, list);
+        cvDao.addCvsToRepository(userId, roleId, list);
     }
 
-    private Optional<ProcessedCv> processAndUpdateProgress(String username, Optional<FileInformation> fileInformation, AtomicInteger counter, int total) {
+    private Optional<ProcessedCv> processAndUpdateProgress(long userId, Optional<FileInformation> fileInformation, AtomicInteger counter, int total) {
         var processedCv = fileInformation.flatMap(this::processCv);
-        sseService.send(username, "progress-upload", STR. "<div>Uploaded: \{ counter.incrementAndGet() }/\{ total }</div>" );
+        sseService.send(userId, "progress-upload", STR. "<div>Uploaded: \{ counter.incrementAndGet() }/\{ total }</div>" );
         return processedCv;
     }
 
@@ -102,34 +102,34 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "cv-currently-selected", key = "{#username, #currentRole}"),
-            @CacheEvict(value = "cv-name", key = "{#username, #currentRole}")
+            @CacheEvict(value = "cv-currently-selected", key = "{#userId, #currentRole}"),
+            @CacheEvict(value = "cv-name", key = "{#userId, #currentRole}")
     })
-    public void deleteCandidate(String username, long currentRole, long cvId) {
+    public void deleteCandidate(long userId, long currentRole, long cvId) {
         cvDao.deleteByCvId(cvId);
     }
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "cv-currently-selected", key = "{#currentUsername, #roleId}"),
-            @CacheEvict(value = "cv-name", key = "{#currentUsername, #roleId}")
+            @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
+            @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
     })
-    public Optional<CandidateData> toggleCandidateSelect(String currentUsername, long roleId, long cvId, boolean select) {
+    public Optional<CandidateData> toggleCandidateSelect(long userId, long roleId, long cvId, boolean select) {
         return cvDao.updateCurrentlySelectedById(cvId, select);
     }
 
     @Override
-    @Cacheable(value = "cv-currently-selected", key = "{#username, #currentRole}")
-    public int findSelectedCandidateCount(String username, long currentRole) {
-        return cvDao.findSelectedCandidateCount(username, currentRole);
+    @Cacheable(value = "cv-currently-selected", key = "{#userId, #currentRole}")
+    public int findSelectedCandidateCount(long userId, long currentRole) {
+        return cvDao.findSelectedCandidateCount(userId, currentRole);
     }
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "cv-currently-selected", key = "{#username, #roleId}"),
-            @CacheEvict(value = "cv-name", key = "{#username, #roleId}")
+            @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
+            @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
     })
-    public void deleteAllCandidates(String username, long roleId) {
-        cvDao.deleteAllCandidates(username, roleId);
+    public void deleteAllCandidates(long userId, long roleId) {
+        cvDao.deleteAllCandidates(userId, roleId);
     }
 }

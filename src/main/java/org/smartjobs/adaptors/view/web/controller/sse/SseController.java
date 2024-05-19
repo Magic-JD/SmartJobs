@@ -1,9 +1,9 @@
 package org.smartjobs.adaptors.view.web.controller.sse;
 
 import lombok.extern.slf4j.Slf4j;
+import org.smartjobs.core.entities.User;
 import org.smartjobs.core.service.SseService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +22,8 @@ public class SseController {
     }
 
     @GetMapping("/register")
-    public SseEmitter register(@AuthenticationPrincipal UserDetails userDetails) {
-        return sseService.register(userDetails.getUsername());
+    public SseEmitter register(@AuthenticationPrincipal User user) {
+        return sseService.register(user.getId());
     }
 
 }

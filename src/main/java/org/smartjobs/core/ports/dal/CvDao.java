@@ -9,11 +9,11 @@ import java.util.Optional;
 
 public interface CvDao {
     @Transactional
-    void addCvsToRepository(String username, long roleId, List<ProcessedCv> processedCvs);
+    void addCvsToRepository(long userId, long roleId, List<ProcessedCv> processedCvs);
 
-    List<CandidateData> getAllNames(String userName, Long roleId);
+    List<CandidateData> getAllNames(long userId, long roleId);
 
-    List<ProcessedCv> getAllSelected(String userName, Long roleId);
+    List<ProcessedCv> getAllSelected(long userId, long roleId);
 
     void deleteByCvId(long cvId);
 
@@ -21,9 +21,9 @@ public interface CvDao {
 
     Optional<CandidateData> updateCurrentlySelectedById(long cvId, boolean select);
 
-    int findSelectedCandidateCount(String username, long roleId);
+    int findSelectedCandidateCount(long userId, long roleId);
 
-    void deleteAllCandidates(String username, Long roleId);
+    void deleteAllCandidates(long userId, long roleId);
 
     Optional<ProcessedCv> getByHash(String hash);
 }

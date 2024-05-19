@@ -1,9 +1,9 @@
 package org.smartjobs.core.service;
 
 public interface CreditService {
-    boolean userHasEnoughCredits(String username);
+    boolean userHasEnoughCredits(long userId);
 
-    int userCredit(String username);
+    int userCredit(long userId);
 
-    boolean debitAndVerify(String username, int size);
+    boolean debitAndVerify(long userId, int size);
 }

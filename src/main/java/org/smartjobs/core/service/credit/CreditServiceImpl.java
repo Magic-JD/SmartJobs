@@ -21,24 +21,24 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
-    public boolean userHasEnoughCredits(String username) {
-        return creditDao.getUserCredits(username) >= 0;
+    public boolean userHasEnoughCredits(long userId) {
+        return creditDao.getUserCredits(userId) >= 0;
     }
 
     @Override
-    public int userCredit(String username) {
-        return creditDao.getUserCredits(username);
+    public int userCredit(long userId) {
+        return creditDao.getUserCredits(userId);
     }
 
     @Override
-    public boolean debitAndVerify(String username, int amount) {
-        creditDao.event(username, amount * -1, "DEBIT");
-        int remainingCredits = userCredit(username);
+    public boolean debitAndVerify(long userId, int amount) {
+        creditDao.event(userId, amount * -1, "DEBIT");
+        int remainingCredits = userCredit(userId);
         if (remainingCredits >= 0) {
-            sseService.send(username, "credit", STR. "Credit: \{ decimalFormat.format(remainingCredits) }" );
+            sseService.send(userId, "credit", STR. "Credit: \{ decimalFormat.format(remainingCredits) }" );
             return true;
         } else {
-            creditDao.event(username, amount, "REFUND");
+            creditDao.event(userId, amount, "REFUND");
             return false;
         }
     }

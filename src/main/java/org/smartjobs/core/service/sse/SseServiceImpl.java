@@ -16,25 +16,25 @@ import java.util.concurrent.ConcurrentMap;
 @Slf4j
 public class SseServiceImpl implements SseService {
 
-    private final ConcurrentMap<String, ConcurrentLinkedQueue<SseEmitter>> sseEmitters = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, ConcurrentLinkedQueue<SseEmitter>> sseEmitters = new ConcurrentHashMap<>();
 
     @Override
-    public SseEmitter register(String username) {
+    public SseEmitter register(long userId) {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
-        var current = sseEmitters.getOrDefault(username, new ConcurrentLinkedQueue<>());
+        var current = sseEmitters.getOrDefault(userId, new ConcurrentLinkedQueue<>());
         current.add(sseEmitter);
-        sseEmitters.put(username, current);
-        log.info("Adding SseEmitter for user: {}", username);
+        sseEmitters.put(userId, current);
+        log.info("Adding SseEmitter for user: {}", userId);
         sseEmitter.onCompletion(() -> log.info("SseEmitter is completed"));
         sseEmitter.onTimeout(() -> log.info("SseEmitter is timed out"));
         return sseEmitter;
     }
 
     @Override
-    public void send(String username, String messageName, String content) {
-        var emitters = sseEmitters.get(username);
+    public void send(long userId, String messageName, String content) {
+        var emitters = sseEmitters.get(userId);
         if (emitters == null) {
-            log.error("Update {} never reached user {}", messageName, username);
+            log.error("Update {} never reached user {}", messageName, userId);
             return;
         }
 
@@ -42,7 +42,7 @@ public class SseServiceImpl implements SseService {
             try {
                 emitter.send(SseEmitter.event().name(messageName).data(content));
             } catch (IOException | IllegalStateException e) {
-                log.error("Update {} never reached user {}", messageName, username);
+                log.error("Update {} never reached user {}", messageName, userId);
             }
         });
     }
@@ -50,25 +50,25 @@ public class SseServiceImpl implements SseService {
     @Scheduled(fixedRate = 1000)
     private void heartBeat() {
         List<Link> list = sseEmitters.entrySet().stream().flatMap(entry -> {
-            String key = entry.getKey();
+            long key = entry.getKey();
             return entry.getValue().stream().map(e -> new Link(key, e));
         }).toList();
         list.forEach(link -> {
             try {
                 link.emitter().send(SseEmitter.event().name("heart-beat").data(System.currentTimeMillis()));
             } catch (IOException | IllegalStateException e) {
-                String username = link.username();
-                log.info("Heartbeat lost, removing user {}", username);
-                ConcurrentLinkedQueue<SseEmitter> currentList = sseEmitters.get(username);
+                long userId = link.userId();
+                log.info("Heartbeat lost, removing user {}", userId);
+                ConcurrentLinkedQueue<SseEmitter> currentList = sseEmitters.get(userId);
                 currentList.remove(link.emitter());
                 if (currentList.isEmpty()) {
-                    sseEmitters.remove(username);
+                    sseEmitters.remove(userId);
                 }
             }
         });
     }
 
-    private record Link(String username, SseEmitter emitter) {
+    private record Link(long userId, SseEmitter emitter) {
     }
 
 }

@@ -18,7 +18,7 @@ public class Credit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    private Long userId;
 
     private int balance;
 

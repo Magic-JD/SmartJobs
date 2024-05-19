@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Criteria {
+public class DefinedCriteria {
 
     @Id
     @Column(updatable = false, nullable = false)

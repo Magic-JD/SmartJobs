@@ -3,7 +3,7 @@ package org.smartjobs.core.service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 public interface SseService {
-    SseEmitter register(String username);
+    SseEmitter register(long userId);
 
-    void send(String username, String messageName, String content);
+    void send(long userId, String messageName, String content);
 }

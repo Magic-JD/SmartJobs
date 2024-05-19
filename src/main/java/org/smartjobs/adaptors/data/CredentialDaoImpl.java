@@ -1,13 +1,12 @@
 package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.CredentialRepository;
+import org.smartjobs.core.entities.User;
 import org.smartjobs.core.ports.dal.CredentialDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,42 +21,7 @@ public class CredentialDaoImpl implements CredentialDao {
     }
 
     @Override
-    public Optional<UserDetails> getUserPassword(String username) {
-        return repository.findByUsername(username).map(user -> new UserDetails() {
-            @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
-                return List.of((GrantedAuthority) () -> "USER");
-            }
-
-            @Override
-            public String getPassword() {
-                return user.getPassword();
-            }
-
-            @Override
-            public String getUsername() {
-                return user.getUsername();
-            }
-
-            @Override
-            public boolean isAccountNonExpired() {
-                return true;
-            }
-
-            @Override
-            public boolean isAccountNonLocked() {
-                return true;
-            }
-
-            @Override
-            public boolean isCredentialsNonExpired() {
-                return true;
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        });
+    public Optional<User> getUser(String username) {
+        return repository.findByUsername(username).map(user -> new User(user.getUsername(), user.getPassword(), user.getId(), List.of((GrantedAuthority) () -> "USER")));
     }
 }

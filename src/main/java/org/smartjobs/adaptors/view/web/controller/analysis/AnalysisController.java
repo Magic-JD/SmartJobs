@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
+import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.CandidateService;
@@ -12,7 +13,6 @@ import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -58,22 +58,22 @@ public class AnalysisController {
 
     @HxRequest
     @GetMapping("/scoring")
-    public String scoreAllCandidates(@AuthenticationPrincipal UserDetails userDetails, HttpServletResponse response, Model model) {
-        String username = userDetails.getUsername();
-        var roleId = roleService.getCurrentlySelectedRoleId(username).orElseThrow(UserResolvedExceptions.NoRoleSelectedException::new);
-        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(username, roleId);
+    public String scoreAllCandidates(@AuthenticationPrincipal User user, HttpServletResponse response, Model model) {
+        var userId = user.getId();
+        var roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(UserResolvedExceptions.NoRoleSelectedException::new);
+        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(userId, roleId);
         if (candidateInformation.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
         }
-        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRoleId(username);
+        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRoleId(userId);
         if (currentlySelectedRole.isEmpty()) {
             return createUserErrorMessageToDisplayForUser("Please select a role", response, model);
         }
-        if (!creditService.debitAndVerify(username, candidateInformation.size())) {
+        if (!creditService.debitAndVerify(userId, candidateInformation.size())) {
             return createUserErrorMessageToDisplayForUser("Please purchase more credits", response, model);
         }
         var role = roleService.getRole(currentlySelectedRole.get());
-        var results = analysisService.scoreToCriteria(username, candidateInformation, role).stream()
+        var results = analysisService.scoreToCriteria(userId, candidateInformation, role).stream()
                 .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
         model.addAttribute("results", results);
