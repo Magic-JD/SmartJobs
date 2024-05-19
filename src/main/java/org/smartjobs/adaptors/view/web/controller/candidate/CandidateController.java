@@ -69,7 +69,7 @@ public class CandidateController {
         int selectedCount = candidateService.findSelectedCandidateCount(userId, role.id());
 
         model.addAttribute("selectedCount", selectedCount);
-        model.addAttribute("currentRole", role);
+        model.addAttribute("currentRole", role.position());
         return CANDIDATE_PAGE;
     }
 
