@@ -46,7 +46,7 @@ public class RoleDaoImpl implements RoleDao {
     @Override
     public org.smartjobs.core.entities.Role getRoleById(long id) {
         var criteria = roleCriteriaRepository.findAllByRoleId(id).stream()
-                .map(rc -> userCriteriaRepository.findById(rc.getCriteriaId())).map(Optional::orElseThrow).map(userCriteria -> {
+                .map(rc -> userCriteriaRepository.findById(rc.getUserCriteriaId())).map(Optional::orElseThrow).map(userCriteria -> {
                     DefinedCriteria defCrit = definedScoringCriteriaRepository.findById(userCriteria.getDefinedCriteriaId()).orElseThrow();
                     String aiPrompt = defCrit.getAiPrompt();
                     return new ScoringCriteria(
@@ -69,7 +69,7 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public void addCriteriaToRole(long roleId, long criteriaId) {
-        roleCriteriaRepository.save(RoleCriteria.builder().roleId(roleId).criteriaId(criteriaId).build());
+        roleCriteriaRepository.save(RoleCriteria.builder().roleId(roleId).userCriteriaId(criteriaId).build());
     }
 
     @Override
@@ -79,7 +79,7 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public void setSelectedRole(long userId, long roleId) {
-        selectedRoleRepository.saveAndFlush(selectedRoleRepository.findByUsername(userId)
+        selectedRoleRepository.saveAndFlush(selectedRoleRepository.findByUserId(userId)
                 .map(sr -> {
                     sr.setRoleId(roleId);
                     return sr;
@@ -89,7 +89,7 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public Optional<Long> getCurrentlySelectedRoleById(long userId) {
-        return selectedRoleRepository.findByUsername(userId).map(SelectedRole::getRoleId);
+        return selectedRoleRepository.findByUserId(userId).map(SelectedRole::getRoleId);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public Optional<org.smartjobs.core.entities.Role> getCurrentlySelectedRole(long userId) {
-        return selectedRoleRepository.findByUsername(userId)
+        return selectedRoleRepository.findByUserId(userId)
                 .map(SelectedRole::getRoleId)
                 .map(this::getRoleById);
     }

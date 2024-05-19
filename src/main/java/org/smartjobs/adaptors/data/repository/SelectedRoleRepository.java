@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface SelectedRoleRepository extends JpaRepository<SelectedRole, Long> {
 
     @Transactional
-    Optional<SelectedRole> findByUsername(long userId);
+    Optional<SelectedRole> findByUserId(long userId);
 
     @Transactional
     Long deleteByUserId(long userId);

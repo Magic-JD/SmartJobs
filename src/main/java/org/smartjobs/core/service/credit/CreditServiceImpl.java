@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 
+import static org.smartjobs.core.entities.CreditEvent.DEBIT;
+import static org.smartjobs.core.entities.CreditEvent.REFUND;
+
 @Service
 public class CreditServiceImpl implements CreditService {
 
@@ -26,19 +29,19 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
-    public int userCredit(long userId) {
+    public long userCredit(long userId) {
         return creditDao.getUserCredits(userId);
     }
 
     @Override
     public boolean debitAndVerify(long userId, int amount) {
-        creditDao.event(userId, amount * -1, "DEBIT");
-        int remainingCredits = userCredit(userId);
+        creditDao.event(userId, amount * -1, DEBIT);
+        long remainingCredits = userCredit(userId);
         if (remainingCredits >= 0) {
             sseService.send(userId, "credit", STR. "Credit: \{ decimalFormat.format(remainingCredits) }" );
             return true;
         } else {
-            creditDao.event(userId, amount, "REFUND");
+            creditDao.event(userId, amount, REFUND);
             return false;
         }
     }

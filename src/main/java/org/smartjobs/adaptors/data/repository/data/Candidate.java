@@ -1,24 +1,33 @@
 package org.smartjobs.adaptors.data.repository.data;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.sql.Date;
 
 @Getter
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleCriteria {
+public class Candidate {
 
     @Id
     @Column(updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long roleId;
-    private Long userCriteriaId;
+    @Setter
+    private Boolean currentlySelected;
 
+    @Setter
+    private String name;
+
+    private Long cvId;
+
+    private Long userId;
+
+    private Long roleId;
+
+    private Date lastAccessed;
 }

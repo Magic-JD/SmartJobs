@@ -2,6 +2,7 @@ package org.smartjobs.core.ports.dal;
 
 import jakarta.transaction.Transactional;
 import org.smartjobs.core.entities.CandidateData;
+import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.ProcessedCv;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface CvDao {
 
     List<ProcessedCv> getAllSelected(long userId, long roleId);
 
-    void deleteByCvId(long cvId);
+    void deleteByCandidateId(long cvId);
 
     boolean knownHash(String fileHash);
 
@@ -25,5 +26,7 @@ public interface CvDao {
 
     void deleteAllCandidates(long userId, long roleId);
 
-    Optional<ProcessedCv> getByHash(String hash);
+    Optional<CvData> getByHash(String hash);
+
+    List<CandidateData> getByDataId(Long id);
 }

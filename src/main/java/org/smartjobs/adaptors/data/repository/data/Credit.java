@@ -18,9 +18,9 @@ public class Credit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    private long userId;
 
-    private int balance;
+    private long balance;
 
-    private String event;
+    private short event;
 }

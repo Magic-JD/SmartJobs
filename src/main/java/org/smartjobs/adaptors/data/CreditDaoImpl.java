@@ -2,6 +2,7 @@ package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.CreditRepository;
 import org.smartjobs.adaptors.data.repository.data.Credit;
+import org.smartjobs.core.entities.CreditEvent;
 import org.smartjobs.core.ports.dal.CreditDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,15 +18,30 @@ public class CreditDaoImpl implements CreditDao {
     }
 
     @Override
-    public int getUserCredits(long userId) {
+    public long getUserCredits(long userId) {
         return repository.findByUserId(userId).stream()
                 .map(Credit::getBalance)
-                .mapToInt(Integer::intValue)
+                .mapToLong(Long::longValue)
                 .sum();
     }
 
     @Override
-    public void event(long userId, int amount, String type) {
-        repository.save(new Credit(null, userId, amount, type));
+    public void event(long userId, int amount, CreditEvent type) {
+        repository.save(new Credit(null, userId, amount, creditEventMapping(type)));
+    }
+
+    /**
+     * IMPORTANT! Do not change existing values, only add new ones.
+     * This will ensure that the database and the enums stay in sync even if the enums are renamed or reordered.
+     *
+     * @param type The enum to translate
+     * @return short value representing enum in the database.
+     */
+    private short creditEventMapping(CreditEvent type) {
+        return switch (type) {
+            case CREDIT -> 1;
+            case DEBIT -> 2;
+            case REFUND -> 3;
+        };
     }
 }

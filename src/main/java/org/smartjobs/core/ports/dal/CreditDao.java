@@ -1,7 +1,9 @@
 package org.smartjobs.core.ports.dal;
 
-public interface CreditDao {
-    int getUserCredits(long userId);
+import org.smartjobs.core.entities.CreditEvent;
 
-    void event(long userId, int amount, String type);
+public interface CreditDao {
+    long getUserCredits(long userId);
+
+    void event(long userId, int amount, CreditEvent type);
 }

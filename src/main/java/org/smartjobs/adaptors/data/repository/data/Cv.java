@@ -18,17 +18,8 @@ public class Cv {
     @Setter
     private String fileHash;
 
-    @Setter
-    private Boolean currentlySelected;
-
     @Lob
     @Setter
     private String condensedText;
 
-    @Setter
-    private String candidateName;
-
-    private Long userId;
-
-    private Long roleId;
 }

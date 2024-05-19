@@ -48,8 +48,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "current-role-id", key = "#username"),
-            @CacheEvict(value = "current-role", key = "#username")
+            @CacheEvict(value = "current-role-id", key = "#userId"),
+            @CacheEvict(value = "current-role", key = "#userId")
     })
     public void setCurrentlySelectedRole(long userId, long roleId) {
         roleDao.setSelectedRole(userId, roleId);

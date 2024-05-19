@@ -2,9 +2,9 @@ package org.smartjobs.core.service.candidate;
 
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateData;
+import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
-import org.smartjobs.core.exception.categories.ApplicationExceptions.HashKnownButCvNotFound;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.CvDao;
 import org.smartjobs.core.service.CandidateService;
@@ -71,20 +71,32 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Optional<ProcessedCv> processAndUpdateProgress(long userId, Optional<FileInformation> fileInformation, AtomicInteger counter, int total) {
-        var processedCv = fileInformation.flatMap(this::processCv);
+        var processedCv = fileInformation.flatMap(fi -> this.processCv(fi, userId));
         sseService.send(userId, "progress-upload", STR. "<div>Uploaded: \{ counter.incrementAndGet() }/\{ total }</div>" );
         return processedCv;
     }
 
-    private Optional<ProcessedCv> processCv(FileInformation fileInformation) {
+    private Optional<ProcessedCv> processCv(FileInformation fileInformation, long userId) {
         String hash = fileInformation.fileHash();
-        if (cvDao.knownHash(hash)) {
-            Optional<ProcessedCv> byHash = cvDao.getByHash(hash)
-                    .map(pc -> new ProcessedCv(null, pc.name(), true, pc.fileHash(), pc.condensedDescription()));
-            if (byHash.isEmpty()) {
-                throw new HashKnownButCvNotFound(hash);
+        Optional<CvData> coreData = cvDao.getByHash(hash);
+        if (coreData.isPresent()) {
+            CvData cvData = coreData.get();
+            List<CandidateData> candidateData = cvDao.getByDataId(cvData.id());
+            if (candidateData.isEmpty()) {
+                var nameFuture = supplyAsync(() -> aiService.extractCandidateName(fileInformation.fileContent()));
+                return nameFuture.join().map(name -> new ProcessedCv(null, name, true, cvData.fileHash(), cvData.condensedDescription()));
+            } else {
+                String name = candidateData.getFirst().name();
+                var existingRowForUser = candidateData.stream().filter(cd -> cd.userId() == userId).findFirst();
+                if (existingRowForUser.isPresent()) {
+                    CandidateData currentData = existingRowForUser.get();
+                    if (!currentData.currentlySelected()) {
+                        cvDao.updateCurrentlySelectedById(currentData.id(), true);
+                    }
+                    return Optional.empty();
+                }
+                return Optional.of(new ProcessedCv(cvData.id(), name, true, cvData.fileHash(), cvData.condensedDescription()));
             }
-            return byHash;
         }
         var nameFuture = supplyAsync(() -> aiService.extractCandidateName(fileInformation.fileContent()));
         var descriptionFuture = supplyAsync(() -> aiService.anonymizeCv(fileInformation.fileContent()));
@@ -106,7 +118,7 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-name", key = "{#userId, #currentRole}")
     })
     public void deleteCandidate(long userId, long currentRole, long cvId) {
-        cvDao.deleteByCvId(cvId);
+        cvDao.deleteByCandidateId(cvId);
     }
 
     @Override
