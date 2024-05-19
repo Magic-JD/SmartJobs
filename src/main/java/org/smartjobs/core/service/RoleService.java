@@ -1,7 +1,10 @@
 package org.smartjobs.core.service;
 
+import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.RoleDisplay;
+import org.smartjobs.core.entities.UserCriteria;
+import org.smartjobs.core.service.role.data.CriteriaCategory;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +26,13 @@ public interface RoleService {
 
     void deleteRole(long userId, long roleId);
 
-    void addCriteriaToRole(long roleId, long criteriaId);
+    void removeCriteriaFromRole(long roleId, long userCriteriaId);
 
-    void removeCriteriaFromRole(long roleId, long criteriaId);
+    List<DefinedScoringCriteria> getScoringCriteriaForCategory(CriteriaCategory category);
+
+    DefinedScoringCriteria getCriteriaById(long criteriaId);
+
+    UserCriteria addUserCriteriaToRole(long definedCriteriaId, long userId, long roleId, String value, String score);
+
+    void deleteUserCriteria(Long userCriteriaId);
 }

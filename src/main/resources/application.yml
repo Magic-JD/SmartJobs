@@ -15,6 +15,9 @@ gpt:
     max-retries: 3
     initial-timeout-seconds: 20
 
+role:
+  max:
+    criteria: 10
 
 cache:
   general:

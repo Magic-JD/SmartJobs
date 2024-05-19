@@ -43,4 +43,9 @@ public class MessageResponseExceptionHandler extends ResponseEntityExceptionHand
     protected String handleNoRoleSelectedException(HttpServletResponse response, Model model) {
         return createUserErrorMessageToDisplayForUser("This operation requires a selected role.", response, model);
     }
+
+    @ExceptionHandler(value = RoleCriteriaLimitReachedException.class)
+    protected String handleRoleCriteriaLimitReachedException(RuntimeException ex, HttpServletResponse response, Model model) {
+        return createUserErrorMessageToDisplayForUser(ex.getMessage(), response, model);
+    }
 }

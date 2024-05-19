@@ -1,5 +1,6 @@
 package org.smartjobs.adaptors.data;
 
+import jakarta.transaction.Transactional;
 import org.smartjobs.adaptors.data.repository.*;
 import org.smartjobs.adaptors.data.repository.data.*;
 import org.smartjobs.core.entities.RoleDisplay;
@@ -67,14 +68,10 @@ public class RoleDaoImpl implements RoleDao {
         roleRepository.deleteById(roleId);
     }
 
-    @Override
-    public void addCriteriaToRole(long roleId, long criteriaId) {
-        roleCriteriaRepository.save(RoleCriteria.builder().roleId(roleId).userCriteriaId(criteriaId).build());
-    }
 
     @Override
-    public void removeCriteriaFromRole(long roleId, long criteriaId) {
-        roleCriteriaRepository.deleteByRoleAndCriteria(roleId, criteriaId);
+    public void removeUserCriteriaFromRole(long roleId, long userCriteriaId) {
+        roleCriteriaRepository.deleteByRoleAndCriteria(roleId, userCriteriaId);
     }
 
     @Override
@@ -104,15 +101,21 @@ public class RoleDaoImpl implements RoleDao {
                 .map(this::getRoleById);
     }
 
-    @Override
-    public org.smartjobs.core.entities.UserCriteria createNewUserCriteria(long definedCriteriaId, String value, int score) {
+    @Transactional
+    public org.smartjobs.core.entities.UserCriteria createNewUserCriteriaForRole(long definedCriteriaId, long roleId, String value, int score) {
         UserCriteria userCriteria = userCriteriaRepository.saveAndFlush(UserCriteria.builder().definedCriteriaId(definedCriteriaId).value(value).score(score).build());
+        roleCriteriaRepository.save(RoleCriteria.builder().roleId(roleId).userCriteriaId(userCriteria.getId()).build());
         return new org.smartjobs.core.entities.UserCriteria(userCriteria.getId(), userCriteria.getDefinedCriteriaId(), Optional.ofNullable(userCriteria.getValue()), userCriteria.getScore());
     }
 
     @Override
-    public void deleteUserCriteria(long criteriaId) {
-        userCriteriaRepository.deleteById(criteriaId);
+    public void deleteUserCriteria(long userCriteriaId) {
+        userCriteriaRepository.deleteById(userCriteriaId);
+    }
+
+    @Override
+    public int countCriteriaForRole(long roleId) {
+        return roleCriteriaRepository.countByRoleId(roleId);
     }
 }
 

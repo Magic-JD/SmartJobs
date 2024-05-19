@@ -4,7 +4,6 @@ import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import org.smartjobs.core.entities.User;
-import org.smartjobs.core.service.CriteriaService;
 import org.smartjobs.core.service.RoleService;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +26,10 @@ public class RolesController {
 
 
     private final RoleService roleService;
-    private final CriteriaService criteriaService;
 
     @Autowired
-    public RolesController(RoleService roleService, CriteriaService criteriaService) {
+    public RolesController(RoleService roleService) {
         this.roleService = roleService;
-        this.criteriaService = criteriaService;
     }
 
     @HxRequest
@@ -94,24 +91,24 @@ public class RolesController {
     @HxRequest
     @GetMapping("/criteria/{category}")
     public String criteriaForCategory(@PathVariable("category") String category, Model model) {
-        var criteria = criteriaService.getScoringCriteriaForCategory(CriteriaCategory.getFromName(category));
+        var criteria = roleService.getScoringCriteriaForCategory(CriteriaCategory.getFromName(category));
         model.addAttribute("criteria", criteria);
         return CATEGORY_CRITERIA_FRAGMENT;
     }
 
     @HxRequest
     @DeleteMapping("/criteria/{criteriaId}")
-    public String deleteCriteria(@AuthenticationPrincipal User user, @PathVariable("criteriaId") Long criteriaId) {
+    public String deleteCriteria(@AuthenticationPrincipal User user, @PathVariable("criteriaId") Long userCriteriaId) {
         Long roleId = roleService.getCurrentlySelectedRoleId(user.getId()).orElseThrow();
-        roleService.removeCriteriaFromRole(roleId, criteriaId);
-        criteriaService.deleteUserCriteria(criteriaId);
+        roleService.removeCriteriaFromRole(roleId, userCriteriaId);
+        roleService.deleteUserCriteria(userCriteriaId);
         return EMPTY_FRAGMENT;
     }
 
     @HxRequest
     @GetMapping("/select/{criteriaId}")
     public String selectCriteria(@PathVariable("criteriaId") long criteriaId, Model model) {
-        var criteria = criteriaService.getCriteriaById(criteriaId);
+        var criteria = roleService.getCriteriaById(criteriaId);
         model.addAttribute("criteria", criteria);
         model.addAttribute("placeholderText", criteria.inputExample().orElse(""));
         return SELECT_CRITERIA_FRAGMENT;
@@ -119,13 +116,12 @@ public class RolesController {
 
     @HxRequest
     @PostMapping("/save/{criteriaId}")
-    public String saveCriteria(@AuthenticationPrincipal User user, @PathVariable("criteriaId") long criteriaId,
+    public String saveCriteria(@AuthenticationPrincipal User user, @PathVariable("criteriaId") long definedCriteriaId,
                                @PathParam("value") String value,
                                @PathParam("score") String score,
                                HttpServletResponse response) {
-        var criteria = criteriaService.createUserCriteria(criteriaId, value, score);
-        var roleId = roleService.getCurrentlySelectedRoleId(user.getId()).orElseThrow();
-        roleService.addCriteriaToRole(roleId, criteria.id());
+        var criteria = roleService.addUserCriteriaToRole(definedCriteriaId, user.getId(), roleService.getCurrentlySelectedRoleId(user.getId()).orElseThrow(), value, score);
+
         response.addHeader(HX_TRIGGER, ROLE_UPDATED);
         return EMPTY_FRAGMENT;
     }

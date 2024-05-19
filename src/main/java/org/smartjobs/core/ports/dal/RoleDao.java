@@ -16,9 +16,7 @@ public interface RoleDao {
 
     void delete(long roleId);
 
-    void addCriteriaToRole(long roleId, long criteriaId);
-
-    void removeCriteriaFromRole(long roleId, long criteriaId);
+    void removeUserCriteriaFromRole(long roleId, long userCriteriaId);
 
     void setSelectedRole(long userId, long roleId);
 
@@ -28,7 +26,9 @@ public interface RoleDao {
 
     Optional<Role> getCurrentlySelectedRole(long userId);
 
-    UserCriteria createNewUserCriteria(long definedCriteriaId, String value, int score);
+    UserCriteria createNewUserCriteriaForRole(long definedCriteriaId, long roleId, String value, int score);
 
-    void deleteUserCriteria(long criteriaId);
+    void deleteUserCriteria(long userCriteriaId);
+
+    int countCriteriaForRole(long roleId);
 }

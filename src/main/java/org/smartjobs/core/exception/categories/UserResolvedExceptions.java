@@ -42,4 +42,11 @@ public class UserResolvedExceptions {
             super("A role must be selected for this operation");
         }
     }
+
+    public static class RoleCriteriaLimitReachedException extends RuntimeException {
+
+        public RoleCriteriaLimitReachedException(int criteriaLimit) {
+            super(STR. "The criteria limit is \{ criteriaLimit } - Please remove existing criteria before adding more." );
+        }
+    }
 }

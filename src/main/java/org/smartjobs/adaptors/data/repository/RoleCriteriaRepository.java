@@ -16,4 +16,6 @@ public interface RoleCriteriaRepository extends JpaRepository<RoleCriteria, Long
     @Modifying
     @Query("DELETE RoleCriteria rc WHERE rc.roleId = :roleId AND rc.userCriteriaId = :userCriteriaId")
     void deleteByRoleAndCriteria(long roleId, long userCriteriaId);
+
+    int countByRoleId(long roleId);
 }
