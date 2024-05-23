@@ -99,9 +99,9 @@ public class RolesController {
     @HxRequest
     @DeleteMapping("/criteria/{criteriaId}")
     public String deleteCriteria(@AuthenticationPrincipal User user, @PathVariable("criteriaId") Long userCriteriaId) {
-        Long roleId = roleService.getCurrentlySelectedRoleId(user.getId()).orElseThrow();
-        roleService.removeCriteriaFromRole(roleId, userCriteriaId);
-        roleService.deleteUserCriteria(userCriteriaId);
+        long userId = user.getId();
+        Long roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow();
+        roleService.removeCriteriaFromRole(userId, roleId, userCriteriaId);
         return EMPTY_FRAGMENT;
     }
 

@@ -28,7 +28,5 @@ public interface RoleDao {
 
     UserCriteria createNewUserCriteriaForRole(long definedCriteriaId, long roleId, String value, int score);
 
-    void deleteUserCriteria(long userCriteriaId);
-
     int countCriteriaForRole(long roleId);
 }

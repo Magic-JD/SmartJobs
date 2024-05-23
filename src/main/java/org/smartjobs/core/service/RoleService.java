@@ -26,7 +26,7 @@ public interface RoleService {
 
     void deleteRole(long userId, long roleId);
 
-    void removeCriteriaFromRole(long roleId, long userCriteriaId);
+    void removeCriteriaFromRole(long userId, long roleId, long userCriteriaId);
 
     List<DefinedScoringCriteria> getScoringCriteriaForCategory(CriteriaCategory category);
 
@@ -34,5 +34,4 @@ public interface RoleService {
 
     UserCriteria addUserCriteriaToRole(long definedCriteriaId, long userId, long roleId, String value, String score);
 
-    void deleteUserCriteria(Long userCriteriaId);
 }

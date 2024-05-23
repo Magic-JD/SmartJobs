@@ -71,7 +71,10 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public void removeUserCriteriaFromRole(long roleId, long userCriteriaId) {
+        // NOTE - The second one is actually sufficient given the cascading delete. However, that is delayed currently
+        // so might not work properly. But we should work out the structure of the persistent user criteria first.
         roleCriteriaRepository.deleteByRoleAndCriteria(roleId, userCriteriaId);
+        userCriteriaRepository.deleteById(userCriteriaId);
     }
 
     @Override
@@ -106,11 +109,6 @@ public class RoleDaoImpl implements RoleDao {
         UserCriteria userCriteria = userCriteriaRepository.saveAndFlush(UserCriteria.builder().definedCriteriaId(definedCriteriaId).value(value).score(score).build());
         roleCriteriaRepository.save(RoleCriteria.builder().roleId(roleId).userCriteriaId(userCriteria.getId()).build());
         return new org.smartjobs.core.entities.UserCriteria(userCriteria.getId(), userCriteria.getDefinedCriteriaId(), Optional.ofNullable(userCriteria.getValue()), userCriteria.getScore());
-    }
-
-    @Override
-    public void deleteUserCriteria(long userCriteriaId) {
-        userCriteriaRepository.deleteById(userCriteriaId);
     }
 
     @Override

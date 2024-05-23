@@ -95,17 +95,21 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "role", key = "#roleId"),
-            @CacheEvict(value = "role-display", key = "#candidateName")
+            @CacheEvict(value = "current-role", key = "#userId"),
+            @CacheEvict(value = "role", key = "#roleId")
     })
-    public void deleteRole(long candidateName, long roleId) {
-        roleDao.delete(roleId);
+    public void removeCriteriaFromRole(long userId, long roleId, long userCriteriaId) {
+        roleDao.removeUserCriteriaFromRole(roleId, userCriteriaId);
     }
 
     @Override
-    @CacheEvict(value = "role", key = "#roleId")
-    public void removeCriteriaFromRole(long roleId, long userCriteriaId) {
-        roleDao.removeUserCriteriaFromRole(roleId, userCriteriaId);
+    @Caching(evict = {
+            @CacheEvict(value = "role", key = "#roleId"),
+            @CacheEvict(value = "current-role", key = "#userId"),
+            @CacheEvict(value = "role-display", key = "#userId")
+    })
+    public void deleteRole(long userId, long roleId) {
+        roleDao.delete(roleId);
     }
 
 
@@ -124,7 +128,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @CacheEvict(value = "role", key = "#roleId")
+    @Caching(evict = {
+            @CacheEvict(value = "current-role", key = "#userId"),
+            @CacheEvict(value = "role", key = "#roleId")
+    })
     public UserCriteria addUserCriteriaToRole(long definedCriteriaId, long userId, long roleId, String value, String score) {
         DefinedScoringCriteria definedCriteria = getCriteriaById(definedCriteriaId);
         if (!StringUtils.hasText(score)) {
@@ -141,15 +148,10 @@ public class RoleServiceImpl implements RoleService {
         }
         UserCriteria criteria = roleDao.createNewUserCriteriaForRole(definedCriteriaId, roleId, value, scoreInt);
         if (roleDao.countCriteriaForRole(roleId) > maxAllowedCriteria) {
-            roleDao.deleteUserCriteria(criteria.id());
+            roleDao.removeUserCriteriaFromRole(roleId, criteria.id());
             throw new UserResolvedExceptions.RoleCriteriaLimitReachedException(maxAllowedCriteria);
         }
         return criteria;
-    }
-
-    @Override
-    public void deleteUserCriteria(Long userCriteriaId) {
-        roleDao.deleteUserCriteria(userCriteriaId);
     }
 
     private List<DefinedScoringCriteria> getAllDefinedScoringCriteria() {
