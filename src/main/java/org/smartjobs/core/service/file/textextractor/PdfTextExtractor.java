@@ -3,7 +3,7 @@ package org.smartjobs.core.service.file.textextractor;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.smartjobs.core.exception.categories.AsynchronousExceptions.PdfTextExtractionException;
+import org.smartjobs.core.exception.categories.AsynchronousExceptions.TextExtractionException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class PdfTextExtractor implements TextExtractor {
                     .replaceAll("[^(\\x00-\\xFF)]+(?:$|\\s*)", " ")
                     .replace("\n", " ");
         } catch (IOException e) {
-            throw new PdfTextExtractionException(file.getOriginalFilename(), e);
+            throw new TextExtractionException(file.getOriginalFilename(), e);
         }
     }
 }

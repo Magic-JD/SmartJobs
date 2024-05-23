@@ -19,7 +19,7 @@ public class AsynchronousExceptions {
     }
 
     @Getter
-    public static abstract class TextExtractionException extends RuntimeException {
+    public static class TextExtractionException extends RuntimeException {
 
         private final String fileName;
 
@@ -31,20 +31,6 @@ public class AsynchronousExceptions {
         public TextExtractionException(String fileName, Exception e) {
             super(STR. "An error occurred when processing file \{ fileName }" , e);
             this.fileName = fileName;
-        }
-    }
-
-    @Getter
-    public static class PdfTextExtractionException extends TextExtractionException {
-        public PdfTextExtractionException(String fileName, Exception e) {
-            super(fileName, e);
-        }
-    }
-
-    @Getter
-    public static class TxtTextExtractionException extends TextExtractionException {
-        public TxtTextExtractionException(String fileName, Exception e) {
-            super(fileName, e);
         }
     }
 

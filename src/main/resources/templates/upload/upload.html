@@ -8,7 +8,7 @@
     <label class="drop-container" for="files" id="dropcontainer">
         <span class="drop-title text-large">Drop files here<br>or</span>
     </label>
-    <input accept=".txt, .pdf" class="text-medium" id="files" multiple name="files" type="file">
+    <input accept=".txt, .pdf, .doc, .docx" class="text-medium" id="files" multiple name="files" type="file">
     <button class="button-light button-enlarge" type="submit">Upload Files</button>
     <div class="text-large" hx-ext="sse" hx-swap="innerHtml" hx-target="this" sse-connect="/sse/register"
          sse-swap="progress-upload">Uploaded: 0/X

@@ -7,6 +7,8 @@ import org.smartjobs.core.exception.categories.AsynchronousExceptions.FileTypeNo
 import org.smartjobs.core.exception.categories.AsynchronousExceptions.TextExtractionException;
 import org.smartjobs.core.service.FileService;
 import org.smartjobs.core.service.file.data.FileType;
+import org.smartjobs.core.service.file.textextractor.DocTextExtractor;
+import org.smartjobs.core.service.file.textextractor.DocxTextExtractor;
 import org.smartjobs.core.service.file.textextractor.PdfTextExtractor;
 import org.smartjobs.core.service.file.textextractor.TxtTextExtractor;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,8 @@ public class FileServiceImpl implements FileService {
             FileType fileType = switch (getFileExtension(file.getOriginalFilename()).orElse("unsupported")) {
                 case "pdf" -> PDF;
                 case "txt" -> TXT;
+                case "doc" -> DOC;
+                case "docx" -> DOCX;
                 default -> UNSUPPORTED;
             };
             try {
@@ -65,6 +69,8 @@ public class FileServiceImpl implements FileService {
         return switch (fileType) {
             case TXT -> new TxtTextExtractor().extractText(file);
             case PDF -> new PdfTextExtractor().extractText(file);
+            case DOC -> new DocTextExtractor().extractText(file);
+            case DOCX -> new DocxTextExtractor().extractText(file);
             case UNSUPPORTED -> throw new FileTypeNotSupportedException(
                     Arrays.stream(FileType.values())
                             .filter(ft -> ft != UNSUPPORTED)
