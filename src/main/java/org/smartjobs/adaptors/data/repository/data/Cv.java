@@ -18,7 +18,7 @@ public class Cv {
     @Setter
     private String fileHash;
 
-    @Lob
+    @Column(columnDefinition="TEXT")
     @Setter
     private String condensedText;
 
