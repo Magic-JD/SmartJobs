@@ -65,7 +65,11 @@ public class CandidateController {
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
                 .toList();
-        candidateService.updateCandidateCvs(userId, role.id(), handledFiles);
+        var processedCvs = candidateService.updateCandidateCvs(userId, role.id(), handledFiles);
+        var failedCount = files.length - processedCvs.size();
+        if (failedCount > 0) {
+            creditService.refund(userId, failedCount);
+        }
         int selectedCount = candidateService.findSelectedCandidateCount(userId, role.id());
 
         model.addAttribute("selectedCount", selectedCount);

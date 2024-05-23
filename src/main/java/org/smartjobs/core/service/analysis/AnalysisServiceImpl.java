@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,26 +43,29 @@ public class AnalysisServiceImpl implements AnalysisService {
         var counter = new AtomicInteger(0);
         var total = candidateInformation.size();
         return virtualThreadList(candidateInformation, cv -> {
-            CandidateScores candidateScores = generateCandidateScore(cv, role.scoringCriteria());
+            Optional<CandidateScores> candidateScores = generateCandidateScore(cv, role.scoringCriteria());
             sseService.send(userId, "progress-analysis", STR. "<div>Analyzed: \{ counter.incrementAndGet() }/\{ total }</div>" );
             return candidateScores;
-        });
+        }).stream().filter(Optional::isPresent).map(Optional::get).toList();
     }
 
-    private CandidateScores generateCandidateScore(ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {
+    private Optional<CandidateScores> generateCandidateScore(ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {
         var results = virtualThreadList(scoringCriteria, criteria -> scoreForCriteria(cv, criteria));
+        if (results.stream().anyMatch(Optional::isEmpty)) {
+            return Optional.empty();
+        }
+        var clearResults = results.stream().filter(Optional::isPresent).map(Optional::get).toList();
         double totalPossibleScore = scoringCriteria.stream()
                 .mapToInt(ScoringCriteria::weighting).sum();
-        double achievedScore = results.stream()
+        double achievedScore = clearResults.stream()
                 .mapToDouble(ScoredCriteria::score).sum();
         double percentage = (achievedScore / totalPossibleScore) * 100;
-        return new CandidateScores(UUID.randomUUID().toString(), cv.name(), percentage, results);
+        return Optional.of(new CandidateScores(UUID.randomUUID().toString(), cv.name(), percentage, clearResults));
     }
 
-    private ScoredCriteria scoreForCriteria(ProcessedCv cv, ScoringCriteria criteria) {
+    private Optional<ScoredCriteria> scoreForCriteria(ProcessedCv cv, ScoringCriteria criteria) {
         return client.scoreForCriteria(cv.condensedDescription(), criteria.scoringGuide(), criteria.weighting())
-                .map(score -> new ScoredCriteria(criteria.name(), score.justification(), score.score(), criteria.weighting()))
-                .orElse(new ScoredCriteria(criteria.name(), "The score could not be calculated for this value", 0, 0));
+                .map(score -> new ScoredCriteria(criteria.name(), score.justification(), score.score(), criteria.weighting()));
     }
 
 

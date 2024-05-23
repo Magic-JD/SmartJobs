@@ -46,4 +46,11 @@ public class CreditServiceImpl implements CreditService {
         }
     }
 
+    @Override
+    public void refund(long userId, int amount) {
+        creditDao.event(userId, amount, REFUND);
+        long remainingCredits = userCredit(userId);
+        sseService.send(userId, "credit", STR. "Credit: \{ decimalFormat.format(remainingCredits) }" );
+    }
+
 }

@@ -12,7 +12,7 @@ public interface CandidateService {
 
     List<CandidateData> getCurrentCandidates(long userId, long role);
 
-    void updateCandidateCvs(long userId, long roleId, List<Optional<FileInformation>> fileInformationList);
+    List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<Optional<FileInformation>> fileInformationList);
 
     void deleteCandidate(long userId, long currentRole, long roleId);
 

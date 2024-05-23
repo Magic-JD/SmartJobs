@@ -76,6 +76,10 @@ public class AnalysisController {
         var results = analysisService.scoreToCriteria(userId, candidateInformation, role).stream()
                 .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
+        var failedCount = candidateInformation.size() - results.size();
+        if (failedCount > 0) {
+            creditService.refund(userId, failedCount);
+        }
         model.addAttribute("results", results);
         return SCORING_FRAGMENT;
     }

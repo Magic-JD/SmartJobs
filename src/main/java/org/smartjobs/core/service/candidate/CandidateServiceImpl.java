@@ -54,7 +54,7 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
             @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
     })
-    public void updateCandidateCvs(long userId, long roleId, List<Optional<FileInformation>> fileInformationList) {
+    public List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<Optional<FileInformation>> fileInformationList) {
         var counter = new AtomicInteger(0);
         var total = fileInformationList.size();
 
@@ -68,6 +68,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .map(Optional::get)
                 .toList();
         cvDao.addCvsToRepository(userId, roleId, list);
+        return list;
     }
 
     private Optional<ProcessedCv> processAndUpdateProgress(long userId, long roleId, Optional<FileInformation> fileInformation, AtomicInteger counter, int total) {
