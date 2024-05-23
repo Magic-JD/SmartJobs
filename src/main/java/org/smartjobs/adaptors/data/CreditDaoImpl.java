@@ -42,6 +42,7 @@ public class CreditDaoImpl implements CreditDao {
             case CREDIT -> 1;
             case DEBIT -> 2;
             case REFUND -> 3;
+            case OVERSPEND -> 4;
         };
     }
 }
