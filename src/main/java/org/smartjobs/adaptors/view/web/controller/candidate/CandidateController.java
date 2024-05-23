@@ -64,6 +64,7 @@ public class CandidateController {
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(NoRoleSelectedException::new);
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
+                .distinct()
                 .toList();
         var processedCvs = candidateService.updateCandidateCvs(userId, role.id(), handledFiles);
         var failedCount = files.length - processedCvs.size();
