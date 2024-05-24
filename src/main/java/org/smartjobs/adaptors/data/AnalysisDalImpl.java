@@ -1,13 +1,10 @@
 package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.AnalysisRepository;
-import org.smartjobs.adaptors.data.repository.CandidateRepository;
 import org.smartjobs.adaptors.data.repository.CriteriaAnalysisRepository;
-import org.smartjobs.adaptors.data.repository.CvRepository;
 import org.smartjobs.adaptors.data.repository.data.Analysis;
-import org.smartjobs.adaptors.data.repository.data.Candidate;
 import org.smartjobs.adaptors.data.repository.data.CriteriaAnalysis;
-import org.smartjobs.adaptors.data.repository.data.Cv;
+import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ScoredCriteria;
 import org.smartjobs.core.ports.dal.AnalysisDal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,33 +17,19 @@ public class AnalysisDalImpl implements AnalysisDal {
 
     private final CriteriaAnalysisRepository criteriaAnalysisRepository;
     private final AnalysisRepository analysisRepository;
-    private final CvRepository cvRepository;
-    private final CandidateRepository candidateRepository;
 
     @Autowired
-    public AnalysisDalImpl(CriteriaAnalysisRepository criteriaAnalysisRepository, AnalysisRepository analysisRepository, CvRepository cvRepository, CandidateRepository candidateRepository) {
+    public AnalysisDalImpl(CriteriaAnalysisRepository criteriaAnalysisRepository, AnalysisRepository analysisRepository) {
         this.criteriaAnalysisRepository = criteriaAnalysisRepository;
         this.analysisRepository = analysisRepository;
-        this.cvRepository = cvRepository;
-        this.candidateRepository = candidateRepository;
     }
 
     @Override
-    public CandidateDisplay getResultById(long id) {
-        Analysis analysis = analysisRepository.getReferenceById(id);
-        Cv cv = cvRepository.getReferenceById(analysis.getCvId());
-        Candidate candidate = candidateRepository.findAllByCvId(cv.getId()).stream()
-                .filter(c -> c.getUserId().equals(analysis.getUserId()) && c.getRoleId().equals(analysis.getRoleId()))
-                .findFirst()
-                .orElseThrow();
+    public CandidateScores getResultById(long id) {
+
+        String name = analysisRepository.findAnalysedCandidateName(id);
         List<CriteriaAnalysis> analysisList = criteriaAnalysisRepository.findAllByAnalysisId(id);
-        return new CandidateDisplay(id, candidate.getName(), analysisList.stream().map(ca -> new ScoreResults(ca.getCriteriaRequest(), ca.getDescription(), ca.getScore(), ca.getMaxScore())).toList());
-    }
-
-    public record CandidateDisplay(long id, String name, List<ScoreResults> results) {
-    }
-
-    public record ScoreResults(String criteriaRequest, String description, double score, int maxScore) {
+        return new CandidateScores(id, name, analysisList.stream().map(ca -> new ScoredCriteria(ca.getUserCriteriaId(), ca.getCriteriaRequest(), ca.getDescription(), ca.getScore(), ca.getMaxScore())).toList());
     }
 
     @Override

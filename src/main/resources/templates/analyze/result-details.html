@@ -8,7 +8,7 @@
         <p class="candidate-display-right" th:text="|${@numberFormatUtils.formatNumber(result.percentage)}%|"></p>
 
     </div>
-    <div class="candidate-row flex-container text-small" th:each="sc : ${result.scoringCriteria}">
+    <div class="candidate-row flex-container text-small" th:each="sc : ${result.scoredCriteria}">
         <p class="candidate-display-left right-nudged"><span th:text="|${sc.criteriaRequest}:|"></span><br><span
                 th:text="${sc.justification}"></span></p>
         <p class="candidate-display-right" th:text="|${@numberFormatUtils.formatNumber(sc.score)}/${sc.maxScore}|"></p>

@@ -1,7 +1,6 @@
 package org.smartjobs.core.service.analysis;
 
 import io.vavr.control.Either;
-import org.smartjobs.adaptors.data.AnalysisDalImpl;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.ScoredCriteria;
@@ -77,15 +76,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
     @Override
     public CandidateScores getResultById(long id) {
-        AnalysisDalImpl.CandidateDisplay resultById = analysisDal.getResultById(id);
-        double totalScore = resultById.results().stream().mapToDouble(AnalysisDalImpl.ScoreResults::score).sum();
-        int totalMax = resultById.results().stream().mapToInt(AnalysisDalImpl.ScoreResults::maxScore).sum();
-        double percentage = (totalScore / totalMax) * 100;
-        return new CandidateScores(
-                resultById.id(),
-                resultById.name(),
-                percentage,
-                resultById.results().stream().map(r -> new ScoredCriteria(0, r.criteriaRequest(), r.description(), r.score(), r.maxScore())).toList());
+        return analysisDal.getResultById(id);
     }
 
     private Either<ProcessFailure, CandidateScores> generateCandidateScore(long userId, long roleId, ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {
@@ -94,13 +85,8 @@ public class AnalysisServiceImpl implements AnalysisService {
             return Either.left(LLM_FAILURE_ANALYZING);
         }
         var clearResults = results.stream().filter(Optional::isPresent).map(Optional::get).toList();
-        double totalPossibleScore = scoringCriteria.stream()
-                .mapToInt(ScoringCriteria::weighting).sum();
-        double achievedScore = clearResults.stream()
-                .mapToDouble(ScoredCriteria::score).sum();
-        double percentage = (achievedScore / totalPossibleScore) * 100;
         long analysisId = analysisDal.saveResults(userId, cv.id(), roleId, clearResults);
-        return Either.right(new CandidateScores(analysisId, cv.name(), percentage, clearResults));
+        return Either.right(new CandidateScores(analysisId, cv.name(), clearResults));
     }
 
     private Optional<ScoredCriteria> scoreForCriteria(ProcessedCv cv, ScoringCriteria criteria) {
