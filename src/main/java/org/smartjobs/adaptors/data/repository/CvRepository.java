@@ -14,7 +14,15 @@ public interface CvRepository extends JpaRepository<Cv, Long> {
 
 
     @Transactional
-    @Query(value = "SELECT cv.id, c.name, cv.condensed_text, cv.file_hash FROM cv cv JOIN candidate c ON cv.id = c.cv_id WHERE c.currently_selected = :currentlySelected AND c.user_id = :userId AND c.role_id = :roleId", nativeQuery = true)
+    @Query(value = """
+            SELECT cv.id, c.name, cv.condensed_text, cv.file_hash
+            FROM cv cv
+            JOIN candidate c ON cv.id = c.cv_id
+            WHERE c.currently_selected = :currentlySelected
+            AND c.user_id = :userId
+            AND c.role_id = :roleId
+            """,
+            nativeQuery = true)
     List<Tuple> findByCurrentlySelected(boolean currentlySelected, long userId, long roleId);
 
 

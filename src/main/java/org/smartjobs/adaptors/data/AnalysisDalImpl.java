@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+
 @Component
 public class AnalysisDalImpl implements AnalysisDal {
 
@@ -26,10 +28,13 @@ public class AnalysisDalImpl implements AnalysisDal {
 
     @Override
     public CandidateScores getResultById(long id) {
-
-        String name = analysisRepository.findAnalysedCandidateName(id);
-        List<CriteriaAnalysis> analysisList = criteriaAnalysisRepository.findAllByAnalysisId(id);
-        return new CandidateScores(id, name, analysisList.stream().map(ca -> new ScoredCriteria(ca.getUserCriteriaId(), ca.getCriteriaRequest(), ca.getDescription(), ca.getScore(), ca.getMaxScore())).toList());
+        var nameF = supplyAsync(() -> analysisRepository.findAnalysedCandidateName(id));
+        var analysisListF = supplyAsync(() -> criteriaAnalysisRepository.findAllByAnalysisId(id));
+        var name = nameF.join();
+        var analysisList = analysisListF.join();
+        return new CandidateScores(id, name, analysisList.stream()
+                .map(ca -> new ScoredCriteria(ca.getUserCriteriaId(), ca.getCriteriaRequest(), ca.getDescription(), ca.getScore(), ca.getMaxScore()))
+                .toList());
     }
 
     @Override

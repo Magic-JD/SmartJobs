@@ -14,7 +14,13 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
     List<Candidate> findAllByUserIdAndRoleId(long userId, long roleId);
 
     @Transactional
-    @Query(value = "UPDATE candidate SET currently_selected = :currentlySelected WHERE id = :id RETURNING *", nativeQuery = true)
+    @Query(value = """
+            UPDATE candidate
+            SET currently_selected = :currentlySelected
+            WHERE id = :id
+            RETURNING *
+            """,
+            nativeQuery = true)
     Optional<Candidate> updateCurrentlySelectedById(long id, boolean currentlySelected);
 
     @Transactional
