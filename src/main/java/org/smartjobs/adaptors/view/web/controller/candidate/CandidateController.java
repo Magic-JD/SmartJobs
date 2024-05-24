@@ -1,12 +1,15 @@
 package org.smartjobs.adaptors.view.web.controller.candidate;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
+import io.vavr.control.Either;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import org.smartjobs.core.entities.CandidateData;
+import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
+import org.smartjobs.core.failures.ProcessFailure;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.FileService;
@@ -26,6 +29,7 @@ import java.util.Optional;
 import static org.smartjobs.adaptors.view.web.constants.EventConstants.CANDIDATE_COUNT_UPDATED;
 import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.HX_TRIGGER;
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
+import static org.smartjobs.core.failures.ProcessFailure.FAILURE_TO_READ_FILE;
 
 @Controller
 @RequestMapping("/candidate")
@@ -62,11 +66,8 @@ public class CandidateController {
                 .map(fileService::handleFile)
                 .distinct()
                 .toList();
-        var processedCvs = candidateService.updateCandidateCvs(userId, role.id(), handledFiles);
-        var failedCount = files.length - processedCvs.size();
-        if (failedCount > 0) {
-            creditService.refund(userId, failedCount);
-        }
+        var fileInformation = handledFiles.stream().map(hfo -> hfo.map(Either::<ProcessFailure, FileInformation>right).orElse(Either.left(FAILURE_TO_READ_FILE))).toList();
+        candidateService.updateCandidateCvs(userId, role.id(), fileInformation);
         int selectedCount = candidateService.findSelectedCandidateCount(userId, role.id());
 
         model.addAttribute("selectedCount", selectedCount);

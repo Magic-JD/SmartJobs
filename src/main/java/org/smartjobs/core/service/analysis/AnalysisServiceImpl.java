@@ -1,5 +1,6 @@
 package org.smartjobs.core.service.analysis;
 
+import io.vavr.control.Either;
 import org.smartjobs.adaptors.data.AnalysisDalImpl;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
@@ -8,11 +9,13 @@ import org.smartjobs.core.entities.ScoringCriteria;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleHasNoCriteriaException;
+import org.smartjobs.core.failures.ProcessFailure;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.AnalysisDal;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.EventService;
+import org.smartjobs.core.service.event.events.ErrorEvent;
 import org.smartjobs.core.service.event.events.ProgressEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.smartjobs.core.failures.ProcessFailure.LLM_FAILURE_ANALYZING;
 import static org.smartjobs.core.utils.ConcurrencyUtil.virtualThreadListMap;
 
 @Service
@@ -57,17 +61,18 @@ public class AnalysisServiceImpl implements AnalysisService {
         creditService.debit(userId, candidateInformation.size());
         var counter = new AtomicInteger(0);
         var total = candidateInformation.size();
-        List<CandidateScores> results = virtualThreadListMap(candidateInformation, cv -> {
-            Optional<CandidateScores> candidateScores = generateCandidateScore(userId, roleId, cv, scoringCriteria);
+        var results = virtualThreadListMap(candidateInformation, cv -> {
+            Either<ProcessFailure, CandidateScores> candidateScores = generateCandidateScore(userId, roleId, cv, scoringCriteria);
             eventService.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
             return candidateScores;
-        }).stream().filter(Optional::isPresent).map(Optional::get).toList();
-        var failedCount = candidateInformation.size() - results.size();
-        if (failedCount > 0) {
-            creditService.refund(userId, failedCount);
+        });
+        List<CandidateScores> passes = results.stream().filter(Either::isRight).map(Either::get).toList();
+        List<ProcessFailure> failures = results.stream().filter(Either::isLeft).map(Either::getLeft).toList();
+        if (!failures.isEmpty()) {
+            creditService.refund(userId, failures.size());
+            eventService.sendEvent(new ErrorEvent(userId, failures));
         }
-
-        return results;
+        return passes;
     }
 
     @Override
@@ -83,10 +88,10 @@ public class AnalysisServiceImpl implements AnalysisService {
                 resultById.results().stream().map(r -> new ScoredCriteria(0, r.criteriaRequest(), r.description(), r.score(), r.maxScore())).toList());
     }
 
-    private Optional<CandidateScores> generateCandidateScore(long userId, long roleId, ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {
+    private Either<ProcessFailure, CandidateScores> generateCandidateScore(long userId, long roleId, ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {
         var results = virtualThreadListMap(scoringCriteria, criteria -> scoreForCriteria(cv, criteria));
         if (results.stream().anyMatch(Optional::isEmpty)) {
-            return Optional.empty();
+            return Either.left(LLM_FAILURE_ANALYZING);
         }
         var clearResults = results.stream().filter(Optional::isPresent).map(Optional::get).toList();
         double totalPossibleScore = scoringCriteria.stream()
@@ -95,7 +100,7 @@ public class AnalysisServiceImpl implements AnalysisService {
                 .mapToDouble(ScoredCriteria::score).sum();
         double percentage = (achievedScore / totalPossibleScore) * 100;
         long analysisId = analysisDal.saveResults(userId, cv.id(), roleId, clearResults);
-        return Optional.of(new CandidateScores(analysisId, cv.name(), percentage, clearResults));
+        return Either.right(new CandidateScores(analysisId, cv.name(), percentage, clearResults));
     }
 
     private Optional<ScoredCriteria> scoreForCriteria(ProcessedCv cv, ScoringCriteria criteria) {

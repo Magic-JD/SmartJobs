@@ -1,8 +1,10 @@
 package org.smartjobs.core.service;
 
+import io.vavr.control.Either;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
+import org.smartjobs.core.failures.ProcessFailure;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +14,7 @@ public interface CandidateService {
 
     List<CandidateData> getCurrentCandidates(long userId, long role);
 
-    List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<Optional<FileInformation>> fileInformationList);
+    List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<Either<ProcessFailure, FileInformation>> fileInformationList);
 
     void deleteCandidate(long userId, long currentRole, long roleId);
 
