@@ -55,11 +55,16 @@ public class AnalysisServiceImpl implements AnalysisService {
         }
         var counter = new AtomicInteger(0);
         var total = candidateInformation.size();
-        return virtualThreadListMap(candidateInformation, cv -> {
+        List<CandidateScores> results = virtualThreadListMap(candidateInformation, cv -> {
             Optional<CandidateScores> candidateScores = generateCandidateScore(cv, scoringCriteria);
             sseService.send(userId, "progress-analysis", STR. "<div>Analyzed: \{ counter.incrementAndGet() }/\{ total }</div>" );
             return candidateScores;
         }).stream().filter(Optional::isPresent).map(Optional::get).toList();
+        var failedCount = candidateInformation.size() - results.size();
+        if (failedCount > 0) {
+            creditService.refund(userId, failedCount);
+        }
+        return results;
     }
 
     private Optional<CandidateScores> generateCandidateScore(ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {

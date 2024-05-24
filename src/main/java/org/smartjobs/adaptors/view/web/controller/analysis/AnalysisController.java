@@ -9,7 +9,6 @@ import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.CandidateService;
-import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,20 +36,16 @@ public class AnalysisController {
 
     private final RoleService roleService;
 
-    private final CreditService creditService;
-
     private final ConcurrentHashMap<String, CandidateScores> cache = new ConcurrentHashMap<>();
 
     @Autowired
     public AnalysisController(
             CandidateService candidateService,
             AnalysisService analysisService,
-            RoleService roleService,
-            CreditService creditService) {
+            RoleService roleService) {
         this.candidateService = candidateService;
         this.analysisService = analysisService;
         this.roleService = roleService;
-        this.creditService = creditService;
     }
 
 
@@ -64,10 +59,7 @@ public class AnalysisController {
         var results = analysisService.scoreToCriteria(userId, candidateInformation, role.scoringCriteria()).stream()
                 .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
-        var failedCount = candidateInformation.size() - results.size();
-        if (failedCount > 0) {
-            creditService.refund(userId, failedCount);
-        }
+
         model.addAttribute("results", results);
         return SCORING_FRAGMENT;
     }
