@@ -5,7 +5,7 @@ public interface CreditService {
 
     long userCredit(long userId);
 
-    boolean debitAndVerify(long userId, int amount);
+    void debit(long userId, int amount);
 
     void refund(long userId, int amount);
 }

@@ -1,7 +1,6 @@
 package org.smartjobs.core.service.analysis;
 
 import org.smartjobs.adaptors.data.AnalysisDalImpl;
-import org.smartjobs.adaptors.view.web.service.SseService;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.ScoredCriteria;
@@ -13,6 +12,8 @@ import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.AnalysisDal;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.CreditService;
+import org.smartjobs.core.service.EventService;
+import org.smartjobs.core.service.event.events.ProgressEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,16 +28,16 @@ import static org.smartjobs.core.utils.ConcurrencyUtil.virtualThreadListMap;
 public class AnalysisServiceImpl implements AnalysisService {
 
     private final AiService client;
-    private final SseService sseService;
+    private final EventService eventService;
     private final CreditService creditService;
     private final AnalysisDal analysisDal;
     private final int maxRoleCriteriaCount;
 
 
     @Autowired
-    public AnalysisServiceImpl(AiService client, SseService sseService, CreditService creditService, AnalysisDal analysisDal, @Value("${role.max.criteria}") int maxRoleCriteriaCount) {
+    public AnalysisServiceImpl(AiService client, EventService eventService, CreditService creditService, AnalysisDal analysisDal, @Value("${role.max.criteria}") int maxRoleCriteriaCount) {
         this.client = client;
-        this.sseService = sseService;
+        this.eventService = eventService;
         this.creditService = creditService;
         this.analysisDal = analysisDal;
         this.maxRoleCriteriaCount = maxRoleCriteriaCount;
@@ -53,14 +54,12 @@ public class AnalysisServiceImpl implements AnalysisService {
         if (scoringCriteria.size() > maxRoleCriteriaCount) {
             throw new RoleCriteriaLimitReachedException(userId, maxRoleCriteriaCount);
         }
-        if (!creditService.debitAndVerify(userId, candidateInformation.size())) {
-            throw new UserResolvedExceptions.NotEnoughCreditException(userId);
-        }
+        creditService.debit(userId, candidateInformation.size());
         var counter = new AtomicInteger(0);
         var total = candidateInformation.size();
         List<CandidateScores> results = virtualThreadListMap(candidateInformation, cv -> {
             Optional<CandidateScores> candidateScores = generateCandidateScore(userId, roleId, cv, scoringCriteria);
-            sseService.send(userId, "progress-analysis", STR. "<div>Analyzed: \{ counter.incrementAndGet() }/\{ total }</div>" );
+            eventService.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
             return candidateScores;
         }).stream().filter(Optional::isPresent).map(Optional::get).toList();
         var failedCount = candidateInformation.size() - results.size();

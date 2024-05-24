@@ -2,7 +2,7 @@ package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.CreditRepository;
 import org.smartjobs.adaptors.data.repository.data.Credit;
-import org.smartjobs.core.entities.CreditEvent;
+import org.smartjobs.core.entities.CreditType;
 import org.smartjobs.core.ports.dal.CreditDal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class CreditDalImpl implements CreditDal {
     }
 
     @Override
-    public void event(long userId, int amount, CreditEvent type) {
+    public void event(long userId, int amount, CreditType type) {
         repository.save(new Credit(null, userId, amount, creditEventMapping(type)));
     }
 
@@ -37,7 +37,7 @@ public class CreditDalImpl implements CreditDal {
      * @param type The enum to translate
      * @return short value representing enum in the database.
      */
-    private short creditEventMapping(CreditEvent type) {
+    private short creditEventMapping(CreditType type) {
         return switch (type) {
             case CREDIT -> 1;
             case DEBIT -> 2;

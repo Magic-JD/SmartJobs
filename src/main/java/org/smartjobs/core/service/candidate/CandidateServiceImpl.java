@@ -1,7 +1,6 @@
 package org.smartjobs.core.service.candidate;
 
 import lombok.extern.slf4j.Slf4j;
-import org.smartjobs.adaptors.view.web.service.SseService;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.FileInformation;
@@ -9,6 +8,8 @@ import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.CvDal;
 import org.smartjobs.core.service.CandidateService;
+import org.smartjobs.core.service.EventService;
+import org.smartjobs.core.service.event.events.ProgressEvent;
 import org.smartjobs.core.utils.ConcurrencyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,14 +29,14 @@ public class CandidateServiceImpl implements CandidateService {
 
     private final AiService aiService;
     private final CvDal cvDal;
-    private final SseService sseService;
+    private final EventService eventService;
 
 
     @Autowired
-    public CandidateServiceImpl(AiService aiService, CvDal cvDal, SseService sseService) {
+    public CandidateServiceImpl(AiService aiService, CvDal cvDal, EventService eventService) {
         this.aiService = aiService;
         this.cvDal = cvDal;
-        this.sseService = sseService;
+        this.eventService = eventService;
     }
 
     @Override
@@ -73,43 +74,44 @@ public class CandidateServiceImpl implements CandidateService {
 
     private Optional<ProcessedCv> processAndUpdateProgress(long userId, long roleId, Optional<FileInformation> fileInformation, AtomicInteger counter, int total) {
         var processedCv = fileInformation.flatMap(fi -> this.processCv(fi, userId, roleId));
-        sseService.send(userId, "progress-upload", STR. "<div>Uploaded: \{ counter.incrementAndGet() }/\{ total }</div>" );
+        eventService.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
         return processedCv;
     }
 
     private Optional<ProcessedCv> processCv(FileInformation fileInformation, long userId, long roleId) {
         String hash = fileInformation.fileHash();
-        Optional<CvData> coreData = cvDal.getByHash(hash);
-        if (coreData.isPresent()) {
-            CvData cvData = coreData.get();
-            List<CandidateData> candidateData = cvDal.getByDataId(cvData.id());
-            if (candidateData.isEmpty()) {
-                var nameFuture = supplyAsync(() -> aiService.extractCandidateName(fileInformation.fileContent()));
-                return nameFuture.join().map(name -> new ProcessedCv(null, name, true, cvData.fileHash(), cvData.condensedDescription()));
-            } else {
-                String name = candidateData.getFirst().name();
-                var existingRowForUser = candidateData.stream().filter(cd -> cd.userId() == userId && cd.roleId() == roleId).findFirst();
-                if (existingRowForUser.isPresent()) {
-                    CandidateData currentData = existingRowForUser.get();
-                    if (!currentData.currentlySelected()) {
-                        cvDal.updateCurrentlySelectedById(currentData.id(), true);
-                    }
-                    return Optional.empty();
-                }
-                return Optional.of(new ProcessedCv(cvData.id(), name, true, cvData.fileHash(), cvData.condensedDescription()));
-            }
+        var existingData = cvDal.getByHash(hash);
+        if (existingData.isPresent()) {
+            return preexistingData(fileInformation, userId, roleId, existingData.get());
         }
         var nameFuture = supplyAsync(() -> aiService.extractCandidateName(fileInformation.fileContent()));
         var descriptionFuture = supplyAsync(() -> aiService.anonymizeCv(fileInformation.fileContent()));
         var name = nameFuture.join();
         var cvDescription = descriptionFuture.join();
-        if (name.isEmpty() || cvDescription.isEmpty()) {
-            if (log.isErrorEnabled()) {
-                log.error("Either CV position {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
-            }
-            return Optional.empty();
+        var processedCv = name.flatMap(n -> cvDescription.map(cvd -> new ProcessedCv(null, n, true, hash, cvd)));
+        if (processedCv.isEmpty() && log.isErrorEnabled()) {
+            log.error("Either CV position {} or description {} is empty.", name.orElse("???"), cvDescription.orElse("???"));
+        }
+        return processedCv;
+    }
+
+    private Optional<ProcessedCv> preexistingData(FileInformation fileInformation, long userId, long roleId, CvData coreData) {
+        List<CandidateData> candidateData = cvDal.getByDataId(coreData.id());
+        if (candidateData.isEmpty()) {
+            return aiService
+                    .extractCandidateName(fileInformation.fileContent())
+                    .map(name -> new ProcessedCv(coreData.id(), name, true, coreData.fileHash(), coreData.condensedDescription()));
         } else {
-            return Optional.of(new ProcessedCv(null, name.get(), true, hash, cvDescription.get()));
+            String name = candidateData.getFirst().name();
+            var existingRowForUser = candidateData.stream().filter(cd -> cd.userId() == userId && cd.roleId() == roleId).findFirst();
+            if (existingRowForUser.isPresent()) {
+                CandidateData currentData = existingRowForUser.get();
+                if (!currentData.currentlySelected()) {
+                    cvDal.updateCurrentlySelectedById(currentData.id(), true);
+                }
+                return Optional.empty();
+            }
+            return Optional.of(new ProcessedCv(coreData.id(), name, true, coreData.fileHash(), coreData.condensedDescription()));
         }
     }
 

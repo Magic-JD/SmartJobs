@@ -13,8 +13,9 @@
             hx-target="#scoring"
             hx-trigger="click">Confirm you want to proceed with analysis
     </button>
-    <div class="text-large" hx-ext="sse" hx-swap="innerHtml" hx-target="this"
-         sse-connect="/sse/register" sse-swap="progress-analysis" th:text="|Analyzed: 0/${selectedCount}|">
+    <div class="text-large" hx-ext="sse" hx-swap="innerHtml" hx-target="#progress"
+         sse-connect="/sse/register" sse-swap="progress">
+        Analyzed: <span id="progress" th:text="|0/${selectedCount}|"></span>
     </div>
     <img alt="loading" class='htmx-indicator' id="loading-icon" th:src="@{/images/loading.gif}"/>
 </div>

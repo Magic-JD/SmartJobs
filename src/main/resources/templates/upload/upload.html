@@ -14,8 +14,15 @@
                 id="upload-form"
         >Upload Files</button>
     </div>
-    <div class="text-large" hx-ext="sse" hx-swap="innerHtml" hx-target="this" sse-connect="/sse/register"
-         sse-swap="progress-upload">Uploaded: 0/X
+    <div class="text-large"
+         hx-ext="sse" hx-swap="innerHtml"
+         hx-target="#progress"
+         sse-connect="/sse/register"
+         sse-swap="progress">
+        Uploaded:
+        <span id="progress"
+              th:text="|0/0|"
+        ></span>
     </div>
     <img alt="loading" class='htmx-indicator' th:src="@{/images/loading.gif}"/>
 </form>

@@ -3,12 +3,10 @@ package org.smartjobs.adaptors.view.web.controller.candidate;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
-import org.smartjobs.adaptors.view.web.service.SseService;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
-import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.FileService;
@@ -38,7 +36,6 @@ public class CandidateController {
     private final FileService fileService;
     private final CreditService creditService;
     private final RoleService roleService;
-    private final SseService sseService;
 
 
 
@@ -46,13 +43,11 @@ public class CandidateController {
     public CandidateController(FileService fileService,
                                CandidateService candidateService,
                                CreditService creditService,
-                               RoleService roleService,
-                               SseService sseService) {
+                               RoleService roleService) {
         this.fileService = fileService;
         this.candidateService = candidateService;
         this.creditService = creditService;
         this.roleService = roleService;
-        this.sseService = sseService;
     }
 
     @HxRequest
@@ -61,10 +56,7 @@ public class CandidateController {
                              @RequestParam(name = "files") MultipartFile[] files,
                              Model model) {
         var userId = user.getId();
-        sseService.send(userId, "progress-upload", STR. "<div>Uploaded: 0/\{ files.length }</div>" );
-        if (!creditService.debitAndVerify(userId, files.length)) {
-            throw new NotEnoughCreditException(userId);
-        }
+        creditService.debit(userId, files.length);
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)

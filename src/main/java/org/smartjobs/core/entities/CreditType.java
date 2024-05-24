@@ -1,6 +1,6 @@
 package org.smartjobs.core.entities;
 
-public enum CreditEvent {
+public enum CreditType {
     CREDIT,
     DEBIT,
     OVERSPEND,
