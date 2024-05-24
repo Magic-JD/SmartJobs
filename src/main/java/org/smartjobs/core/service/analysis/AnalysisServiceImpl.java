@@ -1,11 +1,11 @@
 package org.smartjobs.core.service.analysis;
 
+import org.smartjobs.adaptors.view.web.service.SseService;
 import org.smartjobs.core.entities.*;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleHasNoCriteriaException;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.service.AnalysisService;
-import org.smartjobs.core.service.SseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.smartjobs.core.utils.ConcurrencyUtil.virtualThreadList;
+import static org.smartjobs.core.utils.ConcurrencyUtil.virtualThreadListMap;
 
 @Service
 public class AnalysisServiceImpl implements AnalysisService {
@@ -35,14 +35,14 @@ public class AnalysisServiceImpl implements AnalysisService {
     @Override
     public List<CandidateScores> scoreToCriteria(long userId, List<ProcessedCv> candidateInformation, Role role) {
         if (role.scoringCriteria().isEmpty()) {
-            throw new RoleHasNoCriteriaException();
+            throw new RoleHasNoCriteriaException(userId);
         }
         if (role.scoringCriteria().size() > maxRoleCriteriaCount) {
-            throw new RoleCriteriaLimitReachedException(maxRoleCriteriaCount);
+            throw new RoleCriteriaLimitReachedException(userId, maxRoleCriteriaCount);
         }
         var counter = new AtomicInteger(0);
         var total = candidateInformation.size();
-        return virtualThreadList(candidateInformation, cv -> {
+        return virtualThreadListMap(candidateInformation, cv -> {
             Optional<CandidateScores> candidateScores = generateCandidateScore(cv, role.scoringCriteria());
             sseService.send(userId, "progress-analysis", STR. "<div>Analyzed: \{ counter.incrementAndGet() }/\{ total }</div>" );
             return candidateScores;
@@ -50,7 +50,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     private Optional<CandidateScores> generateCandidateScore(ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {
-        var results = virtualThreadList(scoringCriteria, criteria -> scoreForCriteria(cv, criteria));
+        var results = virtualThreadListMap(scoringCriteria, criteria -> scoreForCriteria(cv, criteria));
         if (results.stream().anyMatch(Optional::isEmpty)) {
             return Optional.empty();
         }

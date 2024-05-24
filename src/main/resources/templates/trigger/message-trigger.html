@@ -1,0 +1,9 @@
+<div id="message-trigger"
+     th:fragment="message-trigger"
+     class="attacher"
+     hx-ext="sse"
+     hx-swap="outerHtml"
+     hx-target="#message"
+     sse-connect="/sse/register"
+     sse-swap="message"
+></div>

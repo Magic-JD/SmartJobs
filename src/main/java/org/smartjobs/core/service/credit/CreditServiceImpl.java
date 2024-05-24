@@ -1,9 +1,9 @@
 package org.smartjobs.core.service.credit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.smartjobs.adaptors.view.web.service.SseService;
 import org.smartjobs.core.ports.dal.CreditDao;
 import org.smartjobs.core.service.CreditService;
-import org.smartjobs.core.service.SseService;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;

@@ -3,12 +3,16 @@ package org.smartjobs.adaptors.view.web.controller.candidate;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
+import org.smartjobs.adaptors.view.web.service.SseService;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
-import org.smartjobs.core.service.*;
+import org.smartjobs.core.service.CandidateService;
+import org.smartjobs.core.service.CreditService;
+import org.smartjobs.core.service.FileService;
+import org.smartjobs.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -59,9 +63,9 @@ public class CandidateController {
         var userId = user.getId();
         sseService.send(userId, "progress-upload", STR. "<div>Uploaded: 0/\{ files.length }</div>" );
         if (!creditService.debitAndVerify(userId, files.length)) {
-            throw new NotEnoughCreditException();
+            throw new NotEnoughCreditException(userId);
         }
-        var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(NoRoleSelectedException::new);
+        var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         var handledFiles = Arrays.stream(files)
                 .map(fileService::handleFile)
                 .distinct()
@@ -108,7 +112,7 @@ public class CandidateController {
     @DeleteMapping("/delete/all")
     public String deleteAllCandidates(@AuthenticationPrincipal User user, Model model, HttpServletResponse response) {
         var userId = user.getId();
-        Long roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(NoRoleSelectedException::new);
+        Long roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         candidateService.deleteAllCandidates(userId, roleId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         model.addAttribute("candidates", Collections.emptyList());

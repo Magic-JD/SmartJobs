@@ -1,7 +1,7 @@
-package org.smartjobs.core.service.sse;
+package org.smartjobs.adaptors.view.web.service.sse;
 
 import lombok.extern.slf4j.Slf4j;
-import org.smartjobs.core.service.SseService;
+import org.smartjobs.adaptors.view.web.service.SseService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;

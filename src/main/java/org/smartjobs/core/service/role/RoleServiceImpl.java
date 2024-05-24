@@ -5,7 +5,10 @@ import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.RoleDisplay;
 import org.smartjobs.core.entities.UserCriteria;
 import org.smartjobs.core.exception.categories.ApplicationExceptions;
-import org.smartjobs.core.exception.categories.UserResolvedExceptions;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoScoreProvidedException;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoValueProvidedException;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.ScoreIsNotNumberException;
 import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDao;
 import org.smartjobs.core.ports.dal.RoleDao;
 import org.smartjobs.core.service.RoleService;
@@ -135,21 +138,21 @@ public class RoleServiceImpl implements RoleService {
     public UserCriteria addUserCriteriaToRole(long definedCriteriaId, long userId, long roleId, String value, String score) {
         DefinedScoringCriteria definedCriteria = getCriteriaById(definedCriteriaId);
         if (!StringUtils.hasText(score)) {
-            throw new UserResolvedExceptions.NoScoreProvidedException();
+            throw new NoScoreProvidedException(userId);
         }
         int scoreInt;
         try {
             scoreInt = Integer.parseInt(score);
         } catch (NumberFormatException e) {
-            throw new UserResolvedExceptions.ScoreIsNotNumberException();
+            throw new ScoreIsNotNumberException(userId);
         }
         if (definedCriteria.needsInput() && !StringUtils.hasText(value)) {
-            throw new UserResolvedExceptions.NoValueProvidedException();
+            throw new NoValueProvidedException(userId);
         }
         UserCriteria criteria = roleDao.createNewUserCriteriaForRole(definedCriteriaId, roleId, value, scoreInt);
         if (roleDao.countCriteriaForRole(roleId) > maxAllowedCriteria) {
             roleDao.removeUserCriteriaFromRole(roleId, criteria.id());
-            throw new UserResolvedExceptions.RoleCriteriaLimitReachedException(maxAllowedCriteria);
+            throw new RoleCriteriaLimitReachedException(userId, maxAllowedCriteria);
         }
         return criteria;
     }

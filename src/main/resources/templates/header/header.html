@@ -20,4 +20,7 @@
            th:text="${navElement.name}"></a>
         <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
     </nav>
+    <div th:replace="${loggedIn} ? ~{trigger/message-trigger} : ~{trigger/empty-trigger}"></div>
+    <div id="message" class="attacher"></div>
 </header>
+

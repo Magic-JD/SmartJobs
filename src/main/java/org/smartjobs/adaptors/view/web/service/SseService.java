@@ -1,4 +1,4 @@
-package org.smartjobs.core.service;
+package org.smartjobs.adaptors.view.web.service;
 
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 

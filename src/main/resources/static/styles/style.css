@@ -476,3 +476,9 @@ input[type=file]::file-selector-button:hover {
 .left-justified {
     align-items: flex-start;
 }
+
+.attacher {
+    position: absolute;
+    z-index: -100;
+    visibility: invisible;
+}

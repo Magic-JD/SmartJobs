@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.User;
-import org.smartjobs.core.exception.categories.UserResolvedExceptions;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoCandidatesSelectedException;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
+import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.CreditService;
@@ -22,11 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
-import static org.smartjobs.adaptors.view.web.exception.message.ExceptionMessage.createUserErrorMessageToDisplayForUser;
 
 @Controller
 @Slf4j
@@ -60,19 +60,15 @@ public class AnalysisController {
     @GetMapping("/scoring")
     public String scoreAllCandidates(@AuthenticationPrincipal User user, HttpServletResponse response, Model model) {
         var userId = user.getId();
-        var roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(UserResolvedExceptions.NoRoleSelectedException::new);
-        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(userId, roleId);
+        var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
+        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(userId, role.id());
+        //TODO sort out this mess!
         if (candidateInformation.isEmpty()) {
-            return createUserErrorMessageToDisplayForUser("Please upload some users to analyze.", response, model);
-        }
-        Optional<Long> currentlySelectedRole = roleService.getCurrentlySelectedRoleId(userId);
-        if (currentlySelectedRole.isEmpty()) {
-            return createUserErrorMessageToDisplayForUser("Please select a role", response, model);
+            throw new NoCandidatesSelectedException(userId);
         }
         if (!creditService.debitAndVerify(userId, candidateInformation.size())) {
-            return createUserErrorMessageToDisplayForUser("Please purchase more credits", response, model);
+            throw new NotEnoughCreditException(userId);
         }
-        var role = roleService.getRole(currentlySelectedRole.get());
         var results = analysisService.scoreToCriteria(userId, candidateInformation, role).stream()
                 .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));

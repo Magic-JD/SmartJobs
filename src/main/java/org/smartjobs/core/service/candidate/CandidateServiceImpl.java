@@ -1,6 +1,7 @@
 package org.smartjobs.core.service.candidate;
 
 import lombok.extern.slf4j.Slf4j;
+import org.smartjobs.adaptors.view.web.service.SseService;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.FileInformation;
@@ -8,7 +9,6 @@ import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.CvDao;
 import org.smartjobs.core.service.CandidateService;
-import org.smartjobs.core.service.SseService;
 import org.smartjobs.core.utils.ConcurrencyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -58,7 +58,7 @@ public class CandidateServiceImpl implements CandidateService {
         var counter = new AtomicInteger(0);
         var total = fileInformationList.size();
 
-        var processedCvs = ConcurrencyUtil.virtualThreadList(
+        var processedCvs = ConcurrencyUtil.virtualThreadListMap(
                 fileInformationList,
                 fileInformation -> processAndUpdateProgress(userId, roleId, fileInformation, counter, total)
         );
