@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.User;
-import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoCandidatesSelectedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
-import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.CreditService;
@@ -62,14 +60,8 @@ public class AnalysisController {
         var userId = user.getId();
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(userId, role.id());
-        //TODO sort out this mess!
-        if (candidateInformation.isEmpty()) {
-            throw new NoCandidatesSelectedException(userId);
-        }
-        if (!creditService.debitAndVerify(userId, candidateInformation.size())) {
-            throw new NotEnoughCreditException(userId);
-        }
-        var results = analysisService.scoreToCriteria(userId, candidateInformation, role).stream()
+
+        var results = analysisService.scoreToCriteria(userId, candidateInformation, role.scoringCriteria()).stream()
                 .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
         results.forEach(result -> cache.put(result.uuid(), result));
         var failedCount = candidateInformation.size() - results.size();
