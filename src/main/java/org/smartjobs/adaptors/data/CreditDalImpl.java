@@ -3,17 +3,17 @@ package org.smartjobs.adaptors.data;
 import org.smartjobs.adaptors.data.repository.CreditRepository;
 import org.smartjobs.adaptors.data.repository.data.Credit;
 import org.smartjobs.core.entities.CreditEvent;
-import org.smartjobs.core.ports.dal.CreditDao;
+import org.smartjobs.core.ports.dal.CreditDal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreditDaoImpl implements CreditDao {
+public class CreditDalImpl implements CreditDal {
 
     private final CreditRepository repository;
 
     @Autowired
-    public CreditDaoImpl(CreditRepository repository) {
+    public CreditDalImpl(CreditRepository repository) {
         this.repository = repository;
     }
 

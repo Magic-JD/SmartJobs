@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 
@@ -35,8 +34,6 @@ public class AnalysisController {
     private final AnalysisService analysisService;
 
     private final RoleService roleService;
-
-    private final ConcurrentHashMap<String, CandidateScores> cache = new ConcurrentHashMap<>();
 
     @Autowired
     public AnalysisController(
@@ -56,25 +53,23 @@ public class AnalysisController {
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(userId, role.id());
 
-        var results = analysisService.scoreToCriteria(userId, candidateInformation, role.scoringCriteria()).stream()
+        var results = analysisService.scoreToCriteria(userId, role.id(), candidateInformation, role.scoringCriteria()).stream()
                 .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
-        results.forEach(result -> cache.put(result.uuid(), result));
-
         model.addAttribute("results", results);
         return SCORING_FRAGMENT;
     }
 
     @HxRequest
-    @GetMapping("/result/details/{resultUuid}")
-    public String retrieveResultDetails(@PathVariable String resultUuid, Model model, HttpServletResponse response) {
-        model.addAttribute("result", cache.get(resultUuid));
+    @GetMapping("/result/details/{resultId}")
+    public String retrieveResultDetails(@PathVariable Long resultId, Model model, HttpServletResponse response) {
+        model.addAttribute("result", analysisService.getResultById(resultId));
         return RESULT_DETAILS_FRAGMENT;
     }
 
     @HxRequest
-    @DeleteMapping("/result/details/{resultUuid}")
-    public String removeResultDetails(@PathVariable String resultUuid, Model model, HttpServletResponse response) {
-        model.addAttribute("result", cache.get(resultUuid));
+    @DeleteMapping("/result/details/{resultId}")
+    public String removeResultDetails(@PathVariable Long resultId, Model model, HttpServletResponse response) {
+        model.addAttribute("result", analysisService.getResultById(resultId));
         return RESULT_COLLAPSED_FRAGMENT;
     }
 

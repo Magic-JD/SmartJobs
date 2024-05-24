@@ -2,7 +2,7 @@
     <div class="candidate-row flex-container"
          hx-swap="outerHTML"
 
-         th:attr="hx-delete=@{|analysis/result/details/${result.uuid}|}">
+         th:attr="hx-delete=@{|analysis/result/details/${result.id}|}">
 
         <p class="candidate-display-left" th:text="|⌄ ${result.name}|"></p>
         <p class="candidate-display-right" th:text="|${@numberFormatUtils.formatNumber(result.percentage)}%|"></p>

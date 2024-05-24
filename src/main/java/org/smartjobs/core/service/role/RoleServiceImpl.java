@@ -9,8 +9,8 @@ import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoScorePro
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoValueProvidedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.ScoreIsNotNumberException;
-import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDao;
-import org.smartjobs.core.ports.dal.RoleDao;
+import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDal;
+import org.smartjobs.core.ports.dal.RoleDal;
 import org.smartjobs.core.service.RoleService;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,26 +32,26 @@ import java.util.Optional;
 public class RoleServiceImpl implements RoleService {
 
     public final int maxAllowedCriteria;
-    private final RoleDao roleDao;
-    private final DefinedScoringCriteriaDao definedScoringCriteriaDao;
+    private final RoleDal roleDal;
+    private final DefinedScoringCriteriaDal definedScoringCriteriaDal;
 
     @Autowired
-    public RoleServiceImpl(RoleDao roleDao, DefinedScoringCriteriaDao definedScoringCriteriaDao, @Value("${role.max.criteria}") int maxAllowedCriteria) {
-        this.roleDao = roleDao;
-        this.definedScoringCriteriaDao = definedScoringCriteriaDao;
+    public RoleServiceImpl(RoleDal roleDal, DefinedScoringCriteriaDal definedScoringCriteriaDal, @Value("${role.max.criteria}") int maxAllowedCriteria) {
+        this.roleDal = roleDal;
+        this.definedScoringCriteriaDal = definedScoringCriteriaDal;
         this.maxAllowedCriteria = maxAllowedCriteria;
     }
 
     @Override
     @Cacheable("current-role-id")
     public Optional<Long> getCurrentlySelectedRoleId(long userId) {
-        return roleDao.getCurrentlySelectedRoleById(userId);
+        return roleDal.getCurrentlySelectedRoleById(userId);
     }
 
     @Override
     @Cacheable("current-role")
     public Optional<Role> getCurrentlySelectedRole(long userId) {
-        return roleDao.getCurrentlySelectedRole(userId);
+        return roleDal.getCurrentlySelectedRole(userId);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "current-role")
     })
     public void deleteCurrentlySelectedRole(long userId) {
-        roleDao.deleteCurrentlySelectedRole(userId);
+        roleDal.deleteCurrentlySelectedRole(userId);
     }
 
     @Override
@@ -69,19 +69,19 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "current-role", key = "#userId")
     })
     public void setCurrentlySelectedRole(long userId, long roleId) {
-        roleDao.setSelectedRole(userId, roleId);
+        roleDal.setSelectedRole(userId, roleId);
     }
 
     @Override
     @Cacheable("role")
     public Role getRole(long id) {
-        return roleDao.getRoleById(id);
+        return roleDal.getRoleById(id);
     }
 
     @Override
     @Cacheable("role-display")
     public List<RoleDisplay> getUserRoles(long userId) {
-        return roleDao.getUserRoles(userId);
+        return roleDal.getUserRoles(userId);
     }
 
     @Override
@@ -91,8 +91,8 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "current-role", key = "#username")
     })
     public Role createRole(String name, long username) {
-        var roleId = roleDao.saveRole(username, name);
-        roleDao.setSelectedRole(username, roleId);
+        var roleId = roleDal.saveRole(username, name);
+        roleDal.setSelectedRole(username, roleId);
         return new Role(roleId, name, Collections.emptyList());
     }
 
@@ -102,7 +102,7 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "role", key = "#roleId")
     })
     public void removeCriteriaFromRole(long userId, long roleId, long userCriteriaId) {
-        roleDao.removeUserCriteriaFromRole(roleId, userCriteriaId);
+        roleDal.removeUserCriteriaFromRole(roleId, userCriteriaId);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "role-display", key = "#userId")
     })
     public void deleteRole(long userId, long roleId) {
-        roleDao.delete(roleId);
+        roleDal.delete(roleId);
     }
 
 
@@ -149,15 +149,15 @@ public class RoleServiceImpl implements RoleService {
         if (definedCriteria.needsInput() && !StringUtils.hasText(value)) {
             throw new NoValueProvidedException(userId);
         }
-        UserCriteria criteria = roleDao.createNewUserCriteriaForRole(definedCriteriaId, roleId, value, scoreInt);
-        if (roleDao.countCriteriaForRole(roleId) > maxAllowedCriteria) {
-            roleDao.removeUserCriteriaFromRole(roleId, criteria.id());
+        UserCriteria criteria = roleDal.createNewUserCriteriaForRole(definedCriteriaId, roleId, value, scoreInt);
+        if (roleDal.countCriteriaForRole(roleId) > maxAllowedCriteria) {
+            roleDal.removeUserCriteriaFromRole(roleId, criteria.id());
             throw new RoleCriteriaLimitReachedException(userId, maxAllowedCriteria);
         }
         return criteria;
     }
 
     private List<DefinedScoringCriteria> getAllDefinedScoringCriteria() {
-        return definedScoringCriteriaDao.getAllDefinedScoringCriteria();
+        return definedScoringCriteriaDal.getAllDefinedScoringCriteria();
     }
 }

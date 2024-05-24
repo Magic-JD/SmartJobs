@@ -4,7 +4,7 @@ import org.smartjobs.core.entities.User;
 
 import java.util.Optional;
 
-public interface CredentialDao {
+public interface CredentialDal {
 
     Optional<User> getUser(String username);
 }

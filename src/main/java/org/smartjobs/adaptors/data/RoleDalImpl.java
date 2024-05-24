@@ -6,7 +6,7 @@ import org.smartjobs.adaptors.data.repository.data.*;
 import org.smartjobs.core.entities.RoleDisplay;
 import org.smartjobs.core.entities.ScoringCriteria;
 import org.smartjobs.core.exception.categories.ApplicationExceptions.IncorrectIdForRoleRetrievalException;
-import org.smartjobs.core.ports.dal.RoleDao;
+import org.smartjobs.core.ports.dal.RoleDal;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class RoleDaoImpl implements RoleDao {
+public class RoleDalImpl implements RoleDal {
 
     private final RoleRepository roleRepository;
     private final RoleCriteriaRepository roleCriteriaRepository;
@@ -24,7 +24,7 @@ public class RoleDaoImpl implements RoleDao {
     private final SelectedRoleRepository selectedRoleRepository;
 
     @Autowired
-    public RoleDaoImpl(RoleRepository roleRepository, RoleCriteriaRepository roleCriteriaRepository, UserCriteriaRepository userCriteriaRepository, DefinedScoringCriteriaRepository definedScoringCriteriaRepository, SelectedRoleRepository selectedRoleRepository) {
+    public RoleDalImpl(RoleRepository roleRepository, RoleCriteriaRepository roleCriteriaRepository, UserCriteriaRepository userCriteriaRepository, DefinedScoringCriteriaRepository definedScoringCriteriaRepository, SelectedRoleRepository selectedRoleRepository) {
         this.roleRepository = roleRepository;
         this.roleCriteriaRepository = roleCriteriaRepository;
         this.userCriteriaRepository = userCriteriaRepository;

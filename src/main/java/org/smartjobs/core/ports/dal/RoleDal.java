@@ -7,7 +7,7 @@ import org.smartjobs.core.entities.UserCriteria;
 import java.util.List;
 import java.util.Optional;
 
-public interface RoleDao {
+public interface RoleDal {
     List<RoleDisplay> getUserRoles(long userId);
 
     long saveRole(long userId, String name);

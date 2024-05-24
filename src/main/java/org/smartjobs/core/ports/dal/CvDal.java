@@ -8,7 +8,7 @@ import org.smartjobs.core.entities.ProcessedCv;
 import java.util.List;
 import java.util.Optional;
 
-public interface CvDao {
+public interface CvDal {
     @Transactional
     void addCvsToRepository(long userId, long roleId, List<ProcessedCv> processedCvs);
 

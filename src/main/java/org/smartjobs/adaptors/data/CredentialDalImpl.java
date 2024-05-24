@@ -2,7 +2,7 @@ package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.CredentialRepository;
 import org.smartjobs.core.entities.User;
-import org.smartjobs.core.ports.dal.CredentialDao;
+import org.smartjobs.core.ports.dal.CredentialDal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class CredentialDaoImpl implements CredentialDao {
+public class CredentialDalImpl implements CredentialDal {
 
     private final CredentialRepository repository;
 
     @Autowired
-    public CredentialDaoImpl(CredentialRepository repository) {
+    public CredentialDalImpl(CredentialRepository repository) {
         this.repository = repository;
     }
 

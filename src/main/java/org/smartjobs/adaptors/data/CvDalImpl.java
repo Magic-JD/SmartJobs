@@ -9,7 +9,7 @@ import org.smartjobs.adaptors.data.repository.data.Cv;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.ProcessedCv;
-import org.smartjobs.core.ports.dal.CvDao;
+import org.smartjobs.core.ports.dal.CvDal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +20,14 @@ import java.util.Optional;
 
 @Component
 @Slf4j
-public class CvDaoImpl implements CvDao {
+public class CvDalImpl implements CvDal {
 
 
     private final CvRepository cvRepository;
     private final CandidateRepository candidateRepository;
 
     @Autowired
-    public CvDaoImpl(CvRepository repository, CandidateRepository candidateRepository) {
+    public CvDalImpl(CvRepository repository, CandidateRepository candidateRepository) {
         this.cvRepository = repository;
         this.candidateRepository = candidateRepository;
     }

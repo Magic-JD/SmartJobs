@@ -5,7 +5,7 @@ import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
-public interface DefinedScoringCriteriaDao {
+public interface DefinedScoringCriteriaDal {
 
     @Cacheable(value = "defined-criteria", cacheManager = "staticCacheManager", sync = true)
     List<DefinedScoringCriteria> getAllDefinedScoringCriteria();

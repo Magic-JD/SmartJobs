@@ -2,7 +2,7 @@ package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.DefinedScoringCriteriaRepository;
 import org.smartjobs.core.entities.DefinedScoringCriteria;
-import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDao;
+import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDal;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class DefinedScoringCriteriaDaoImpl implements DefinedScoringCriteriaDao {
+public class DefinedScoringCriteriaDalImpl implements DefinedScoringCriteriaDal {
 
     private final DefinedScoringCriteriaRepository repository;
 
     @Autowired
-    public DefinedScoringCriteriaDaoImpl(DefinedScoringCriteriaRepository repository) {
+    public DefinedScoringCriteriaDalImpl(DefinedScoringCriteriaRepository repository) {
         this.repository = repository;
     }
 

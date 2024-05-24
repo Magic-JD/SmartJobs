@@ -7,7 +7,7 @@ import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.ports.client.AiService;
-import org.smartjobs.core.ports.dal.CvDao;
+import org.smartjobs.core.ports.dal.CvDal;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.utils.ConcurrencyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,26 +27,26 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 public class CandidateServiceImpl implements CandidateService {
 
     private final AiService aiService;
-    private final CvDao cvDao;
+    private final CvDal cvDal;
     private final SseService sseService;
 
 
     @Autowired
-    public CandidateServiceImpl(AiService aiService, CvDao cvDao, SseService sseService) {
+    public CandidateServiceImpl(AiService aiService, CvDal cvDal, SseService sseService) {
         this.aiService = aiService;
-        this.cvDao = cvDao;
+        this.cvDal = cvDal;
         this.sseService = sseService;
     }
 
     @Override
     public List<ProcessedCv> getFullCandidateInfo(long userId, long roleId) {
-        return cvDao.getAllSelected(userId, roleId);
+        return cvDal.getAllSelected(userId, roleId);
     }
 
     @Override
     @Cacheable(value = "cv-name", key = "{#userId, #roleId}")
     public List<CandidateData> getCurrentCandidates(long userId, long roleId) {
-        return cvDao.getAllNames(userId, roleId);
+        return cvDal.getAllNames(userId, roleId);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .toList();
-        cvDao.addCvsToRepository(userId, roleId, list);
+        cvDal.addCvsToRepository(userId, roleId, list);
         return list;
     }
 
@@ -79,10 +79,10 @@ public class CandidateServiceImpl implements CandidateService {
 
     private Optional<ProcessedCv> processCv(FileInformation fileInformation, long userId, long roleId) {
         String hash = fileInformation.fileHash();
-        Optional<CvData> coreData = cvDao.getByHash(hash);
+        Optional<CvData> coreData = cvDal.getByHash(hash);
         if (coreData.isPresent()) {
             CvData cvData = coreData.get();
-            List<CandidateData> candidateData = cvDao.getByDataId(cvData.id());
+            List<CandidateData> candidateData = cvDal.getByDataId(cvData.id());
             if (candidateData.isEmpty()) {
                 var nameFuture = supplyAsync(() -> aiService.extractCandidateName(fileInformation.fileContent()));
                 return nameFuture.join().map(name -> new ProcessedCv(null, name, true, cvData.fileHash(), cvData.condensedDescription()));
@@ -92,7 +92,7 @@ public class CandidateServiceImpl implements CandidateService {
                 if (existingRowForUser.isPresent()) {
                     CandidateData currentData = existingRowForUser.get();
                     if (!currentData.currentlySelected()) {
-                        cvDao.updateCurrentlySelectedById(currentData.id(), true);
+                        cvDal.updateCurrentlySelectedById(currentData.id(), true);
                     }
                     return Optional.empty();
                 }
@@ -119,7 +119,7 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
     })
     public void deleteCandidate(long userId, long roleId, long candidateId) {
-        cvDao.deleteByCandidateId(candidateId);
+        cvDal.deleteByCandidateId(candidateId);
     }
 
     @Override
@@ -128,13 +128,13 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
     })
     public Optional<CandidateData> toggleCandidateSelect(long userId, long roleId, long cvId, boolean select) {
-        return cvDao.updateCurrentlySelectedById(cvId, select);
+        return cvDal.updateCurrentlySelectedById(cvId, select);
     }
 
     @Override
     @Cacheable(value = "cv-currently-selected", key = "{#userId, #roleId}")
     public int findSelectedCandidateCount(long userId, long roleId) {
-        return cvDao.findSelectedCandidateCount(userId, roleId);
+        return cvDal.findSelectedCandidateCount(userId, roleId);
     }
 
     @Override
@@ -143,6 +143,6 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
     })
     public void deleteAllCandidates(long userId, long roleId) {
-        cvDao.deleteAllCandidates(userId, roleId);
+        cvDal.deleteAllCandidates(userId, roleId);
     }
 }

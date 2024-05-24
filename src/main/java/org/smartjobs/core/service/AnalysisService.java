@@ -7,5 +7,7 @@ import org.smartjobs.core.entities.ScoringCriteria;
 import java.util.List;
 
 public interface AnalysisService {
-    List<CandidateScores> scoreToCriteria(long userId, List<ProcessedCv> candidateInformation, List<ScoringCriteria> scoringCriteria);
+    List<CandidateScores> scoreToCriteria(long userId, long roleId, List<ProcessedCv> candidateInformation, List<ScoringCriteria> scoringCriteria);
+
+    CandidateScores getResultById(long id);
 }
