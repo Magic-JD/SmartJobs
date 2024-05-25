@@ -1,4 +1,4 @@
-package org.smartjobs.core.service.event.events;
+package org.smartjobs.core.event.events;
 
 public enum EventType {
 

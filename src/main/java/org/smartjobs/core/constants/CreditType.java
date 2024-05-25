@@ -1,4 +1,4 @@
-package org.smartjobs.core.entities;
+package org.smartjobs.core.constants;
 
 public enum CreditType {
     CREDIT,

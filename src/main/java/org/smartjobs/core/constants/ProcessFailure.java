@@ -1,4 +1,4 @@
-package org.smartjobs.core.failures;
+package org.smartjobs.core.constants;
 
 public enum ProcessFailure {
     EXISTING_CANDIDATE,
