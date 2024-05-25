@@ -4,13 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.service.analysis.AnalysisServiceImpl;
-import org.smartjobs.core.service.credit.CreditServiceImpl;
-import org.smartjobs.core.service.event.EventServiceImpl;
 
 import java.util.List;
 
+import static constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.smartjobs.core.config.MockPortConfig.*;
 
 class AnalysisServiceTest {
 
@@ -18,8 +16,7 @@ class AnalysisServiceTest {
 
     @BeforeEach
     void setUp() {
-        EventServiceImpl eventService = new EventServiceImpl();
-        analysisService = new AnalysisServiceImpl(aiServiceMock(), eventService, new CreditServiceImpl(creditDalMock(), eventService), analysisDalMock(), 10);
+        analysisService = new AnalysisServiceImpl(aiServiceMock(), eventService(), creditService(), analysisDalMock(), 10);
     }
 
     @Test
