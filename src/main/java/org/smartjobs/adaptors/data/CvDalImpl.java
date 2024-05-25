@@ -74,7 +74,7 @@ public class CvDalImpl implements CvDal {
                 .stream()
                 .map(cv -> new ProcessedCv(
                         (Long) cv.get("id"),
-                        (String) cv.get("name"),
+                        (String) cv.get("criteriaDescription"),
                         true,
                         (String) cv.get("file_hash"),
                         (String) cv.get("condensed_text")))
@@ -120,7 +120,7 @@ public class CvDalImpl implements CvDal {
     }
 
     @Override
-    public List<CandidateData> getByDataId(Long id) {
+    public List<CandidateData> getByCvId(Long id) {
         return candidateRepository.findAllByCvId(id).stream().map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected())).toList();
     }
 }

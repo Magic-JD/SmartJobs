@@ -1,0 +1,18 @@
+logging:
+  file:
+    path: ./data/logs
+  level:
+    root: ERROR
+    org:
+      smartjobs: TRACE
+  org:
+    springframework:
+      boot:
+        test:
+          context:
+            springboottestcontextbootstrapper: ERROR
+      context:
+        support:
+          abstractcontextloader: off
+          annotationconfigcontextloaderutils: off
+        thymeleaf: DEBUG

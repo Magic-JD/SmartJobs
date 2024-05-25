@@ -2,12 +2,12 @@ package org.smartjobs.adaptors.view.web.service.listener;
 
 import org.smartjobs.adaptors.view.web.constants.DisplayMappings;
 import org.smartjobs.adaptors.view.web.service.SseService;
+import org.smartjobs.core.ports.listener.Listener;
 import org.smartjobs.core.service.EventService;
 import org.smartjobs.core.service.event.events.CreditEvent;
 import org.smartjobs.core.service.event.events.ErrorEvent;
 import org.smartjobs.core.service.event.events.Event;
 import org.smartjobs.core.service.event.events.ProgressEvent;
-import org.smartjobs.core.service.event.listener.Listener;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;

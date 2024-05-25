@@ -53,7 +53,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    @Cacheable(value = "cv-name", key = "{#userId, #roleId}")
+    @Cacheable(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     public List<CandidateData> getCurrentCandidates(long userId, long roleId) {
         return cvDal.getAllNames(userId, roleId);
     }
@@ -61,7 +61,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
-            @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
+            @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<Either<ProcessFailure, FileInformation>> fileInformationList) {
         var counter = new AtomicInteger(0);
@@ -111,7 +111,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Either<ProcessFailure, ProcessedCv> preexistingData(FileInformation fileInformation, long userId, long roleId, CvData coreData) {
-        List<CandidateData> candidateData = cvDal.getByDataId(coreData.id());
+        List<CandidateData> candidateData = cvDal.getByCvId(coreData.id());
         if (candidateData.isEmpty()) {
             return aiService
                     .extractCandidateName(fileInformation.fileContent())
@@ -134,7 +134,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
-            @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
+            @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public void deleteCandidate(long userId, long roleId, long candidateId) {
         cvDal.deleteByCandidateId(candidateId);
@@ -143,7 +143,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
-            @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
+            @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public Optional<CandidateData> toggleCandidateSelect(long userId, long roleId, long cvId, boolean select) {
         return cvDal.updateCurrentlySelectedById(cvId, select);
@@ -158,7 +158,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
-            @CacheEvict(value = "cv-name", key = "{#userId, #roleId}")
+            @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public void deleteAllCandidates(long userId, long roleId) {
         cvDal.deleteAllCandidates(userId, roleId);

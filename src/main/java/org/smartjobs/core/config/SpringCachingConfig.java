@@ -37,7 +37,7 @@ public class SpringCachingConfig implements CachingConfigurer {
     @Override
     public CacheManager cacheManager() {
         var cacheManager = new CaffeineCacheManager(
-                "cv-name",
+                "cv-criteriaDescription",
                 "role",
                 "current-role",
                 "current-role-id",

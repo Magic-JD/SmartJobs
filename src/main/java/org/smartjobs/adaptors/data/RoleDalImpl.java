@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import org.smartjobs.adaptors.data.repository.*;
 import org.smartjobs.adaptors.data.repository.data.*;
 import org.smartjobs.core.entities.RoleDisplay;
-import org.smartjobs.core.entities.ScoringCriteria;
+import org.smartjobs.core.entities.UserScoringCriteria;
 import org.smartjobs.core.exception.categories.ApplicationExceptions.IncorrectIdForRoleRetrievalException;
 import org.smartjobs.core.ports.dal.RoleDal;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
@@ -50,7 +50,7 @@ public class RoleDalImpl implements RoleDal {
                 .map(rc -> userCriteriaRepository.findById(rc.getUserCriteriaId())).map(Optional::orElseThrow).map(userCriteria -> {
                     DefinedCriteria defCrit = definedScoringCriteriaRepository.findById(userCriteria.getDefinedCriteriaId()).orElseThrow();
                     String aiPrompt = defCrit.getAiPrompt();
-                    return new ScoringCriteria(
+                    return new UserScoringCriteria(
                             userCriteria.getId(),
                             CriteriaCategory.getFromName(defCrit.getCategory()),
                             defCrit.getCriteria() + (defCrit.isInput() ? ": " + userCriteria.getValue() : ""),

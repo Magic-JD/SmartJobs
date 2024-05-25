@@ -1,4 +1,4 @@
-package org.smartjobs.core.service.event.listener;
+package org.smartjobs.core.ports.listener;
 
 import org.smartjobs.core.service.event.events.Event;
 

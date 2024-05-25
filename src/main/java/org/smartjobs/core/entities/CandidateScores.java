@@ -56,7 +56,7 @@ public final class CandidateScores {
     public String toString() {
         return "CandidateScores[" +
                 "id=" + id + ", " +
-                "name=" + name + ", " +
+                "criteriaDescription=" + name + ", " +
                 "scoringCriteria=" + scored + ']';
     }
 

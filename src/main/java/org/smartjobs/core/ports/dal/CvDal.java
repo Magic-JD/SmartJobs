@@ -28,5 +28,5 @@ public interface CvDal {
 
     Optional<CvData> getByHash(String hash);
 
-    List<CandidateData> getByDataId(Long id);
+    List<CandidateData> getByCvId(Long id);
 }

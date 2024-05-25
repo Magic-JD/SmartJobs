@@ -1,8 +1,8 @@
 package org.smartjobs.core.service.event;
 
+import org.smartjobs.core.ports.listener.Listener;
 import org.smartjobs.core.service.EventService;
 import org.smartjobs.core.service.event.events.Event;
-import org.smartjobs.core.service.event.listener.Listener;
 import org.smartjobs.core.utils.ConcurrencyUtil;
 import org.springframework.stereotype.Service;
 

@@ -40,12 +40,12 @@ public class MessageResponseExceptionHandler extends ResponseEntityExceptionHand
 
     @ExceptionHandler(value = NoValueProvidedException.class)
     protected String handleNoValueProvidedException(UserResolvedExceptions ex, HttpServletResponse response, Model model) {
-        return handleError(ex.getUserId(), "You must provide a value for the name.", response);
+        return handleError(ex.getUserId(), "You must provide a value for the criteriaDescription.", response);
     }
 
     @ExceptionHandler(value = NoScoreProvidedException.class)
     protected String handleNoScoreProvidedException(UserResolvedExceptions ex, HttpServletResponse response, Model model) {
-        return handleError(ex.getUserId(), "You must provide a score for the name.", response);
+        return handleError(ex.getUserId(), "You must provide a score for the criteriaDescription.", response);
     }
 
     @ExceptionHandler(value = ScoreIsNotNumberException.class)

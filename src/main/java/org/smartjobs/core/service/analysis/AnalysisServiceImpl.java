@@ -4,7 +4,7 @@ import io.vavr.control.Either;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.ScoredCriteria;
-import org.smartjobs.core.entities.ScoringCriteria;
+import org.smartjobs.core.entities.UserScoringCriteria;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleHasNoCriteriaException;
@@ -47,21 +47,21 @@ public class AnalysisServiceImpl implements AnalysisService {
     }
 
     @Override
-    public List<CandidateScores> scoreToCriteria(long userId, long roleId, List<ProcessedCv> candidateInformation, List<ScoringCriteria> scoringCriteria) {
+    public List<CandidateScores> scoreToCriteria(long userId, long roleId, List<ProcessedCv> candidateInformation, List<UserScoringCriteria> userScoringCriteria) {
         if (candidateInformation.isEmpty()) {
             throw new UserResolvedExceptions.NoCandidatesSelectedException(userId);
         }
-        if (scoringCriteria.isEmpty()) {
+        if (userScoringCriteria.isEmpty()) {
             throw new RoleHasNoCriteriaException(userId);
         }
-        if (scoringCriteria.size() > maxRoleCriteriaCount) {
+        if (userScoringCriteria.size() > maxRoleCriteriaCount) {
             throw new RoleCriteriaLimitReachedException(userId, maxRoleCriteriaCount);
         }
         creditService.debit(userId, candidateInformation.size());
         var counter = new AtomicInteger(0);
         var total = candidateInformation.size();
         var results = virtualThreadListMap(candidateInformation, cv -> {
-            Either<ProcessFailure, CandidateScores> candidateScores = generateCandidateScore(userId, roleId, cv, scoringCriteria);
+            Either<ProcessFailure, CandidateScores> candidateScores = generateCandidateScore(userId, roleId, cv, userScoringCriteria);
             eventService.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
             return candidateScores;
         });
@@ -79,8 +79,8 @@ public class AnalysisServiceImpl implements AnalysisService {
         return analysisDal.getResultById(id);
     }
 
-    private Either<ProcessFailure, CandidateScores> generateCandidateScore(long userId, long roleId, ProcessedCv cv, List<ScoringCriteria> scoringCriteria) {
-        var results = virtualThreadListMap(scoringCriteria, criteria -> scoreForCriteria(cv, criteria));
+    private Either<ProcessFailure, CandidateScores> generateCandidateScore(long userId, long roleId, ProcessedCv cv, List<UserScoringCriteria> userScoringCriteria) {
+        var results = virtualThreadListMap(userScoringCriteria, criteria -> criteria.isBoolean() ? scoreForPass(cv, criteria) : scoreForCriteria(cv, criteria));
         if (results.stream().anyMatch(Optional::isEmpty)) {
             return Either.left(LLM_FAILURE_ANALYZING);
         }
@@ -89,8 +89,13 @@ public class AnalysisServiceImpl implements AnalysisService {
         return Either.right(new CandidateScores(analysisId, cv.name(), clearResults));
     }
 
-    private Optional<ScoredCriteria> scoreForCriteria(ProcessedCv cv, ScoringCriteria criteria) {
+    private Optional<ScoredCriteria> scoreForCriteria(ProcessedCv cv, UserScoringCriteria criteria) {
         return client.scoreForCriteria(cv.condensedDescription(), criteria.scoringGuide(), criteria.weighting())
-                .map(score -> new ScoredCriteria(criteria.id(), criteria.name(), score.justification(), score.score(), criteria.weighting()));
+                .map(score -> new ScoredCriteria(criteria.id(), criteria.criteriaDescription(), score.justification(), score.score(), criteria.weighting()));
+    }
+
+    private Optional<ScoredCriteria> scoreForPass(ProcessedCv cv, UserScoringCriteria criteria) {
+        return client.passForCriteria(cv.condensedDescription(), criteria.scoringGuide(), criteria.weighting())
+                .map(score -> new ScoredCriteria(criteria.id(), criteria.criteriaDescription(), score.justification(), score.score(), criteria.weighting()));
     }
 }

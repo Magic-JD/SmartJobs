@@ -53,7 +53,7 @@ public class AnalysisController {
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(userId, role.id());
 
-        var results = analysisService.scoreToCriteria(userId, role.id(), candidateInformation, role.scoringCriteria()).stream()
+        var results = analysisService.scoreToCriteria(userId, role.id(), candidateInformation, role.userScoringCriteria()).stream()
                 .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
         model.addAttribute("results", results);
         return SCORING_FRAGMENT;

@@ -75,10 +75,10 @@ public class PageController {
                 Arrays.stream(values).map(cc ->
                                 new RolesController.Category(
                                         cc.toString(),
-                                        internalRole.scoringCriteria()
+                                        internalRole.userScoringCriteria()
                                                 .stream()
                                                 .filter(crit -> crit.category().equals(cc))
-                                                .map(crit -> new RolesController.ScoringCriteria(crit.id(), crit.name(), crit.weighting()))
+                                                .map(crit -> new RolesController.ScoringCriteria(crit.id(), crit.criteriaDescription(), crit.weighting()))
                                                 .toList()
                                 )
                         )
