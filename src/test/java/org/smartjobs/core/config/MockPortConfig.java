@@ -79,11 +79,14 @@ public class MockPortConfig {
     public static final UserCriteria USER_CRITERIA = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID, Optional.of(VALUE), MAX_SCORE_VALUE);
 
 
-    ArgumentCaptor<List<ScoredCriteria>> scoredCriteriaCaptor = ArgumentCaptor.forClass(List.class);
 
     @Bean
     @Primary
     public AiService aiService() {
+        return aiServiceMock();
+    }
+
+    public static AiService aiServiceMock() {
         AiService aiService = mock(AiService.class);
         when(aiService.extractCandidateName(CV_STRING_PARTIAL)).thenReturn(Optional.of(CANDIDATE_NAME));
         when(aiService.scoreForCriteria(CV_STRING_CONDENSED, CRITERIA_REQUEST_SCORE, MAX_SCORE_VALUE)).thenReturn(Optional.of(SCORE_GOOD));
@@ -95,6 +98,11 @@ public class MockPortConfig {
     @Bean
     @Primary
     public AnalysisDal analysisDal() {
+        return analysisDalMock();
+    }
+
+    public static AnalysisDal analysisDalMock() {
+        ArgumentCaptor<List<ScoredCriteria>> scoredCriteriaCaptor = ArgumentCaptor.forClass(List.class);
         AnalysisDal analysisDal = mock(AnalysisDal.class);
         when(analysisDal.getResultById(anyLong())).thenReturn(CANDIDATE_SCORES);
         when(analysisDal.saveResults(eq(USER_ID), eq(CV_ID), eq(ROLE_ID), scoredCriteriaCaptor.capture()))
@@ -111,6 +119,10 @@ public class MockPortConfig {
     @Bean
     @Primary
     public CredentialDal credentialDal() {
+        return credentialDalMock();
+    }
+
+    public static CredentialDal credentialDalMock() {
         CredentialDal credentialDal = mock(CredentialDal.class);
         when(credentialDal.getUser(USERNAME)).thenReturn(Optional.of(new User(USERNAME, PASSWORD, USER_ID, List.of(GRANTED_AUTHORITY_USER))));
         return credentialDal;
@@ -119,6 +131,10 @@ public class MockPortConfig {
     @Bean
     @Primary
     public CreditDal creditDal() {
+        return creditDalMock();
+    }
+
+    public static CreditDal creditDalMock() {
         CreditDal creditDal = mock(CreditDal.class);
         when(creditDal.getUserCredits(USER_ID)).thenReturn(CREDIT_AMOUNT);
         doNothing().when(creditDal).event(USER_ID, CREDIT_CHANGE_AMOUNT, CreditType.CREDIT);
@@ -128,6 +144,10 @@ public class MockPortConfig {
     @Bean
     @Primary
     public CvDal cvDal() {
+        return cvDalMock();
+    }
+
+    public static CvDal cvDalMock() {
         CvDal cvDal = mock(CvDal.class);
         when(cvDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.of(CANDIDATE_DATA));
         when(cvDal.findSelectedCandidateCount(USER_ID, ROLE_ID)).thenReturn(SELECTED_CANDIDATE_COUNT);
@@ -142,6 +162,10 @@ public class MockPortConfig {
     @Bean
     @Primary
     public DefinedScoringCriteriaDal definedScoringCriteriaDal() {
+        return definedScoringCriteriaDalMock();
+    }
+
+    public static DefinedScoringCriteriaDal definedScoringCriteriaDalMock() {
         DefinedScoringCriteriaDal definedScoringCriteriaDal = mock(DefinedScoringCriteriaDal.class);
         when(definedScoringCriteriaDal.getAllDefinedScoringCriteria()).thenReturn(DEFINED_SCORING_CRITERIA_LIST);
         return definedScoringCriteriaDal;
@@ -151,6 +175,10 @@ public class MockPortConfig {
     @Bean
     @Primary
     public RoleDal roleDal() {
+        return roleDalMock();
+    }
+
+    public static RoleDal roleDalMock() {
         RoleDal roleDal = mock(RoleDal.class);
         when(roleDal.getRoleById(ROLE_ID)).thenReturn(ROLE);
         when(roleDal.getUserRoles(USER_ID)).thenReturn(ROLE_DISPLAY_LIST);

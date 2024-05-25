@@ -1,33 +1,26 @@
 package org.smartjobs.core.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.smartjobs.SmartJobs;
-import org.smartjobs.core.config.CoreFilter;
-import org.smartjobs.core.config.MockPortConfig;
 import org.smartjobs.core.entities.CandidateScores;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.smartjobs.core.service.analysis.AnalysisServiceImpl;
+import org.smartjobs.core.service.credit.CreditServiceImpl;
+import org.smartjobs.core.service.event.EventServiceImpl;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.smartjobs.core.config.MockPortConfig.*;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        classes = SmartJobs.class)
-@AutoConfigureMockMvc
-@ContextConfiguration(classes = MockPortConfig.class)
-@TestPropertySource(locations = "classpath:application-test.yml")
-@TypeExcludeFilters(CoreFilter.class)
 class AnalysisServiceTest {
 
-    @Autowired
     AnalysisService analysisService;
+
+    @BeforeEach
+    void setUp() {
+        EventServiceImpl eventService = new EventServiceImpl();
+        analysisService = new AnalysisServiceImpl(aiServiceMock(), eventService, new CreditServiceImpl(creditDalMock(), eventService), analysisDalMock(), 10);
+    }
 
     @Test
     void testScoreToCriteriaReturnsTheCorrectCandidateScores() {
