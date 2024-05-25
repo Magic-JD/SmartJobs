@@ -1,6 +1,6 @@
 package org.smartjobs.core.ports.dal;
 
-import org.smartjobs.core.entities.CreditType;
+import org.smartjobs.core.constants.CreditType;
 
 public interface CreditDal {
     long getUserCredits(long userId);

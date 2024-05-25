@@ -1,6 +1,7 @@
 package org.smartjobs.core.service.analysis;
 
 import io.vavr.control.Either;
+import org.smartjobs.core.constants.ProcessFailure;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.ScoredCriteria;
@@ -11,7 +12,6 @@ import org.smartjobs.core.event.events.ProgressEvent;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleHasNoCriteriaException;
-import org.smartjobs.core.failures.ProcessFailure;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.AnalysisDal;
 import org.smartjobs.core.service.AnalysisService;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.smartjobs.core.failures.ProcessFailure.LLM_FAILURE_ANALYZING;
+import static org.smartjobs.core.constants.ProcessFailure.LLM_FAILURE_ANALYZING;
 import static org.smartjobs.core.utils.ConcurrencyUtil.virtualThreadListMap;
 
 @Service

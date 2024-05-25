@@ -1,7 +1,7 @@
 package org.smartjobs.core.event.events;
 
+import org.smartjobs.core.constants.ProcessFailure;
 import org.smartjobs.core.event.Event;
-import org.smartjobs.core.failures.ProcessFailure;
 
 import java.util.List;
 

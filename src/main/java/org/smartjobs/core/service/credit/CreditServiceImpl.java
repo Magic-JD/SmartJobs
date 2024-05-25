@@ -8,8 +8,9 @@ import org.smartjobs.core.ports.dal.CreditDal;
 import org.smartjobs.core.service.CreditService;
 import org.springframework.stereotype.Service;
 
-import static org.smartjobs.core.entities.CreditType.DEBIT;
-import static org.smartjobs.core.entities.CreditType.REFUND;
+import static org.smartjobs.core.constants.CreditType.DEBIT;
+import static org.smartjobs.core.constants.CreditType.REFUND;
+
 
 @Service
 @Slf4j

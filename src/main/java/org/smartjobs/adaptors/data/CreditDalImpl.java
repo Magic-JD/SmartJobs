@@ -2,7 +2,7 @@ package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.CreditRepository;
 import org.smartjobs.adaptors.data.repository.data.Credit;
-import org.smartjobs.core.entities.CreditType;
+import org.smartjobs.core.constants.CreditType;
 import org.smartjobs.core.ports.dal.CreditDal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

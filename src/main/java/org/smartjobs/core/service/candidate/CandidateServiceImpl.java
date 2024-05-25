@@ -2,6 +2,7 @@ package org.smartjobs.core.service.candidate;
 
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
+import org.smartjobs.core.constants.ProcessFailure;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.FileInformation;
@@ -9,7 +10,6 @@ import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.event.EventEmitter;
 import org.smartjobs.core.event.events.ErrorEvent;
 import org.smartjobs.core.event.events.ProgressEvent;
-import org.smartjobs.core.failures.ProcessFailure;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.CvDal;
 import org.smartjobs.core.service.CandidateService;
@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
-import static org.smartjobs.core.failures.ProcessFailure.*;
+import static org.smartjobs.core.constants.ProcessFailure.*;
 
 @Service
 @Slf4j

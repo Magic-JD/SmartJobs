@@ -1,6 +1,7 @@
 package org.smartjobs.adaptors.view.web.constants;
 
-import org.smartjobs.core.failures.ProcessFailure;
+
+import org.smartjobs.core.constants.ProcessFailure;
 
 public class DisplayMappings {
 

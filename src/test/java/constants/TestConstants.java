@@ -2,6 +2,7 @@ package constants;
 
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.smartjobs.core.constants.CreditType;
 import org.smartjobs.core.entities.*;
 import org.smartjobs.core.event.EventEmitter;
 import org.smartjobs.core.event.implementation.EventEmitterImpl;
