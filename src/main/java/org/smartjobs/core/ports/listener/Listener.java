@@ -1,6 +1,6 @@
 package org.smartjobs.core.ports.listener;
 
-import org.smartjobs.core.service.event.events.Event;
+import org.smartjobs.core.event.Event;
 
 public interface Listener {
 

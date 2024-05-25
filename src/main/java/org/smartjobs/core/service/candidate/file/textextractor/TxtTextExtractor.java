@@ -1,4 +1,4 @@
-package org.smartjobs.core.service.file.textextractor;
+package org.smartjobs.core.service.candidate.file.textextractor;
 
 import org.smartjobs.core.exception.categories.AsynchronousExceptions.TextExtractionException;
 import org.springframework.web.multipart.MultipartFile;

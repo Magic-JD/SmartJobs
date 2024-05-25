@@ -1,18 +1,14 @@
 package org.smartjobs.adaptors.view.web.controller.candidate;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
-import io.vavr.control.Either;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import org.smartjobs.core.entities.CandidateData;
-import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
-import org.smartjobs.core.failures.ProcessFailure;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.CreditService;
-import org.smartjobs.core.service.FileService;
 import org.smartjobs.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,7 +25,6 @@ import java.util.Optional;
 import static org.smartjobs.adaptors.view.web.constants.EventConstants.CANDIDATE_COUNT_UPDATED;
 import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.HX_TRIGGER;
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
-import static org.smartjobs.core.failures.ProcessFailure.FAILURE_TO_READ_FILE;
 
 @Controller
 @RequestMapping("/candidate")
@@ -37,18 +32,15 @@ public class CandidateController {
 
 
     private final CandidateService candidateService;
-    private final FileService fileService;
     private final CreditService creditService;
     private final RoleService roleService;
 
 
 
     @Autowired
-    public CandidateController(FileService fileService,
-                               CandidateService candidateService,
+    public CandidateController(CandidateService candidateService,
                                CreditService creditService,
                                RoleService roleService) {
-        this.fileService = fileService;
         this.candidateService = candidateService;
         this.creditService = creditService;
         this.roleService = roleService;
@@ -62,12 +54,7 @@ public class CandidateController {
         var userId = user.getId();
         creditService.debit(userId, files.length);
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
-        var handledFiles = Arrays.stream(files)
-                .map(fileService::handleFile)
-                .distinct()
-                .toList();
-        var fileInformation = handledFiles.stream().map(hfo -> hfo.map(Either::<ProcessFailure, FileInformation>right).orElse(Either.left(FAILURE_TO_READ_FILE))).toList();
-        candidateService.updateCandidateCvs(userId, role.id(), fileInformation);
+        candidateService.updateCandidateCvs(userId, role.id(), Arrays.stream(files).toList());
         int selectedCount = candidateService.findSelectedCandidateCount(userId, role.id());
 
         model.addAttribute("selectedCount", selectedCount);

@@ -3,6 +3,7 @@ package org.smartjobs.adaptors.data;
 import jakarta.transaction.Transactional;
 import org.smartjobs.adaptors.data.repository.*;
 import org.smartjobs.adaptors.data.repository.data.*;
+import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.entities.RoleDisplay;
 import org.smartjobs.core.entities.UserScoringCriteria;
 import org.smartjobs.core.exception.categories.ApplicationExceptions.IncorrectIdForRoleRetrievalException;
@@ -114,6 +115,19 @@ public class RoleDalImpl implements RoleDal {
     @Override
     public int countCriteriaForRole(long roleId) {
         return roleCriteriaRepository.countByRoleId(roleId);
+    }
+
+    @Override
+    public List<DefinedScoringCriteria> getAllDefinedScoringCriteria() {
+        return definedScoringCriteriaRepository.findAll().stream()
+                .map(dsc -> new DefinedScoringCriteria(dsc.getId(),
+                        dsc.getCriteria(),
+                        CriteriaCategory.getFromName(dsc.getCategory()),
+                        dsc.isInput(),
+                        Optional.ofNullable(dsc.getInputExample()),
+                        dsc.getAiPrompt(),
+                        dsc.getTooltip()))
+                .toList();
     }
 }
 

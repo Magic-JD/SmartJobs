@@ -1,9 +1,8 @@
-package org.smartjobs.core.service;
+package org.smartjobs.core.event;
 
 import org.smartjobs.core.ports.listener.Listener;
-import org.smartjobs.core.service.event.events.Event;
 
-public interface EventService {
+public interface EventEmitter {
 
     void sendEvent(Event event);
 

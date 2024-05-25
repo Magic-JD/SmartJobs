@@ -1,16 +1,16 @@
-package org.smartjobs.core.service.event;
+package org.smartjobs.core.event.implementation;
 
+import org.smartjobs.core.event.Event;
+import org.smartjobs.core.event.EventEmitter;
 import org.smartjobs.core.ports.listener.Listener;
-import org.smartjobs.core.service.EventService;
-import org.smartjobs.core.service.event.events.Event;
 import org.smartjobs.core.utils.ConcurrencyUtil;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class EventServiceImpl implements EventService {
+@Component
+public class EventEmitterImpl implements EventEmitter {
 
     private final List<Listener> listeners = new ArrayList<>();
 

@@ -5,6 +5,9 @@ import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.ScoredCriteria;
 import org.smartjobs.core.entities.UserScoringCriteria;
+import org.smartjobs.core.event.EventEmitter;
+import org.smartjobs.core.event.events.ErrorEvent;
+import org.smartjobs.core.event.events.ProgressEvent;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleHasNoCriteriaException;
@@ -13,9 +16,6 @@ import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.AnalysisDal;
 import org.smartjobs.core.service.AnalysisService;
 import org.smartjobs.core.service.CreditService;
-import org.smartjobs.core.service.EventService;
-import org.smartjobs.core.service.event.events.ErrorEvent;
-import org.smartjobs.core.service.event.events.ProgressEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,16 +31,16 @@ import static org.smartjobs.core.utils.ConcurrencyUtil.virtualThreadListMap;
 public class AnalysisServiceImpl implements AnalysisService {
 
     private final AiService client;
-    private final EventService eventService;
+    private final EventEmitter eventEmitter;
     private final CreditService creditService;
     private final AnalysisDal analysisDal;
     private final int maxRoleCriteriaCount;
 
 
     @Autowired
-    public AnalysisServiceImpl(AiService client, EventService eventService, CreditService creditService, AnalysisDal analysisDal, @Value("${role.max.criteria}") int maxRoleCriteriaCount) {
+    public AnalysisServiceImpl(AiService client, EventEmitter eventEmitter, CreditService creditService, AnalysisDal analysisDal, @Value("${role.max.criteria}") int maxRoleCriteriaCount) {
         this.client = client;
-        this.eventService = eventService;
+        this.eventEmitter = eventEmitter;
         this.creditService = creditService;
         this.analysisDal = analysisDal;
         this.maxRoleCriteriaCount = maxRoleCriteriaCount;
@@ -62,14 +62,14 @@ public class AnalysisServiceImpl implements AnalysisService {
         var total = candidateInformation.size();
         var results = virtualThreadListMap(candidateInformation, cv -> {
             Either<ProcessFailure, CandidateScores> candidateScores = generateCandidateScore(userId, roleId, cv, userScoringCriteria);
-            eventService.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
+            eventEmitter.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
             return candidateScores;
         });
         List<CandidateScores> passes = results.stream().filter(Either::isRight).map(Either::get).toList();
         List<ProcessFailure> failures = results.stream().filter(Either::isLeft).map(Either::getLeft).toList();
         if (!failures.isEmpty()) {
             creditService.refund(userId, failures.size());
-            eventService.sendEvent(new ErrorEvent(userId, failures));
+            eventEmitter.sendEvent(new ErrorEvent(userId, failures));
         }
         return passes;
     }

@@ -6,28 +6,28 @@ import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
+import org.smartjobs.core.event.EventEmitter;
+import org.smartjobs.core.event.events.ErrorEvent;
+import org.smartjobs.core.event.events.ProgressEvent;
 import org.smartjobs.core.failures.ProcessFailure;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.CvDal;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.CreditService;
-import org.smartjobs.core.service.EventService;
-import org.smartjobs.core.service.event.events.ErrorEvent;
-import org.smartjobs.core.service.event.events.ProgressEvent;
 import org.smartjobs.core.utils.ConcurrencyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
-import static org.smartjobs.core.failures.ProcessFailure.EXISTING_CANDIDATE;
-import static org.smartjobs.core.failures.ProcessFailure.LLM_FAILURE_UPLOADING;
+import static org.smartjobs.core.failures.ProcessFailure.*;
 
 @Service
 @Slf4j
@@ -35,16 +35,18 @@ public class CandidateServiceImpl implements CandidateService {
 
     private final AiService aiService;
     private final CvDal cvDal;
-    private final EventService eventService;
+    private final EventEmitter eventEmitter;
     private final CreditService creditService;
+    private final FileHandler fileHandler;
 
 
     @Autowired
-    public CandidateServiceImpl(AiService aiService, CvDal cvDal, EventService eventService, CreditService creditService) {
+    public CandidateServiceImpl(AiService aiService, CvDal cvDal, EventEmitter eventEmitter, CreditService creditService, FileHandler fileHandler) {
         this.aiService = aiService;
         this.cvDal = cvDal;
-        this.eventService = eventService;
+        this.eventEmitter = eventEmitter;
         this.creditService = creditService;
+        this.fileHandler = fileHandler;
     }
 
     @Override
@@ -63,13 +65,18 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
             @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
-    public List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<Either<ProcessFailure, FileInformation>> fileInformationList) {
+    public List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<MultipartFile> files) {
+        var handledFiles = files.stream()
+                .map(fileHandler::handleFile)
+                .distinct()
+                .toList();
+        var fileInformation = handledFiles.stream().map(hfo -> hfo.map(Either::<ProcessFailure, FileInformation>right).orElse(Either.left(FAILURE_TO_READ_FILE))).toList();
         var counter = new AtomicInteger(0);
-        var total = fileInformationList.size();
+        var total = files.size();
 
         var processedCvs = ConcurrencyUtil.virtualThreadListMap(
-                fileInformationList,
-                fileInformation -> processAndUpdateProgress(userId, roleId, fileInformation, counter, total)
+                fileInformation,
+                fi -> processAndUpdateProgress(userId, roleId, fi, counter, total)
         );
 
         List<ProcessedCv> successfullyProcessed = processedCvs.stream()
@@ -79,19 +86,19 @@ public class CandidateServiceImpl implements CandidateService {
         List<ProcessFailure> processFailures = processedCvs.stream().filter(Either::isLeft).map(Either::getLeft).toList();
         if (!processFailures.isEmpty()) {
             creditService.refund(userId, processFailures.size());
-            eventService.sendEvent(new ErrorEvent(userId, processFailures));
+            eventEmitter.sendEvent(new ErrorEvent(userId, processFailures));
         }
         cvDal.addCvsToRepository(userId, roleId, successfullyProcessed);
         return successfullyProcessed;
     }
 
     private Either<ProcessFailure, ProcessedCv> processAndUpdateProgress(long userId, long roleId, Either<ProcessFailure, FileInformation> fileInformation, AtomicInteger counter, int total) {
-        var processedCv = fileInformation.flatMap(fi -> this.processCv(fi, userId, roleId));
-        eventService.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
+        var processedCv = fileInformation.flatMap(fi -> this.extractInformation(fi, userId, roleId));
+        eventEmitter.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
         return processedCv;
     }
 
-    private Either<ProcessFailure, ProcessedCv> processCv(FileInformation fileInformation, long userId, long roleId) {
+    private Either<ProcessFailure, ProcessedCv> extractInformation(FileInformation fileInformation, long userId, long roleId) {
         String hash = fileInformation.fileHash();
         var existingData = cvDal.getByHash(hash);
         if (existingData.isPresent()) {

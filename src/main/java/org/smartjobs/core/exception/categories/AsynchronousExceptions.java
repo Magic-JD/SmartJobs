@@ -2,19 +2,13 @@ package org.smartjobs.core.exception.categories;
 
 import lombok.Getter;
 
-import java.util.Collections;
-import java.util.List;
-
 public class AsynchronousExceptions {
 
     @Getter
     public static class FileTypeNotSupportedException extends TextExtractionException {
 
-        private final List<String> allowedFileTypes;
-
-        public FileTypeNotSupportedException(List<String> allowedFileTypes, String fileName) {
+        public FileTypeNotSupportedException(String fileName) {
             super(fileName);
-            this.allowedFileTypes = Collections.unmodifiableList(allowedFileTypes);
         }
     }
 

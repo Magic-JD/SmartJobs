@@ -1,31 +1,27 @@
-package org.smartjobs.core.service.file;
+package org.smartjobs.core.service.candidate.file;
 
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.exception.categories.AsynchronousExceptions.FileTypeNotSupportedException;
 import org.smartjobs.core.exception.categories.AsynchronousExceptions.TextExtractionException;
-import org.smartjobs.core.service.FileService;
-import org.smartjobs.core.service.file.data.FileType;
-import org.smartjobs.core.service.file.textextractor.DocTextExtractor;
-import org.smartjobs.core.service.file.textextractor.DocxTextExtractor;
-import org.smartjobs.core.service.file.textextractor.PdfTextExtractor;
-import org.smartjobs.core.service.file.textextractor.TxtTextExtractor;
-import org.springframework.stereotype.Service;
+import org.smartjobs.core.service.candidate.FileHandler;
+import org.smartjobs.core.service.candidate.file.textextractor.DocTextExtractor;
+import org.smartjobs.core.service.candidate.file.textextractor.DocxTextExtractor;
+import org.smartjobs.core.service.candidate.file.textextractor.PdfTextExtractor;
+import org.smartjobs.core.service.candidate.file.textextractor.TxtTextExtractor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Optional;
 
-import static org.smartjobs.core.service.file.data.FileType.*;
-
-@Service
+@Component
 @Slf4j
-public class FileServiceImpl implements FileService {
+public class FileHandlerImpl implements FileHandler {
 
 
     @Override
@@ -34,15 +30,15 @@ public class FileServiceImpl implements FileService {
         var hashString = extractHash(file);
         return hashString.flatMap(hash -> {
             log.debug("File hash {}", hash);
-            FileType fileType = switch (getFileExtension(file.getOriginalFilename()).orElse("unsupported")) {
-                case "pdf" -> PDF;
-                case "txt" -> TXT;
-                case "doc" -> DOC;
-                case "docx" -> DOCX;
-                default -> UNSUPPORTED;
-            };
             try {
-                String text = extractText(file, fileType);
+                String text = switch (getFileExtension(file.getOriginalFilename()).orElse("unsupported")) {
+                    case "pdf" -> new PdfTextExtractor().extractText(file);
+                    case "txt" -> new TxtTextExtractor().extractText(file);
+                    case "doc" -> new DocTextExtractor().extractText(file);
+                    case "docx" -> new DocxTextExtractor().extractText(file);
+                    default -> throw new FileTypeNotSupportedException(file.getOriginalFilename());
+                };
+
                 log.debug("File information {} extracted from {}", text, file.getOriginalFilename());
                 return Optional.of(new FileInformation(hash, text));
             } catch (TextExtractionException e) {
@@ -63,21 +59,6 @@ public class FileServiceImpl implements FileService {
             log.error("Could not extract hash for file {}", file.getOriginalFilename());
             return Optional.empty();
         }
-    }
-
-    private String extractText(MultipartFile file, FileType fileType) {
-        return switch (fileType) {
-            case TXT -> new TxtTextExtractor().extractText(file);
-            case PDF -> new PdfTextExtractor().extractText(file);
-            case DOC -> new DocTextExtractor().extractText(file);
-            case DOCX -> new DocxTextExtractor().extractText(file);
-            case UNSUPPORTED -> throw new FileTypeNotSupportedException(
-                    Arrays.stream(FileType.values())
-                            .filter(ft -> ft != UNSUPPORTED)
-                            .map(ft -> ft.name().toLowerCase()).toList(),
-                    file.getOriginalFilename());
-        };
-
     }
 
     private Optional<String> getFileExtension(@Nullable String fileName) {

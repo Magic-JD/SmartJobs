@@ -9,7 +9,6 @@ import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoScorePro
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoValueProvidedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.ScoreIsNotNumberException;
-import org.smartjobs.core.ports.dal.DefinedScoringCriteriaDal;
 import org.smartjobs.core.ports.dal.RoleDal;
 import org.smartjobs.core.service.RoleService;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
@@ -33,12 +32,10 @@ public class RoleServiceImpl implements RoleService {
 
     public final int maxAllowedCriteria;
     private final RoleDal roleDal;
-    private final DefinedScoringCriteriaDal definedScoringCriteriaDal;
 
     @Autowired
-    public RoleServiceImpl(RoleDal roleDal, DefinedScoringCriteriaDal definedScoringCriteriaDal, @Value("${role.max.criteria}") int maxAllowedCriteria) {
+    public RoleServiceImpl(RoleDal roleDal, @Value("${role.max.criteria}") int maxAllowedCriteria) {
         this.roleDal = roleDal;
-        this.definedScoringCriteriaDal = definedScoringCriteriaDal;
         this.maxAllowedCriteria = maxAllowedCriteria;
     }
 
@@ -158,6 +155,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     private List<DefinedScoringCriteria> getAllDefinedScoringCriteria() {
-        return definedScoringCriteriaDal.getAllDefinedScoringCriteria();
+        return roleDal.getAllDefinedScoringCriteria();
     }
 }

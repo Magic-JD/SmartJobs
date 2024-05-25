@@ -1,8 +1,7 @@
-package org.smartjobs.core.service.file.textextractor;
+package org.smartjobs.core.service.candidate.file.textextractor;
 
 
 import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.smartjobs.core.exception.categories.AsynchronousExceptions.TextExtractionException;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,4 +1,4 @@
-package org.smartjobs.core.service.file.textextractor;
+package org.smartjobs.core.service.candidate.file.textextractor;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;

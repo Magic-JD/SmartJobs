@@ -1,10 +1,8 @@
 package org.smartjobs.core.service;
 
-import io.vavr.control.Either;
 import org.smartjobs.core.entities.CandidateData;
-import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
-import org.smartjobs.core.failures.ProcessFailure;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +10,11 @@ import java.util.Optional;
 public interface CandidateService {
     List<ProcessedCv> getFullCandidateInfo(long userId, long roleId);
 
-    List<CandidateData> getCurrentCandidates(long userId, long role);
+    List<CandidateData> getCurrentCandidates(long userId, long roleId);
 
-    List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<Either<ProcessFailure, FileInformation>> fileInformationList);
+    List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<MultipartFile> files);
 
-    void deleteCandidate(long userId, long currentRole, long roleId);
+    void deleteCandidate(long userId, long roleId, long candidateId);
 
     Optional<CandidateData> toggleCandidateSelect(long userId, long roleId, long cvId, boolean select);
 

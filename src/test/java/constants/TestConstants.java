@@ -3,15 +3,20 @@ package constants;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.smartjobs.core.entities.*;
+import org.smartjobs.core.event.EventEmitter;
+import org.smartjobs.core.event.implementation.EventEmitterImpl;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.*;
 import org.smartjobs.core.service.CreditService;
-import org.smartjobs.core.service.EventService;
+import org.smartjobs.core.service.candidate.FileHandler;
+import org.smartjobs.core.service.candidate.file.FileHandlerImpl;
 import org.smartjobs.core.service.credit.CreditServiceImpl;
-import org.smartjobs.core.service.event.EventServiceImpl;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -46,9 +51,9 @@ public class TestConstants {
     public static final long USER_ID = 5345342L;
     public static final long CV_ID = 5634253242L;
     public static final long ROLE_ID = 5345654342L;
-    public static final String CV_STRING_PARTIAL = "Partial Cv String";
     public static final String CV_STRING_CONDENSED = "Condensed Cv String";
-    public static final String CV_STRING_FULL = "Full Cv String";
+    public static final String CV_STRING_FULL = "Full Cv String "; //Multipart file adds that space by default
+    public static final String CV_STRING_FULL_FOR_CONVERSION = "Full Cv String";
     public static final String USERNAME = "Username";
     public static final String PASSWORD = "Password";
     public static final GrantedAuthority GRANTED_AUTHORITY_USER = () -> "USER";
@@ -56,8 +61,10 @@ public class TestConstants {
     public static final int CREDIT_CHANGE_AMOUNT = 43;
     public static final long CANDIDATE_ID = 654432L;
     public static final CandidateData CANDIDATE_DATA = new CandidateData(CANDIDATE_ID, CANDIDATE_NAME, USER_ID, ROLE_ID, true);
+    public static final CandidateData CANDIDATE_DATA_UNSELECTED = new CandidateData(CANDIDATE_ID, CANDIDATE_NAME, USER_ID, ROLE_ID, false);
+    public static final List<CandidateData> CANDIDATE_DATA_LIST = List.of(CANDIDATE_DATA);
     public static final int SELECTED_CANDIDATE_COUNT = 453;
-    public static final String HASH = "ert4r543ert";
+    public static final String HASH = "12055492ce597b78066c49ec03405635";
     public static final ProcessedCv PROCESSED_CV = new ProcessedCv(CV_ID, CANDIDATE_NAME, true, HASH, CV_STRING_CONDENSED);
     public static final List<ProcessedCv> PROCESSED_CV_LIST = List.of(PROCESSED_CV);
     public static final CvData CV_DATA = new CvData(CV_ID, HASH, CV_STRING_CONDENSED);
@@ -79,7 +86,7 @@ public class TestConstants {
     //PORT MOCKS
     public static AiService aiServiceMock() {
         AiService aiService = mock(AiService.class);
-        when(aiService.extractCandidateName(CV_STRING_PARTIAL)).thenReturn(Optional.of(CANDIDATE_NAME));
+        when(aiService.extractCandidateName(CV_STRING_FULL)).thenReturn(Optional.of(CANDIDATE_NAME));
         when(aiService.scoreForCriteria(CV_STRING_CONDENSED, CRITERIA_REQUEST_SCORE, MAX_SCORE_VALUE)).thenReturn(Optional.of(SCORE_GOOD));
         when(aiService.passForCriteria(CV_STRING_CONDENSED, CRITERIA_REQUEST_PASS, MAX_SCORE_VALUE)).thenReturn(Optional.of(SCORE_BAD));
         when(aiService.anonymizeCv(CV_STRING_FULL)).thenReturn(Optional.of(CV_STRING_CONDENSED));
@@ -117,19 +124,14 @@ public class TestConstants {
     public static CvDal cvDalMock() {
         CvDal cvDal = mock(CvDal.class);
         when(cvDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.of(CANDIDATE_DATA));
+        when(cvDal.updateCurrentlySelectedById(CV_ID, false)).thenReturn(Optional.of(CANDIDATE_DATA_UNSELECTED));
         when(cvDal.findSelectedCandidateCount(USER_ID, ROLE_ID)).thenReturn(SELECTED_CANDIDATE_COUNT);
-        when(cvDal.getAllNames(USER_ID, ROLE_ID)).thenReturn(List.of(CANDIDATE_DATA));
-        when(cvDal.getByCvId(CV_ID)).thenReturn(List.of(CANDIDATE_DATA));
-        when(cvDal.getByHash(HASH)).thenReturn(Optional.of(CV_DATA));
-        when(cvDal.knownHash(HASH)).thenReturn(true);
+        when(cvDal.getAllNames(USER_ID, ROLE_ID)).thenReturn(CANDIDATE_DATA_LIST);
+        when(cvDal.getByCvId(CV_ID)).thenReturn(CANDIDATE_DATA_LIST);
+        when(cvDal.getByHash(HASH)).thenReturn(Optional.empty());
+        when(cvDal.knownHash(HASH)).thenReturn(false);
         when(cvDal.getAllSelected(USER_ID, ROLE_ID)).thenReturn(PROCESSED_CV_LIST);
         return cvDal;
-    }
-
-    public static DefinedScoringCriteriaDal definedScoringCriteriaDalMock() {
-        DefinedScoringCriteriaDal definedScoringCriteriaDal = mock(DefinedScoringCriteriaDal.class);
-        when(definedScoringCriteriaDal.getAllDefinedScoringCriteria()).thenReturn(DEFINED_SCORING_CRITERIA_LIST);
-        return definedScoringCriteriaDal;
     }
 
     public static RoleDal roleDalMock() {
@@ -141,16 +143,28 @@ public class TestConstants {
         when(roleDal.getCurrentlySelectedRole(USER_ID)).thenReturn(Optional.of(ROLE));
         when(roleDal.countCriteriaForRole(ROLE_ID)).thenReturn(ROLE_CRITERIA_COUNT);
         when(roleDal.createNewUserCriteriaForRole(DEFINED_SCORING_CRITERIA_ID, ROLE_ID, VALUE, MAX_SCORE_VALUE)).thenReturn(USER_CRITERIA);
+        when(roleDal.getAllDefinedScoringCriteria()).thenReturn(DEFINED_SCORING_CRITERIA_LIST);
         return roleDal;
     }
 
     //SERVICE OBJECTS
 
-    public static EventService eventService() {
-        return new EventServiceImpl();
+    public static EventEmitter eventService() {
+        return new EventEmitterImpl();
     }
 
     public static CreditService creditService() {
         return new CreditServiceImpl(creditDalMock(), eventService());
+    }
+
+    public static FileHandler fileHandler() {
+        return new FileHandlerImpl();
+    }
+
+    public static MultipartFile file() {
+        return new MockMultipartFile("MultipartFileTestInput.txt",
+                "MultipartFileTestInput.txt",
+                "text/plain",
+                CV_STRING_FULL_FOR_CONVERSION.getBytes(StandardCharsets.UTF_8));
     }
 }

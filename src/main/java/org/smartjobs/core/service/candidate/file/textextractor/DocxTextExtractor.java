@@ -1,4 +1,4 @@
-package org.smartjobs.core.service.file.textextractor;
+package org.smartjobs.core.service.candidate.file.textextractor;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;

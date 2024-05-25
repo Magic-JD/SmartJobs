@@ -1,5 +1,6 @@
 package org.smartjobs.core.ports.dal;
 
+import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.RoleDisplay;
 import org.smartjobs.core.entities.UserCriteria;
@@ -29,4 +30,6 @@ public interface RoleDal {
     UserCriteria createNewUserCriteriaForRole(long definedCriteriaId, long roleId, String value, int score);
 
     int countCriteriaForRole(long roleId);
+
+    List<DefinedScoringCriteria> getAllDefinedScoringCriteria();
 }

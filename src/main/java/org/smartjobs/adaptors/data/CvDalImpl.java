@@ -37,7 +37,7 @@ public class CvDalImpl implements CvDal {
     public void addCvsToRepository(long userId, long roleId, List<ProcessedCv> processedCvs) {
         for (ProcessedCv pc : processedCvs) {
             Optional<CvData> byHash = this.getByHash(pc.fileHash());
-            Long cvId = null;
+            Long cvId;
             if (byHash.isPresent()) {
                 cvId = byHash.get().id();
             } else {
