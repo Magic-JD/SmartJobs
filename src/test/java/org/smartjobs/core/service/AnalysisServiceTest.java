@@ -2,9 +2,11 @@ package org.smartjobs.core.service;
 
 import org.junit.jupiter.api.Test;
 import org.smartjobs.SmartJobs;
+import org.smartjobs.core.config.CoreFilter;
 import org.smartjobs.core.config.MockPortConfig;
 import org.smartjobs.core.entities.CandidateScores;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,6 +23,7 @@ import static org.smartjobs.core.config.MockPortConfig.*;
 @AutoConfigureMockMvc
 @ContextConfiguration(classes = MockPortConfig.class)
 @TestPropertySource(locations = "classpath:application-test.yml")
+@TypeExcludeFilters(CoreFilter.class)
 class AnalysisServiceTest {
 
     @Autowired
