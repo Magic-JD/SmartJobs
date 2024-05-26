@@ -4,7 +4,6 @@ import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateScores;
-import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
 import org.smartjobs.core.service.AnalysisService;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Comparator;
-import java.util.List;
 
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 
@@ -51,10 +49,11 @@ public class AnalysisController {
     public String scoreAllCandidates(@AuthenticationPrincipal User user, HttpServletResponse response, Model model) {
         var userId = user.getId();
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
-        List<ProcessedCv> candidateInformation = candidateService.getFullCandidateInfo(userId, role.id());
-
-        var results = analysisService.scoreToCriteria(userId, role.id(), candidateInformation, role.userScoringCriteria()).stream()
-                .sorted(Comparator.comparing(CandidateScores::percentage).reversed()).toList();
+        var candidateInformation = candidateService.getFullCandidateInfo(userId, role.id());
+        var results = analysisService.scoreToCriteria(userId, role.id(), candidateInformation, role.userScoringCriteria())
+                .stream()
+                .sorted(Comparator.comparing(CandidateScores::percentage).reversed())
+                .toList();
         model.addAttribute("results", results);
         return SCORING_FRAGMENT;
     }

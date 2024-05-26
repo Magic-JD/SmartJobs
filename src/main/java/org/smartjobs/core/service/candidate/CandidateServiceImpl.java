@@ -66,6 +66,7 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<MultipartFile> files) {
+        creditService.debit(userId, files.size());
         var handledFiles = files.stream()
                 .map(fileHandler::handleFile)
                 .distinct()

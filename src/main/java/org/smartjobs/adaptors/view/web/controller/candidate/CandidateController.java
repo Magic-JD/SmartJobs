@@ -8,7 +8,6 @@ import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NoRoleSelectedException;
 import org.smartjobs.core.service.CandidateService;
-import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,17 +31,14 @@ public class CandidateController {
 
 
     private final CandidateService candidateService;
-    private final CreditService creditService;
     private final RoleService roleService;
 
 
 
     @Autowired
     public CandidateController(CandidateService candidateService,
-                               CreditService creditService,
                                RoleService roleService) {
         this.candidateService = candidateService;
-        this.creditService = creditService;
         this.roleService = roleService;
     }
 
@@ -52,7 +48,6 @@ public class CandidateController {
                              @RequestParam(name = "files") MultipartFile[] files,
                              Model model) {
         var userId = user.getId();
-        creditService.debit(userId, files.length);
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         candidateService.updateCandidateCvs(userId, role.id(), Arrays.stream(files).toList());
         int selectedCount = candidateService.findSelectedCandidateCount(userId, role.id());
@@ -67,14 +62,11 @@ public class CandidateController {
     @GetMapping()
     public String getAllCandidates(@AuthenticationPrincipal User user, Model model) {
         var userId = user.getId();
-        var selectedRoleOptional = roleService.getCurrentlySelectedRoleId(userId);
-        if (selectedRoleOptional.isEmpty()) {
-            return EMPTY_FRAGMENT;
-        }
-        var selectedRole = selectedRoleOptional.get();
-        var candidates = candidateService.getCurrentCandidates(userId, selectedRole).stream()
-                .sorted(Comparator.comparing(CandidateData::name)).toList();
-        model.addAttribute("candidates", candidates);
+        var candidates = roleService.getCurrentlySelectedRoleId(userId)
+                .map(roleId -> candidateService.getCurrentCandidates(userId, roleId))
+                .orElse(Collections.emptyList());
+        var sorted = candidates.stream().sorted(Comparator.comparing(CandidateData::name)).toList();
+        model.addAttribute("candidates", sorted);
         return CANDIDATE_TABLE_FRAGMENT;
     }
 
@@ -82,8 +74,8 @@ public class CandidateController {
     @DeleteMapping("/delete/{candidateId}")
     public String deleteCandidate(@AuthenticationPrincipal User user, @PathVariable long candidateId, HttpServletResponse response) {
         var userId = user.getId();
-        var selectedRole = roleService.getCurrentlySelectedRoleId(userId).orElseThrow();
-        candidateService.deleteCandidate(userId, selectedRole, candidateId);
+        var roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
+        candidateService.deleteCandidate(userId, roleId, candidateId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
         return EMPTY_FRAGMENT;
     }
