@@ -9,7 +9,7 @@ public interface AiService {
 
     Optional<String> anonymizeCv(String cv);
 
-    Optional<Score> scoreForCriteria(String cv, String criteria, int maxScore);
+    Optional<Score> scoreForCriteria(String cv, String criteria, long maxScore);
 
-    Optional<Score> passForCriteria(String cv, String criteria, int maxScore);
+    Optional<Score> passForCriteria(String cv, String criteria, long maxScore);
 }

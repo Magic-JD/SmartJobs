@@ -6,6 +6,6 @@ public record UserScoringCriteria(long id,
                                   CriteriaCategory category,
                                   String criteriaDescription,
                                   boolean isBoolean,
-                                  int weighting,
+                                  long weighting,
                                   String scoringGuide) {
 }

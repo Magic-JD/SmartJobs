@@ -55,7 +55,7 @@ public class GptService implements AiService {
     }
 
     @Override
-    public Optional<Score> scoreForCriteria(String cv, String criteria, int maxScore) {
+    public Optional<Score> scoreForCriteria(String cv, String criteria, long maxScore) {
         GptRequest gptRequest = GptRequest.scoreForCriteria(cv, criteria, userBaseScore);
         return sendMessage(gptRequest)
                 .flatMap(rp -> rp.choices().stream().map(choice -> choice.message().content()).findFirst())
@@ -68,7 +68,7 @@ public class GptService implements AiService {
     }
 
     @Override
-    public Optional<Score> passForCriteria(String cv, String criteria, int maxScore) {
+    public Optional<Score> passForCriteria(String cv, String criteria, long maxScore) {
         GptRequest gptRequest = GptRequest.passForCriteria(cv, criteria);
         return sendMessage(gptRequest)
                 .flatMap(rp -> rp.choices().stream().map(choice -> choice.message().content()).findFirst())

@@ -43,7 +43,7 @@ logging:
   level:
     root: ERROR
     org:
-      smartjobs: DEBUG
+      smartjobs: TRACE
   org:
     springframework:
       boot:

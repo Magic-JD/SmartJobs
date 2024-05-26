@@ -19,7 +19,7 @@ public class CriteriaAnalysis {
     private Long id;
     private long analysisId;
     private double score;
-    private int maxScore;
+    private long maxScore;
     private String criteriaRequest;
     private String description;
     private long userCriteriaId;

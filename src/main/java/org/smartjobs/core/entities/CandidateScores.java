@@ -19,7 +19,7 @@ public final class CandidateScores {
     public double percentage() {
         if (percentage == null) {
             double score = scored.stream().mapToDouble(ScoredCriteria::score).sum();
-            int max = scored.stream().mapToInt(ScoredCriteria::maxScore).sum();
+            long max = scored.stream().mapToLong(ScoredCriteria::maxScore).sum();
             percentage = (score / max) * 100;
         }
         return percentage;

@@ -2,7 +2,10 @@ package org.smartjobs.adaptors.data;
 
 import jakarta.transaction.Transactional;
 import org.smartjobs.adaptors.data.repository.*;
-import org.smartjobs.adaptors.data.repository.data.*;
+import org.smartjobs.adaptors.data.repository.data.Role;
+import org.smartjobs.adaptors.data.repository.data.RoleCriteria;
+import org.smartjobs.adaptors.data.repository.data.SelectedRole;
+import org.smartjobs.adaptors.data.repository.data.UserCriteria;
 import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.entities.RoleDisplay;
 import org.smartjobs.core.entities.UserScoringCriteria;
@@ -14,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 @Component
 public class RoleDalImpl implements RoleDal {
@@ -47,19 +52,22 @@ public class RoleDalImpl implements RoleDal {
 
     @Override
     public org.smartjobs.core.entities.Role getRoleById(long id) {
-        var criteria = roleCriteriaRepository.findAllByRoleId(id).stream()
-                .map(rc -> userCriteriaRepository.findById(rc.getUserCriteriaId())).map(Optional::orElseThrow).map(userCriteria -> {
-                    DefinedCriteria defCrit = definedScoringCriteriaRepository.findById(userCriteria.getDefinedCriteriaId()).orElseThrow();
-                    String aiPrompt = defCrit.getAiPrompt();
+        var criteriaF = supplyAsync(() -> roleCriteriaRepository.findAllCriteriaByRoleId(id).stream()
+                .map(tuple -> {
+                    String aiPrompt = tuple.get("ai_prompt", String.class);
+                    String value = tuple.get("value", String.class);
                     return new UserScoringCriteria(
-                            userCriteria.getId(),
-                            CriteriaCategory.getFromName(defCrit.getCategory()),
-                            defCrit.getCriteria() + (defCrit.isInput() ? ": " + userCriteria.getValue() : ""),
-                            defCrit.isBoolean(),
-                            userCriteria.getScore(),
-                            userCriteria.getValue() == null ? aiPrompt : aiPrompt.replace("X", userCriteria.getValue()));
-                }).toList();
-        return roleRepository.findById(id)
+                            tuple.get("id", Long.class),
+                            CriteriaCategory.getFromName(tuple.get("category", String.class)),
+                            tuple.get("criteria", String.class) + (tuple.get("input", Boolean.class) ? ": " + value : ""),
+                            tuple.get("is_boolean", Boolean.class),
+                            tuple.get("score", Long.class),
+                            value == null ? aiPrompt : aiPrompt.replace("X", value));
+                }).toList());
+        var roleFoundByIdF = supplyAsync(() -> roleRepository.findById(id));
+        var criteria = criteriaF.join();
+        var roleFoundById = roleFoundByIdF.join();
+        return roleFoundById
                 .map(role -> new org.smartjobs.core.entities.Role(role.getId(), role.getPosition(), criteria))
                 .orElseThrow(() -> new IncorrectIdForRoleRetrievalException(id));
     }
@@ -72,10 +80,7 @@ public class RoleDalImpl implements RoleDal {
 
     @Override
     public void removeUserCriteriaFromRole(long roleId, long userCriteriaId) {
-        // NOTE - The second one is actually sufficient given the cascading delete. However, that is delayed currently
-        // so might not work properly. But we should work out the structure of the persistent user criteria first.
-        roleCriteriaRepository.deleteByRoleAndCriteria(roleId, userCriteriaId);
-        userCriteriaRepository.deleteById(userCriteriaId);
+        userCriteriaRepository.deleteById(userCriteriaId); //Handled through cascade
     }
 
     @Override

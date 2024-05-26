@@ -157,7 +157,7 @@ public class RolesController {
     public record Category(String name, List<ScoringCriteria> criteria) {
     }
 
-    public record ScoringCriteria(long id, String description, int weight) {
+    public record ScoringCriteria(long id, String description, long weight) {
     }
 
 }
