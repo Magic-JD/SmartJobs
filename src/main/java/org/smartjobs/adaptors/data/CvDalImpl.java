@@ -74,7 +74,7 @@ public class CvDalImpl implements CvDal {
                 .stream()
                 .map(cv -> new ProcessedCv(
                         (Long) cv.get("id"),
-                        (String) cv.get("criteriaDescription"),
+                        (String) cv.get("name"),
                         true,
                         (String) cv.get("file_hash"),
                         (String) cv.get("condensed_text")))

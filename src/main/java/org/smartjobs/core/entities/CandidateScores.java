@@ -7,7 +7,7 @@ public final class CandidateScores {
     private final long id;
     private final String name;
     private final List<ScoredCriteria> scored;
-    private Double percentage = null;
+    private Double percentage = null; // Lazy Init
 
 
     public CandidateScores(long id, String name, List<ScoredCriteria> scored) {
