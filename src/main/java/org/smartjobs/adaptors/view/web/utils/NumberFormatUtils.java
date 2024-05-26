@@ -1,4 +1,4 @@
-package org.smartjobs.core.utils;
+package org.smartjobs.adaptors.view.web.utils;
 
 import org.springframework.stereotype.Component;
 

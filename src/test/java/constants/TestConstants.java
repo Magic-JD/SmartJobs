@@ -18,10 +18,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -69,20 +66,22 @@ public class TestConstants {
     public static final ProcessedCv PROCESSED_CV = new ProcessedCv(CV_ID, CANDIDATE_NAME, true, HASH, CV_STRING_CONDENSED);
     public static final List<ProcessedCv> PROCESSED_CV_LIST = List.of(PROCESSED_CV);
     public static final CvData CV_DATA = new CvData(CV_ID, HASH, CV_STRING_CONDENSED);
-    public static final long DEFINED_SCORING_CRITERIA_ID = 43543L;
+    public static final long DEFINED_SCORING_CRITERIA_ID_SCORE = 43543L;
+    public static final long DEFINED_SCORING_CRITERIA_ID_PASS = 487673L;
     public static final String DEFINED_SCORING_CRITERIA_DESCRIPTION = "Description";
     public static final String INPUT_EXAMPLE = "Input Example";
     public static final String TOOLTIP = "Tooltip";
-    public static final DefinedScoringCriteria DEFINED_SCORING_CRITERIA_PASS = new DefinedScoringCriteria(DEFINED_SCORING_CRITERIA_ID, DEFINED_SCORING_CRITERIA_DESCRIPTION, CriteriaCategory.HARD_SKILLS, false, Optional.empty(), CRITERIA_REQUEST_PASS, TOOLTIP);
-    public static final DefinedScoringCriteria DEFINED_SCORING_CRITERIA_SCORE = new DefinedScoringCriteria(DEFINED_SCORING_CRITERIA_ID, DEFINED_SCORING_CRITERIA_DESCRIPTION, CriteriaCategory.HARD_SKILLS, true, Optional.of(INPUT_EXAMPLE), CRITERIA_REQUEST_SCORE, TOOLTIP);
+    public static final DefinedScoringCriteria DEFINED_SCORING_CRITERIA_PASS = new DefinedScoringCriteria(DEFINED_SCORING_CRITERIA_ID_PASS, DEFINED_SCORING_CRITERIA_DESCRIPTION, CriteriaCategory.HARD_SKILLS, false, Optional.empty(), CRITERIA_REQUEST_PASS, TOOLTIP);
+    public static final DefinedScoringCriteria DEFINED_SCORING_CRITERIA_SCORE = new DefinedScoringCriteria(DEFINED_SCORING_CRITERIA_ID_SCORE, DEFINED_SCORING_CRITERIA_DESCRIPTION, CriteriaCategory.SOFT_SKILLS, true, Optional.of(INPUT_EXAMPLE), CRITERIA_REQUEST_SCORE, TOOLTIP);
     public static final List<DefinedScoringCriteria> DEFINED_SCORING_CRITERIA_LIST = List.of(DEFINED_SCORING_CRITERIA_SCORE, DEFINED_SCORING_CRITERIA_PASS);
     public static final String POSITION = "Position";
     public static final RoleDisplay ROLE_DISPLAY = new RoleDisplay(ROLE_ID, POSITION);
     public static final List<RoleDisplay> ROLE_DISPLAY_LIST = List.of(ROLE_DISPLAY);
     public static final int ROLE_CRITERIA_COUNT = 5;
     public static final String VALUE = "Java";
-    public static final UserCriteria USER_CRITERIA = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID, Optional.of(VALUE), MAX_SCORE_VALUE);
+    public static final UserCriteria USER_CRITERIA = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID_SCORE, Optional.of(VALUE), MAX_SCORE_VALUE);
     public static final Role ROLE = new Role(ROLE_ID, POSITION, USER_SCORING_CRITERIA_LIST);
+    public static final Role ROLE_NEW = new Role(ROLE_ID, POSITION, Collections.emptyList());
 
     //PORT MOCKS
     public static AiService aiServiceMock() {
@@ -143,19 +142,19 @@ public class TestConstants {
         when(roleDal.getCurrentlySelectedRoleById(USER_ID)).thenReturn(Optional.of(ROLE_ID));
         when(roleDal.getCurrentlySelectedRole(USER_ID)).thenReturn(Optional.of(ROLE));
         when(roleDal.countCriteriaForRole(ROLE_ID)).thenReturn(ROLE_CRITERIA_COUNT);
-        when(roleDal.createNewUserCriteriaForRole(DEFINED_SCORING_CRITERIA_ID, ROLE_ID, VALUE, MAX_SCORE_VALUE)).thenReturn(USER_CRITERIA);
+        when(roleDal.createNewUserCriteriaForRole(DEFINED_SCORING_CRITERIA_ID_SCORE, ROLE_ID, VALUE, MAX_SCORE_VALUE)).thenReturn(USER_CRITERIA);
         when(roleDal.getAllDefinedScoringCriteria()).thenReturn(DEFINED_SCORING_CRITERIA_LIST);
         return roleDal;
     }
 
     //SERVICE OBJECTS
 
-    public static EventEmitter eventService() {
+    public static EventEmitter eventEmitter() {
         return new EventEmitterImpl();
     }
 
     public static CreditService creditService() {
-        return new CreditServiceImpl(creditDalMock(), eventService());
+        return new CreditServiceImpl(creditDalMock(), eventEmitter());
     }
 
     public static FileHandler fileHandler() {

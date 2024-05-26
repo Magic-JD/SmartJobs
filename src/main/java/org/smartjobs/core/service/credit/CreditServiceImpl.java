@@ -25,11 +25,6 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
-    public boolean userHasEnoughCredits(long userId) {
-        return creditDal.getUserCredits(userId) >= 0;
-    }
-
-    @Override
     public long userCredit(long userId) {
         return creditDal.getUserCredits(userId);
     }

@@ -22,7 +22,7 @@ class CandidateServiceTest {
     @BeforeEach
     void setUp() {
         cvDal = cvDalMock();
-        candidateService = new CandidateServiceImpl(aiServiceMock(), cvDal, eventService(), creditService(), fileHandler());
+        candidateService = new CandidateServiceImpl(aiServiceMock(), cvDal, eventEmitter(), creditService(), fileHandler());
     }
 
     @Test

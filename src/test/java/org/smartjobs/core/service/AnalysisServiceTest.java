@@ -16,7 +16,7 @@ class AnalysisServiceTest {
 
     @BeforeEach
     void setUp() {
-        analysisService = new AnalysisServiceImpl(aiServiceMock(), eventService(), creditService(), analysisDalMock(), 10);
+        analysisService = new AnalysisServiceImpl(aiServiceMock(), eventEmitter(), creditService(), analysisDalMock(), 10);
     }
 
     @Test
