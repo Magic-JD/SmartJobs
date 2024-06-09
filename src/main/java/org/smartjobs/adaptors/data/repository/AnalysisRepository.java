@@ -14,7 +14,8 @@ public interface AnalysisRepository extends JpaRepository<Analysis, Long> {
             FROM analysis a
             JOIN cv cv ON a.cv_id = cv.id
             JOIN candidate c on cv.id = c.cv_id
-            WHERE a.role_id = c.role_id
+            WHERE a.id = :id
+            AND a.role_id = c.role_id
             AND a.user_id = c.user_id
             LIMIT 1
             """,
