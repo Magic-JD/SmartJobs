@@ -1,5 +1,6 @@
 package org.smartjobs.core.entities;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,7 +14,7 @@ public final class CandidateScores {
     public CandidateScores(long id, String name, List<ScoredCriteria> scored) {
         this.id = id;
         this.name = name;
-        this.scored = scored;
+        this.scored = Collections.unmodifiableList(scored);
     }
 
     public double percentage() {

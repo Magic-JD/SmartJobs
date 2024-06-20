@@ -54,9 +54,7 @@ public class SpringCachingConfig implements CachingConfigurer {
     @Bean
     public CacheManager staticCacheManager(
     ) {
-        var cacheManager = new CaffeineCacheManager(
-                "defined-criteria"
-        );
+        var cacheManager = new CaffeineCacheManager("defined-criteria");
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .initialCapacity(1)
                 .maximumSize(1)
