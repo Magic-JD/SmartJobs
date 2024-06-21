@@ -12,7 +12,7 @@ public interface CvDal {
     @Transactional
     void addCvsToRepository(long userId, long roleId, List<ProcessedCv> processedCvs);
 
-    List<CandidateData> getAllNames(long userId, long roleId);
+    List<CandidateData> getAllCandidates(long userId, long roleId);
 
     List<ProcessedCv> getAllSelected(long userId, long roleId);
 

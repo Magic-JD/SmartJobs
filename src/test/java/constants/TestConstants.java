@@ -18,6 +18,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,6 +85,8 @@ public class TestConstants {
     public static final Role ROLE = new Role(ROLE_ID, POSITION, USER_SCORING_CRITERIA_LIST);
     public static final Role ROLE_NEW = new Role(ROLE_ID, POSITION, Collections.emptyList());
 
+    public static final Date NOW =  Date.valueOf(LocalDate.now());
+
     //PORT MOCKS
     public static AiService aiServiceMock() {
         AiService aiService = mock(AiService.class);
@@ -126,7 +130,7 @@ public class TestConstants {
         when(cvDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.of(CANDIDATE_DATA));
         when(cvDal.updateCurrentlySelectedById(CV_ID, false)).thenReturn(Optional.of(CANDIDATE_DATA_UNSELECTED));
         when(cvDal.findSelectedCandidateCount(USER_ID, ROLE_ID)).thenReturn(SELECTED_CANDIDATE_COUNT);
-        when(cvDal.getAllNames(USER_ID, ROLE_ID)).thenReturn(CANDIDATE_DATA_LIST);
+        when(cvDal.getAllCandidates(USER_ID, ROLE_ID)).thenReturn(CANDIDATE_DATA_LIST);
         when(cvDal.getByCvId(CV_ID)).thenReturn(CANDIDATE_DATA_LIST);
         when(cvDal.getByHash(HASH)).thenReturn(Optional.empty());
         when(cvDal.knownHash(HASH)).thenReturn(false);

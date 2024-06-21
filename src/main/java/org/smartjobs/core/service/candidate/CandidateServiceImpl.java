@@ -57,7 +57,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Cacheable(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     public List<CandidateData> getCurrentCandidates(long userId, long roleId) {
-        return cvDal.getAllNames(userId, roleId);
+        return cvDal.getAllCandidates(userId, roleId);
     }
 
     @Override

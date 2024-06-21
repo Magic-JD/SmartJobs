@@ -6,6 +6,7 @@ import org.smartjobs.adaptors.data.repository.CandidateRepository;
 import org.smartjobs.adaptors.data.repository.CvRepository;
 import org.smartjobs.adaptors.data.repository.data.Candidate;
 import org.smartjobs.adaptors.data.repository.data.Cv;
+import org.smartjobs.core.config.DateSupplier;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.ProcessedCv;
@@ -13,8 +14,6 @@ import org.smartjobs.core.ports.dal.CvDal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,33 +24,31 @@ public class CvDalImpl implements CvDal {
 
     private final CvRepository cvRepository;
     private final CandidateRepository candidateRepository;
+    private final DateSupplier dateSupplier;
 
     @Autowired
-    public CvDalImpl(CvRepository repository, CandidateRepository candidateRepository) {
+    public CvDalImpl(CvRepository repository, CandidateRepository candidateRepository, DateSupplier dateSupplier) {
         this.cvRepository = repository;
         this.candidateRepository = candidateRepository;
+        this.dateSupplier = dateSupplier;
     }
 
     @Override
     @Transactional
     public void addCvsToRepository(long userId, long roleId, List<ProcessedCv> processedCvs) {
         for (ProcessedCv pc : processedCvs) {
-            Optional<CvData> byHash = this.getByHash(pc.fileHash());
-            Long cvId;
-            if (byHash.isPresent()) {
-                cvId = byHash.get().id();
-            } else {
-                Cv cv = Cv.builder()
-                        .fileHash(pc.fileHash())
-                        .condensedText(pc.condensedDescription())
-                        .build();
-                cvId = cvRepository.save(cv).getId();
-            }
-
+            Long cvId = this.getByHash(pc.fileHash())
+                    .map(CvData::id)
+                    .orElseGet(() -> cvRepository.save(
+                            Cv.builder()
+                                    .fileHash(pc.fileHash())
+                                    .condensedText(pc.condensedDescription())
+                                    .build())
+                            .getId());
             Candidate candidate = Candidate.builder()
                     .name(pc.name())
                     .cvId(cvId)
-                    .lastAccessed(Date.valueOf(LocalDate.now()))
+                    .lastAccessed(dateSupplier.getDate())
                     .userId(userId)
                     .roleId(roleId)
                     .currentlySelected(pc.currentlySelected())
@@ -62,7 +59,7 @@ public class CvDalImpl implements CvDal {
     }
 
     @Override
-    public List<CandidateData> getAllNames(long userId, long roleId) {
+    public List<CandidateData> getAllCandidates(long userId, long roleId) {
         return candidateRepository.findAllByUserIdAndRoleId(userId, roleId).stream()
                 .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected()))
                 .toList();
