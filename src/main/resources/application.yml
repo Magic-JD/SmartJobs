@@ -13,6 +13,7 @@ gpt:
     requests-per-minute: 600
     max-retries: 3
     initial-timeout-seconds: 20
+    cv-name-chunk: 500
 
 role:
   max:

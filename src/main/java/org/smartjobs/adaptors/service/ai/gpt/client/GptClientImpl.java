@@ -26,6 +26,12 @@ import static java.time.Duration.ofSeconds;
 @Slf4j
 public class GptClientImpl implements GptClient {
     public static final String FAILED_GPT_CALL = "Failure calling GPT, code {}, body {}";
+    public static final String APPLICATION_JSON = "application/json";
+    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String ACCEPT = "Accept";
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String AUTHORIZATION = "Authorization";
+    public static final int SINGLE_TOKEN = 1;
 
     private final HttpClient client;
     private final Gson gson;
@@ -52,9 +58,9 @@ public class GptClientImpl implements GptClient {
         return makeServiceCall(request, 1);
     }
 
-    public Optional<GptResponse> makeServiceCall(GptRequest gptRequest, int callNumber) {
+    private Optional<GptResponse> makeServiceCall(GptRequest gptRequest, int callNumber) {
         log.info("Preparing to call gpt when available.");
-        bucket.asBlocking().consumeUninterruptibly(1); // Wait until we can safely call without triggering overloading.
+        bucket.asBlocking().consumeUninterruptibly(SINGLE_TOKEN); // Wait until we can safely call without triggering overloading.
         try {
             var request = createRequest(gptRequest, callNumber * initialTimeoutSeconds);
             HttpResponse<String> response = client.send(request, ofString());
@@ -81,9 +87,9 @@ public class GptClientImpl implements GptClient {
     private HttpRequest createRequest(GptRequest request, int timeoutDuration) {
         return HttpRequest.newBuilder()
                 .uri(uri)
-                .header("Accept", "application/json")
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + apiKey)
+                .header(ACCEPT, APPLICATION_JSON)
+                .header(CONTENT_TYPE, APPLICATION_JSON)
+                .header(AUTHORIZATION, BEARER_PREFIX + apiKey)
                 .timeout(ofSeconds(timeoutDuration))
                 .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(request)))
                 .build();

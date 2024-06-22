@@ -3,6 +3,13 @@ package constants;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.smartjobs.adaptors.data.repository.data.SelectedRole;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptMessage;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
+import org.smartjobs.adaptors.service.ai.gpt.data.GptRole;
+import org.smartjobs.adaptors.service.ai.gpt.request.GptRequest;
+import org.smartjobs.adaptors.service.ai.gpt.response.GptChoices;
+import org.smartjobs.adaptors.service.ai.gpt.response.GptResponse;
+import org.smartjobs.adaptors.service.ai.gpt.response.GptUsage;
 import org.smartjobs.core.constants.CreditType;
 import org.smartjobs.core.entities.*;
 import org.smartjobs.core.event.EventEmitter;
@@ -92,6 +99,61 @@ public class TestConstants {
     public static final SelectedRole SELECTED_ROLE = new SelectedRole(SELECTED_ROLE_ID, USER_ID, ROLE_ID);
     public static final long ZERO = 0L;
     public static final Date NOW =  Date.valueOf(LocalDate.now());
+    public static final GptRequest GPT_REQUEST = new GptRequest(GptModel.GPT_3_5, 1.0, 0.5, List.of(new GptMessage(GptRole.SYSTEM, "Are you sentient yet")));
+    public static final String GPT_RESPONSE_ID = "ID";
+    public static final String GPT_RESPONSE_OBJECT = "OBJECT";
+    public static final long GPT_RESPONSE_CREATED_TIME = 1234L;
+    public static final GptUsage USAGE = new GptUsage(100, 50, 150);
+    public static final GptResponse GPT_RESPONSE = new GptResponse(GPT_RESPONSE_ID, GPT_RESPONSE_OBJECT, GPT_RESPONSE_CREATED_TIME, GptModel.GPT_3_5, USAGE, List.of(new GptChoices(new GptMessage(GptRole.SYSTEM, "Not yet"), "Log", "End", 0)));
+    public static final int MAX_CLIENT_RETRIES = 3;
+    public static final int INITIAL_TIMEOUT_SECONDS = 1;
+    public static final int USER_BASE_SCORE = 10;
+    public static final String NAME_IDENTIFY_SYSTEM_PROMPT = """
+            You are an expert in identifying names in CV documents.
+            Scan the document to reliably find and return only the candidate's name, with proper casing.
+            Do not include any additional information.""";
+    public static final String CV_SHORT = "CV_DATA";
+    public static final String CV_LONG = "CV_DATA_EXTENDED";
+    public static final int CV_NAME_CHUNK = 500;
+    public static final String ANON_CV_SYSTEM_PROMPT = """
+            You are an expert in information extraction.
+            Summarize the candidate's CV, including work history, certifications, skills, condensed job roles, and self-description.
+            Ensure the summary is easy for an AI model to read, not necessarily a human.
+            Remove unnecessary details and personal information such as name, age, sex, sexual orientation, and ethnicity, replacing them with neutral terms if needed.
+            Maintain the length of employment and specific skills mentioned.
+            Output only the summary, no additional commentary.
+            Limit the output to a maximum of 600 tokens.""";
+
+    public static final String SCORE_CV_SYSTEM_PROMPT = """
+            Master of scoring candidates.
+            Given scoring criteria and points, examine the provided CV.
+            Determine match with criteria.
+            Output max two sentences explaining the reason for the score, focused on the criteria match, without mentioning the score number.
+            State "SCORE" then the score out of 10.
+            Only award points for mentioned criteria factors.
+
+            Example output:
+
+            The candidate has held several positions where they have used Java, but shows no evidence of having used Python. SCORE 6
+            The candidate does not have an advanced degree in Computer Science. SCORE 0
+            The candidate fully meets the supplied criteria. SCORE 10""";
+
+
+    public static final String PASS_CV_SYSTEM_PROMPT = """
+            Given criteria, determine if the candidate meets it (true/false). Examine the CV to assess criteria match.
+
+            Output two sentences max:
+
+            State if the candidate meets the criteria.
+            Follow with "PASS true/false".
+            If no match, return false.
+
+            Examples:
+
+            The candidate does not have an advanced degree in Computer Science. PASS false
+            The candidate has an AWS certification. PASS true""";
+
+    public static final String ANON_CV = "ANON_CV";
 
     //PORT MOCKS
     public static AiService aiServiceMock() {

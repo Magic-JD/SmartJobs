@@ -22,22 +22,22 @@ public class GptService implements AiService {
 
 
     private final ScoreParser scoreParser;
-
     private final int userBaseScore;
-
+    private final int cvNameChunk;
     private final GptClient client;
 
 
     @Autowired
-    public GptService(GptClient client, ScoreParser scoreParser, @Value("${gpt.api.user-base-score}") int userBaseScore) {
+    public GptService(GptClient client, ScoreParser scoreParser, @Value("${gpt.api.user-base-score}") int userBaseScore, @Value("${gpt.api.cv-name-chunk}") int cvNameChunk) {
         this.client = client;
         this.scoreParser = scoreParser;
         this.userBaseScore = userBaseScore;
+        this.cvNameChunk = cvNameChunk;
     }
 
     @Override
     public Optional<String> extractCandidateName(String cv) {
-        GptRequest gptRequest = GptRequest.extractCandidateName(cv.substring(0, Math.min(cv.length(), 500)));
+        GptRequest gptRequest = GptRequest.extractCandidateName(cv.substring(0, Math.min(cv.length(), cvNameChunk)));
         var response = sendMessage(gptRequest);
         return response.map(rp -> rp.choices().stream()
                 .map(choice -> choice.message().content())

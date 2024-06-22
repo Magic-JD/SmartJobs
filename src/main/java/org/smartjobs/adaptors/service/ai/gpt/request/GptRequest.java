@@ -20,8 +20,7 @@ public record GptRequest(GptModel model, double temperature, double topP, List<G
                 systemMessage("""
 You are an expert in identifying names in CV documents.
 Scan the document to reliably find and return only the candidate's name, with proper casing.
-Do not include any additional information.
-                        """),
+                        Do not include any additional information."""),
                 userMessage(cvData));
     }
 
@@ -34,8 +33,8 @@ Ensure the summary is easy for an AI model to read, not necessarily a human.
 Remove unnecessary details and personal information such as name, age, sex, sexual orientation, and ethnicity, replacing them with neutral terms if needed.
 Maintain the length of employment and specific skills mentioned.
 Output only the summary, no additional commentary.
-Limit the output to a maximum of 600 tokens.
-                        """),
+                                Limit the output to a maximum of 600 tokens."""
+                ),
                 userMessage(cvData));
     }
 
@@ -53,8 +52,8 @@ Example output:
 
 The candidate has held several positions where they have used Java, but shows no evidence of having used Python. SCORE 6
 The candidate does not have an advanced degree in Computer Science. SCORE 0
-The candidate fully meets the supplied criteria. SCORE 10
-                        """ ),
+The candidate fully meets the supplied criteria. SCORE 10"""
+                ),
                 userMessage(STR. "CV: \{ cv }. Scoring criteria: \{ criteria }" ));
     }
 
@@ -73,8 +72,8 @@ If no match, return false.
 Examples:
 
 The candidate does not have an advanced degree in Computer Science. PASS false
-The candidate has an AWS certification. PASS true
-                        """),
+                                The candidate has an AWS certification. PASS true"""
+                ),
                 userMessage(STR. "CV: \{ cv }. Scoring criteria: \{ criteria }" ));
     }
 }
