@@ -1,5 +1,7 @@
 package org.smartjobs.core.utils;
 
+import display.CamelCaseDisplayNameGenerator;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -7,8 +9,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class ConcurrencyUtilTest {
 
     public static final List<Integer> INTEGER_LIST = IntStream.range(0, 10).boxed().toList();

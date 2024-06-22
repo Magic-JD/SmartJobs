@@ -1,12 +1,14 @@
 package org.smartjobs.core.config;
 
-import org.junit.jupiter.api.BeforeEach;
+import display.CamelCaseDisplayNameGenerator;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 
 import java.text.DecimalFormat;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class ApplicationConfigTest {
 
     private final ApplicationConfig applicationConfig = new ApplicationConfig();

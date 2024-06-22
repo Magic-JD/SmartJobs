@@ -42,7 +42,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Cacheable("current-role-id")
     public Optional<Long> getCurrentlySelectedRoleId(long userId) {
-        return roleDal.getCurrentlySelectedRoleById(userId);
+        return roleDal.getCurrentlySelectedRoleByUserId(userId);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "role-display", key = "#userId")
     })
     public void deleteRole(long userId, long roleId) {
-        roleDal.delete(roleId);
+        roleDal.deleteRole(roleId);
     }
 
 

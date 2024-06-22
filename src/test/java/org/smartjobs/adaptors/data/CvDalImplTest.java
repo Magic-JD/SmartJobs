@@ -1,9 +1,11 @@
 package org.smartjobs.adaptors.data;
 
+import display.CamelCaseDisplayNameGenerator;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TupleElement;
 import org.hibernate.sql.results.internal.TupleImpl;
 import org.hibernate.sql.results.internal.TupleMetadata;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.smartjobs.adaptors.data.repository.CandidateRepository;
@@ -20,6 +22,7 @@ import static constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class CvDalImplTest {
 
     public static final Candidate CANDIDATE = new Candidate(CANDIDATE_ID, true, CANDIDATE_NAME, CV_ID, USER_ID, ROLE_ID, NOW);
@@ -88,7 +91,7 @@ class CvDalImplTest {
     @Test
     void testDeleteByCandidateIdDeletesByTheGivenId(){
         cvDal.deleteByCandidateId(CANDIDATE_ID);
-        verify(candidateRepository, times(1)).deleteById(CANDIDATE_ID);
+        verify(candidateRepository).deleteById(CANDIDATE_ID);
     }
 
     @Test
@@ -124,7 +127,7 @@ class CvDalImplTest {
     @Test
     void testThatDeleteAllCandidatesWillDeleteAllByUserIdAndRoleId(){
         cvDal.deleteAllCandidates(USER_ID, ROLE_ID);
-        verify(candidateRepository, times(1)).deleteByUserIdAndRoleId(USER_ID, ROLE_ID);
+        verify(candidateRepository).deleteByUserIdAndRoleId(USER_ID, ROLE_ID);
     }
 
     @Test

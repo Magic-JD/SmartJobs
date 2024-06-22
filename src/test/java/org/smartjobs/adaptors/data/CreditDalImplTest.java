@@ -1,5 +1,7 @@
 package org.smartjobs.adaptors.data;
 
+import display.CamelCaseDisplayNameGenerator;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.smartjobs.adaptors.data.repository.CreditRepository;
@@ -10,9 +12,11 @@ import org.smartjobs.core.ports.dal.CreditDal;
 import java.util.List;
 
 import static constants.TestConstants.USER_ID;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class CreditDalImplTest {
 
     public static final int CREDIT_AMOUNT = 100;

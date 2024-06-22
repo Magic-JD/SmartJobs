@@ -1,5 +1,7 @@
 package org.smartjobs.adaptors.data;
 
+import display.CamelCaseDisplayNameGenerator;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.smartjobs.adaptors.data.repository.AnalysisRepository;
@@ -12,9 +14,10 @@ import org.smartjobs.core.ports.dal.AnalysisDal;
 import java.util.List;
 
 import static constants.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class AnalysisDalImplTest {
     public static final long CRITERIA_ANALYSIS_ID = 534543L;
     public static final List<CriteriaAnalysis> CRITERIA_ANALYSIS_LIST = List.of(

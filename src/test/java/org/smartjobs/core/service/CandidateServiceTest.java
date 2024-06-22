@@ -1,6 +1,8 @@
 package org.smartjobs.core.service;
 
+import display.CamelCaseDisplayNameGenerator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.ProcessedCv;
@@ -14,6 +16,7 @@ import static constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class CandidateServiceTest {
 
     private CandidateService candidateService;

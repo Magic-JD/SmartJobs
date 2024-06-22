@@ -1,6 +1,8 @@
 package org.smartjobs.core.service;
 
+import display.CamelCaseDisplayNameGenerator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
 import org.smartjobs.core.ports.dal.CreditDal;
@@ -12,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.smartjobs.core.constants.CreditType.REFUND;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class CreditServiceTest {
 
     public static final int AMOUNT_TO_CHANGE = 50;

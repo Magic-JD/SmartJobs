@@ -1,17 +1,18 @@
 package org.smartjobs.core.entities;
 
-import constants.TestConstants;
+import display.CamelCaseDisplayNameGenerator;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static constants.TestConstants.CANDIDATE_ID;
 import static constants.TestConstants.CANDIDATE_NAME;
 import static java.lang.Double.NaN;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class CandidateScoresTest {
 
     public static final List<ScoredCriteria> SCORED_CRITERIA = List.of(

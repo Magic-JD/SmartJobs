@@ -2,6 +2,7 @@ package constants;
 
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.smartjobs.adaptors.data.repository.data.SelectedRole;
 import org.smartjobs.core.constants.CreditType;
 import org.smartjobs.core.entities.*;
 import org.smartjobs.core.event.EventEmitter;
@@ -82,9 +83,14 @@ public class TestConstants {
     public static final int ROLE_CRITERIA_COUNT = 5;
     public static final String VALUE = "Java";
     public static final UserCriteria USER_CRITERIA = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID_SCORE, Optional.of(VALUE), MAX_SCORE_VALUE);
+    public static final UserCriteria USER_CRITERIA_WITHOUT_VALUE = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID_SCORE, Optional.empty(), MAX_SCORE_VALUE);
     public static final Role ROLE = new Role(ROLE_ID, POSITION, USER_SCORING_CRITERIA_LIST);
     public static final Role ROLE_NEW = new Role(ROLE_ID, POSITION, Collections.emptyList());
-
+    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID, USER_ID, POSITION);
+    public static final List<org.smartjobs.adaptors.data.repository.data.Role> DATABASE_ROLE_LIST = List.of(DATABASE_ROLE);
+    public static final long SELECTED_ROLE_ID = 4346453L;
+    public static final SelectedRole SELECTED_ROLE = new SelectedRole(SELECTED_ROLE_ID, USER_ID, ROLE_ID);
+    public static final long ZERO = 0L;
     public static final Date NOW =  Date.valueOf(LocalDate.now());
 
     //PORT MOCKS
@@ -143,7 +149,7 @@ public class TestConstants {
         when(roleDal.getRoleById(ROLE_ID)).thenReturn(ROLE);
         when(roleDal.getUserRoles(USER_ID)).thenReturn(ROLE_DISPLAY_LIST);
         when(roleDal.saveRole(USER_ID, POSITION)).thenReturn(ROLE_ID);
-        when(roleDal.getCurrentlySelectedRoleById(USER_ID)).thenReturn(Optional.of(ROLE_ID));
+        when(roleDal.getCurrentlySelectedRoleByUserId(USER_ID)).thenReturn(Optional.of(ROLE_ID));
         when(roleDal.getCurrentlySelectedRole(USER_ID)).thenReturn(Optional.of(ROLE));
         when(roleDal.countCriteriaForRole(ROLE_ID)).thenReturn(ROLE_CRITERIA_COUNT);
         when(roleDal.createNewUserCriteriaForRole(DEFINED_SCORING_CRITERIA_ID_SCORE, ROLE_ID, VALUE, MAX_SCORE_VALUE)).thenReturn(USER_CRITERIA);

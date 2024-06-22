@@ -15,13 +15,13 @@ public interface RoleDal {
 
     Role getRoleById(long id);
 
-    void delete(long roleId);
+    void deleteRole(long roleId);
 
     void removeUserCriteriaFromRole(long roleId, long userCriteriaId);
 
     void setSelectedRole(long userId, long roleId);
 
-    Optional<Long> getCurrentlySelectedRoleById(long userId);
+    Optional<Long> getCurrentlySelectedRoleByUserId(long userId);
 
     void deleteCurrentlySelectedRole(long userId);
 

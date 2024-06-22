@@ -1,6 +1,8 @@
 package org.smartjobs.core.service;
 
+import display.CamelCaseDisplayNameGenerator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.entities.Role;
@@ -17,6 +19,7 @@ import static constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class RoleServiceTest {
 
     public static final int MAX_ALLOWED_CRITERIA = 10;
@@ -75,7 +78,7 @@ class RoleServiceTest {
     @Test
     void testDeleteRoleDeletesTheRoleFromThePersistenceLayer() {
         roleService.deleteRole(USER_ID, ROLE_ID);
-        verify(roleDal).delete(ROLE_ID);
+        verify(roleDal).deleteRole(ROLE_ID);
     }
 
     @Test

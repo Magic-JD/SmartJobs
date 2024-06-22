@@ -1,6 +1,8 @@
 package org.smartjobs.core.service;
 
+import display.CamelCaseDisplayNameGenerator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.service.analysis.AnalysisServiceImpl;
@@ -10,6 +12,7 @@ import java.util.List;
 import static constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class AnalysisServiceTest {
 
     AnalysisService analysisService;

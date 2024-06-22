@@ -73,7 +73,7 @@ public class RoleDalImpl implements RoleDal {
     }
 
     @Override
-    public void delete(long roleId) {
+    public void deleteRole(long roleId) {
         roleRepository.deleteById(roleId);
     }
 
@@ -94,7 +94,7 @@ public class RoleDalImpl implements RoleDal {
     }
 
     @Override
-    public Optional<Long> getCurrentlySelectedRoleById(long userId) {
+    public Optional<Long> getCurrentlySelectedRoleByUserId(long userId) {
         return selectedRoleRepository.findByUserId(userId).map(SelectedRole::getRoleId);
     }
 

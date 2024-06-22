@@ -1,5 +1,7 @@
 package org.smartjobs.adaptors.data;
 
+import display.CamelCaseDisplayNameGenerator;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.adaptors.data.repository.CredentialRepository;
 import org.smartjobs.adaptors.data.repository.data.Credential;
@@ -11,10 +13,12 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static constants.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class CredentialDalImplTest {
 
     private final CredentialRepository credentialRepository = mock(CredentialRepository.class);

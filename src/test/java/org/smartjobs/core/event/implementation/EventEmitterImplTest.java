@@ -1,17 +1,18 @@
 package org.smartjobs.core.event.implementation;
 
-import org.checkerframework.checker.units.qual.C;
+import display.CamelCaseDisplayNameGenerator;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.event.events.ErrorEvent;
 
 import java.util.Collections;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class EventEmitterImplTest {
 
     EventEmitterImpl emitter = new EventEmitterImpl();
