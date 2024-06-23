@@ -1,7 +1,6 @@
 package org.smartjobs.core.service;
 
 import display.CamelCaseDisplayNameGenerator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.entities.CandidateData;
@@ -19,60 +18,55 @@ import static org.mockito.Mockito.verify;
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class CandidateServiceTest {
 
-    private CandidateService candidateService;
-    private CvDal cvDal;
-
-    @BeforeEach
-    void setUp() {
-        cvDal = cvDalMock();
-        candidateService = new CandidateServiceImpl(aiServiceMock(), cvDal, eventEmitter(), creditService(), fileHandler());
-    }
-
     @Test
     void testGetFullCandidateInfoReturnsCorrectInformation() {
-        List<ProcessedCv> fullCandidateInfo = candidateService.getFullCandidateInfo(USER_ID, ROLE_ID);
+        List<ProcessedCv> fullCandidateInfo = CANDIDATE_SERVICE.getFullCandidateInfo(USER_ID, ROLE_ID);
         assertEquals(PROCESSED_CV_LIST, fullCandidateInfo);
     }
 
     @Test
     void getCurrentCandidates() {
-        List<CandidateData> currentCandidates = candidateService.getCurrentCandidates(USER_ID, ROLE_ID);
+        List<CandidateData> currentCandidates = CANDIDATE_SERVICE.getCurrentCandidates(USER_ID, ROLE_ID);
         assertEquals(CANDIDATE_DATA_LIST, currentCandidates);
     }
 
     @Test
     void testUpdateCandidateCvsReturnsTheUpdatedCandidateCvs() {
-        List<ProcessedCv> processedCvs = candidateService.updateCandidateCvs(USER_ID, ROLE_ID, List.of(file()));
+        List<ProcessedCv> processedCvs = CANDIDATE_SERVICE.updateCandidateCvs(USER_ID, ROLE_ID, List.of(file()));
         assertEquals(List.of(new ProcessedCv(null, CANDIDATE_NAME, true, HASH, CV_STRING_CONDENSED)), processedCvs);
     }
 
     @Test
     void testDeleteCandidateDeletesTheCandidateFromThePropagationLayer() {
+        CvDal cvDal = cvDalMock();
+        CandidateService candidateService = new CandidateServiceImpl(AI_SERVICE, cvDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
         candidateService.deleteCandidate(USER_ID, ROLE_ID, CANDIDATE_ID);
         verify(cvDal).deleteByCandidateId(CANDIDATE_ID);
     }
 
     @Test
     void testToggleCandidateSelectSelecting() {
-        Optional<CandidateData> candidateData = candidateService.toggleCandidateSelect(USER_ID, ROLE_ID, CV_ID, true);
+        Optional<CandidateData> candidateData = CANDIDATE_SERVICE.toggleCandidateSelect(USER_ID, ROLE_ID, CV_ID, true);
         assertEquals(Optional.of(CANDIDATE_DATA), candidateData);
     }
 
     @Test
     void testToggleCandidateSelectUnselecting() {
-        Optional<CandidateData> candidateData = candidateService.toggleCandidateSelect(USER_ID, ROLE_ID, CV_ID, false);
+        Optional<CandidateData> candidateData = CANDIDATE_SERVICE.toggleCandidateSelect(USER_ID, ROLE_ID, CV_ID, false);
         assertEquals(Optional.of(CANDIDATE_DATA_UNSELECTED), candidateData);
     }
 
     @Test
     void testFindSelectedCandidateCountReturnsTheCorrectCandidateCount() {
-        int selectedCandidateCount = candidateService.findSelectedCandidateCount(USER_ID, ROLE_ID);
+        int selectedCandidateCount = CANDIDATE_SERVICE.findSelectedCandidateCount(USER_ID, ROLE_ID);
         assertEquals(SELECTED_CANDIDATE_COUNT, selectedCandidateCount);
 
     }
 
     @Test
     void testDeleteAllCandidatesDeletesAllCandidatesForTheRoleAndTheUserFromThePersistenceLayer() {
+        CvDal cvDal = cvDalMock();
+        CandidateService candidateService = new CandidateServiceImpl(AI_SERVICE, cvDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
         candidateService.deleteAllCandidates(USER_ID, ROLE_ID);
         verify(cvDal).deleteAllCandidates(USER_ID, ROLE_ID);
     }

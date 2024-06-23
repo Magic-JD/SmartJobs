@@ -3,7 +3,6 @@ package org.smartjobs.adaptors.view.web.controller.roles;
 import display.CamelCaseDisplayNameGenerator;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
-import org.smartjobs.core.service.role.RoleServiceImpl;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.List;
@@ -14,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class RolesControllerTest {
 
-    private final RolesController rolesController = new RolesController(new RoleServiceImpl(roleDalMock(), 10));
+    public static final RolesController ROLES_CONTROLLER = new RolesController(ROLE_SERVICE);
+    private final RolesController rolesController = ROLES_CONTROLLER;
 
     @Test
     void testSavedRolesReturnsAllTheRolesAsWellAsTheCurrentlySelectedOne() {

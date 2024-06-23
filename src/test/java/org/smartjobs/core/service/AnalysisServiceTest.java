@@ -1,11 +1,9 @@
 package org.smartjobs.core.service;
 
 import display.CamelCaseDisplayNameGenerator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.entities.CandidateScores;
-import org.smartjobs.core.service.analysis.AnalysisServiceImpl;
 
 import java.util.List;
 
@@ -15,16 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class AnalysisServiceTest {
 
-    AnalysisService analysisService;
-
-    @BeforeEach
-    void setUp() {
-        analysisService = new AnalysisServiceImpl(aiServiceMock(), eventEmitter(), creditService(), analysisDalMock(), 10);
-    }
-
     @Test
     void testScoreToCriteriaReturnsTheCorrectCandidateScores() {
-        List<CandidateScores> candidateScores = analysisService.scoreToCriteria(USER_ID, ROLE_ID, PROCESSED_CV_LIST, USER_SCORING_CRITERIA_LIST);
+        List<CandidateScores> candidateScores = ANALYSIS_SERVICE.scoreToCriteria(USER_ID, ROLE_ID, PROCESSED_CV_LIST, USER_SCORING_CRITERIA_LIST);
         assertEquals(2, candidateScores.size());
         CandidateScores cs2 = candidateScores.get(0);
         CandidateScores cs = candidateScores.get(1);
@@ -34,7 +25,7 @@ class AnalysisServiceTest {
 
     @Test
     void testGetResultByIdReturnsTheCorrectCandidateScoresForThatId() {
-        CandidateScores candidateScores = analysisService.getResultById(ANALYSIS_ID);
+        CandidateScores candidateScores = ANALYSIS_SERVICE.getResultById(ANALYSIS_ID);
         assertEquals(CANDIDATE_SCORES, candidateScores);
     }
 }

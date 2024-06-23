@@ -1,7 +1,6 @@
 package org.smartjobs.core.service;
 
 import display.CamelCaseDisplayNameGenerator;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
@@ -18,29 +17,23 @@ import static org.smartjobs.core.constants.CreditType.REFUND;
 class CreditServiceTest {
 
     public static final int AMOUNT_TO_CHANGE = 50;
-    private CreditService creditService;
-    private CreditDal creditDal;
-
-    @BeforeEach
-    void setUp() {
-        creditDal = creditDalMock();
-        creditService = new CreditServiceImpl(creditDal, eventEmitter());
-    }
 
     @Test
     void testUserCreditReturnsTheAmountOfUserCreditFromTheDatabase() {
-        long currentUserCredit = creditService.userCredit(USER_ID);
+        long currentUserCredit = CREDIT_SERVICE.userCredit(USER_ID);
         assertEquals(CREDIT_AMOUNT, currentUserCredit);
     }
 
     @Test
     void testDebitDoesNotThrowWhenThereIsSufficientCredit() {
-        creditService.debit(USER_ID, AMOUNT_TO_CHANGE);
+        CREDIT_SERVICE.debit(USER_ID, AMOUNT_TO_CHANGE);
         assertDoesNotThrow(() -> new NotEnoughCreditException(USER_ID));
     }
 
     @Test
     void testRefundReturnsTheUsersCredit() {
+        CreditDal creditDal = creditDalMock();
+        CreditService creditService = new CreditServiceImpl(creditDal, EVENT_EMITTER);
         creditService.refund(USER_ID, AMOUNT_TO_CHANGE);
         verify(creditDal).event(USER_ID, AMOUNT_TO_CHANGE, REFUND);
     }

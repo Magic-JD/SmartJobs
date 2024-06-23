@@ -3,12 +3,6 @@ package org.smartjobs.adaptors.view.web.controller.analysis;
 import display.CamelCaseDisplayNameGenerator;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
-import org.smartjobs.core.service.AnalysisService;
-import org.smartjobs.core.service.CandidateService;
-import org.smartjobs.core.service.RoleService;
-import org.smartjobs.core.service.analysis.AnalysisServiceImpl;
-import org.smartjobs.core.service.candidate.CandidateServiceImpl;
-import org.smartjobs.core.service.role.RoleServiceImpl;
 
 import java.util.List;
 
@@ -18,11 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class AnalysisControllerTest {
 
-    private final AnalysisService analysisService = new AnalysisServiceImpl(aiServiceMock(), eventEmitter(), creditService(), analysisDalMock(), ROLE_CRITERIA_COUNT);
-    private final CandidateService candidateService = new CandidateServiceImpl(aiServiceMock(), cvDalMock(), eventEmitter(), creditService(), fileHandler());
-    private final RoleService roleService = new RoleServiceImpl(roleDalMock(), ROLE_CRITERIA_COUNT);
-
-    private final AnalysisController analysisController = new AnalysisController(candidateService, analysisService, roleService);
+    private final AnalysisController analysisController = new AnalysisController(CANDIDATE_SERVICE, ANALYSIS_SERVICE, ROLE_SERVICE);
 
     @Test
     void testThatScoreAllCandidatesWillAddExpectedResultsInTheCorrectOrder() {

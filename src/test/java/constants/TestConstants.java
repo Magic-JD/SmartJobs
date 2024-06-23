@@ -17,9 +17,12 @@ import org.smartjobs.core.event.implementation.EventEmitterImpl;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.*;
 import org.smartjobs.core.service.CreditService;
+import org.smartjobs.core.service.analysis.AnalysisServiceImpl;
+import org.smartjobs.core.service.candidate.CandidateServiceImpl;
 import org.smartjobs.core.service.candidate.FileHandler;
 import org.smartjobs.core.service.candidate.file.FileHandlerImpl;
 import org.smartjobs.core.service.credit.CreditServiceImpl;
+import org.smartjobs.core.service.role.RoleServiceImpl;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -195,6 +198,18 @@ public class TestConstants {
     public static final RolesController.Role DISPLAY_ROLE = new RolesController.Role(ROLE_ID, POSITION, CATEGORY_LIST);
     public static final RolesController.Role DISPLAY_ROLE_NEW = new RolesController.Role(ROLE_ID, POSITION, CATEGORY_LIST_NEW);
     public static final List<String> CATEGORY_STRINGS = List.of("Hard Skills", "Professional Engagement and Recognition", "Qualifications", "Relevant Experience", "Soft Skills");
+    public static final AiService AI_SERVICE = aiServiceMock();
+    public static final CvDal CV_DAL = cvDalMock();
+    public static final EventEmitter EVENT_EMITTER = new EventEmitterImpl();
+    public static final FileHandler FILE_HANDLER = new FileHandlerImpl();
+    public static final RoleDal ROLE_DAL = roleDalMock();
+    public static final AnalysisDal ANALYSIS_DAL = analysisDalMock();
+    public static final CreditDal CREDIT_DAL = creditDalMock();
+    public static final CreditService CREDIT_SERVICE = new CreditServiceImpl(CREDIT_DAL, EVENT_EMITTER);
+    public static final CandidateServiceImpl CANDIDATE_SERVICE = new CandidateServiceImpl(AI_SERVICE, CV_DAL, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
+    public static final int MAX_ALLOWED_CRITERIA = 10;
+    public static final RoleServiceImpl ROLE_SERVICE = new RoleServiceImpl(ROLE_DAL, MAX_ALLOWED_CRITERIA);
+    public static final AnalysisServiceImpl ANALYSIS_SERVICE = new AnalysisServiceImpl(AI_SERVICE, EVENT_EMITTER, CREDIT_SERVICE, ANALYSIS_DAL, ROLE_CRITERIA_COUNT);
 
     //PORT MOCKS
     public static AiService aiServiceMock() {
@@ -258,19 +273,6 @@ public class TestConstants {
     }
 
     //SERVICE OBJECTS
-
-    public static EventEmitter eventEmitter() {
-        return new EventEmitterImpl();
-    }
-
-    public static CreditService creditService() {
-        return new CreditServiceImpl(creditDalMock(), eventEmitter());
-    }
-
-    public static FileHandler fileHandler() {
-        return new FileHandlerImpl();
-    }
-
     public static MultipartFile file() {
         return new MockMultipartFile("MultipartFileTestInput.txt",
                 "MultipartFileTestInput.txt",
