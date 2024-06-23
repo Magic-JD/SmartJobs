@@ -25,7 +25,7 @@ class CandidateControllerTest {
 
     @Test
     void testUploadFileReturnsTheCandidatePageWithTheCorrectInformation() {
-        String candidatePage = candidateController.uploadFile(USER, new MultipartFile[]{file()}, MODEL);
+        String candidatePage = candidateController.uploadFile(USER, new MultipartFile[]{fileTxt()}, MODEL);
         assertEquals(SELECTED_CANDIDATE_COUNT, MODEL.getAttribute("selectedCount"));
         assertEquals(POSITION, MODEL.getAttribute("currentRole"));
         assertEquals("candidate/candidates", candidatePage);

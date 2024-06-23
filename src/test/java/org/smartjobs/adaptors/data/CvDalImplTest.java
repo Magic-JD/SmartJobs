@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 class CvDalImplTest {
 
     public static final Candidate CANDIDATE = new Candidate(CANDIDATE_ID, true, CANDIDATE_NAME, CV_ID, USER_ID, ROLE_ID, NOW);
-    public static final List<Cv> CV_LIST = List.of(new Cv(CV_ID, HASH, CV_STRING_CONDENSED));
+    public static final List<Cv> CV_LIST = List.of(new Cv(CV_ID, HASH_TXT, CV_STRING_CONDENSED));
     public static final Candidate CANDIDATE2 = new Candidate(CANDIDATE_ID2, true, CANDIDATE_NAME2, CV_ID, USER_ID, ROLE_ID, NOW);
     private final CvRepository cvRepository = mock(CvRepository.class);
     private final CandidateRepository candidateRepository = mock(CandidateRepository.class);
@@ -38,7 +38,7 @@ class CvDalImplTest {
     @Test
     void testAddingCvsToRepositoryWillAddAllProcessedCvsCorrectlyWhenTheFileAlreadyExistsByHash() {
         when(dateSupplier.getDate()).thenReturn(NOW);
-        when(cvRepository.findByFileHash(HASH)).thenReturn(CV_LIST);
+        when(cvRepository.findByFileHash(HASH_TXT)).thenReturn(CV_LIST);
         when(candidateRepository.save(candidateArgumentCaptor.capture())).thenAnswer(_ -> candidateArgumentCaptor.getValue());
         cvDal.addCvsToRepository(USER_ID, ROLE_ID, PROCESSED_CV_LIST);
         verify(cvRepository, never()).save(any(Cv.class));
@@ -56,7 +56,7 @@ class CvDalImplTest {
     void testAddingCvsToRepositoryWillAddAllProcessedCvsCorrectlyWhenTheFileDoesNotExistByHash() {
         //Given
         when(dateSupplier.getDate()).thenReturn(NOW);
-        when(cvRepository.findByFileHash(HASH)).thenReturn(Collections.emptyList());
+        when(cvRepository.findByFileHash(HASH_TXT)).thenReturn(Collections.emptyList());
         when(candidateRepository.save(candidateArgumentCaptor.capture())).thenAnswer(_ -> candidateArgumentCaptor.getValue());
         when(cvRepository.save(cvArgumentCaptor.capture())).thenReturn(new Cv(CV_ID, "", ""));
         //When
@@ -70,7 +70,7 @@ class CvDalImplTest {
         assertEquals(ROLE_ID, savedCandidate.getRoleId());
         assertEquals(PROCESSED_CV.currentlySelected(), savedCandidate.getCurrentlySelected());
         Cv cv = cvArgumentCaptor.getValue();
-        assertEquals(HASH, cv.getFileHash());
+        assertEquals(HASH_TXT, cv.getFileHash());
         assertEquals(CV_STRING_CONDENSED, cv.getCondensedText());
     }
 
@@ -84,10 +84,10 @@ class CvDalImplTest {
     void testGetAllSelectedReturnsTheCorrectValues(){
         Tuple tuple = new TupleImpl(
                 new TupleMetadata(new TupleElement[]{}, new String[]{"id", "name", "file_hash", "condensed_text"}),
-                new Object[]{CV_ID, CANDIDATE_NAME, HASH, CV_STRING_CONDENSED});
+                new Object[]{CV_ID, CANDIDATE_NAME, HASH_TXT, CV_STRING_CONDENSED});
         Tuple tuple2 = new TupleImpl(
                 new TupleMetadata(new TupleElement[]{}, new String[]{"id", "name", "file_hash", "condensed_text"}),
-                new Object[]{CV_ID2, CANDIDATE_NAME2, HASH, CV_STRING_CONDENSED2});
+                new Object[]{CV_ID2, CANDIDATE_NAME2, HASH_TXT, CV_STRING_CONDENSED2});
         when(cvRepository.findByCurrentlySelected(true, USER_ID, ROLE_ID)).thenReturn(List.of(tuple2, tuple));
         assertEquals(PROCESSED_CV_LIST, cvDal.getAllSelected(USER_ID, ROLE_ID));
     }
@@ -100,14 +100,14 @@ class CvDalImplTest {
 
     @Test
     void testKnownHashReturnsTrueWhenTheHashIsKnown(){
-        when(cvRepository.existsCvByFileHash(HASH)).thenReturn(true);
-        assertTrue(cvDal.knownHash(HASH));
+        when(cvRepository.existsCvByFileHash(HASH_TXT)).thenReturn(true);
+        assertTrue(cvDal.knownHash(HASH_TXT));
     }
 
     @Test
     void testKnownHashReturnsFalseWhenTheHashIsNotKnown(){
-        when(cvRepository.existsCvByFileHash(HASH)).thenReturn(false);
-        assertFalse(cvDal.knownHash(HASH));
+        when(cvRepository.existsCvByFileHash(HASH_TXT)).thenReturn(false);
+        assertFalse(cvDal.knownHash(HASH_TXT));
     }
 
     @Test
@@ -136,8 +136,8 @@ class CvDalImplTest {
 
     @Test
     void testThatGetByHashReturnsValidCv(){
-        when(cvRepository.findByFileHash(HASH)).thenReturn(CV_LIST);
-        assertEquals(Optional.of(CV_DATA), cvDal.getByHash(HASH));
+        when(cvRepository.findByFileHash(HASH_TXT)).thenReturn(CV_LIST);
+        assertEquals(Optional.of(CV_DATA), cvDal.getByHash(HASH_TXT));
     }
 
     @Test

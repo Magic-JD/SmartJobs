@@ -80,11 +80,8 @@ public class CandidateServiceImpl implements CandidateService {
                 fi -> processAndUpdateProgress(userId, roleId, fi, counter, total)
         );
 
-        List<ProcessedCv> successfullyProcessed = processedCvs.stream()
-                .filter(Either::isRight)
-                .map(Either::get)
-                .toList();
-        List<ProcessFailure> processFailures = processedCvs.stream().filter(Either::isLeft).map(Either::getLeft).toList();
+        var successfullyProcessed = processedCvs.stream().filter(Either::isRight).map(Either::get).toList();
+        var processFailures = processedCvs.stream().filter(Either::isLeft).map(Either::getLeft).toList();
         if (!processFailures.isEmpty()) {
             creditService.refund(userId, processFailures.size());
             eventEmitter.sendEvent(new ErrorEvent(userId, processFailures));

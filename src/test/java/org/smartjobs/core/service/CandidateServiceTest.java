@@ -32,8 +32,8 @@ class CandidateServiceTest {
 
     @Test
     void testUpdateCandidateCvsReturnsTheUpdatedCandidateCvs() {
-        List<ProcessedCv> processedCvs = CANDIDATE_SERVICE.updateCandidateCvs(USER_ID, ROLE_ID, List.of(file()));
-        assertEquals(List.of(new ProcessedCv(null, CANDIDATE_NAME, true, HASH, CV_STRING_CONDENSED)), processedCvs);
+        List<ProcessedCv> processedCvs = CANDIDATE_SERVICE.updateCandidateCvs(USER_ID, ROLE_ID, List.of(fileTxt()));
+        assertEquals(List.of(new ProcessedCv(null, CANDIDATE_NAME, true, HASH_TXT, CV_STRING_CONDENSED)), processedCvs);
     }
 
     @Test
