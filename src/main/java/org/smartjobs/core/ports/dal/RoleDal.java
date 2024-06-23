@@ -17,7 +17,7 @@ public interface RoleDal {
 
     void deleteRole(long roleId);
 
-    void removeUserCriteriaFromRole(long roleId, long userCriteriaId);
+    void removeUserCriteriaFromRole(long userCriteriaId);
 
     void setSelectedRole(long userId, long roleId);
 

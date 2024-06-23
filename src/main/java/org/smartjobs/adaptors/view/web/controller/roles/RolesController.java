@@ -71,9 +71,6 @@ public class RolesController {
     @DeleteMapping("/delete/{roleId}")
     public String deleteRole(@AuthenticationPrincipal User user, @PathVariable("roleId") long roleId, HttpServletResponse response) {
         var userId = user.getId();
-        roleService.getCurrentlySelectedRoleId(userId)
-                .filter(current -> current.equals(roleId))
-                .ifPresent(_ -> roleService.deleteCurrentlySelectedRole(userId));
         roleService.deleteRole(userId, roleId);
         response.addHeader(HX_TRIGGER, ROLE_DELETED);
         return EMPTY_FRAGMENT;
@@ -120,8 +117,7 @@ public class RolesController {
                                @PathParam("value") String value,
                                @PathParam("score") String score,
                                HttpServletResponse response) {
-        var criteria = roleService.addUserCriteriaToRole(definedCriteriaId, user.getId(), roleService.getCurrentlySelectedRoleId(user.getId()).orElseThrow(), value, score);
-
+        roleService.addUserCriteriaToRole(definedCriteriaId, user.getId(), roleService.getCurrentlySelectedRoleId(user.getId()).orElseThrow(), value, score);
         response.addHeader(HX_TRIGGER, ROLE_UPDATED);
         return EMPTY_FRAGMENT;
     }

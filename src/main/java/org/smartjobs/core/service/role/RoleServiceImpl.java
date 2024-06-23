@@ -99,13 +99,14 @@ public class RoleServiceImpl implements RoleService {
             @CacheEvict(value = "role", key = "#roleId")
     })
     public void removeCriteriaFromRole(long userId, long roleId, long userCriteriaId) {
-        roleDal.removeUserCriteriaFromRole(roleId, userCriteriaId);
+        roleDal.removeUserCriteriaFromRole(userCriteriaId);
     }
 
     @Override
     @Caching(evict = {
             @CacheEvict(value = "role", key = "#roleId"),
             @CacheEvict(value = "current-role", key = "#userId"),
+            @CacheEvict(value = "current-role-id", key = "#userId"),
             @CacheEvict(value = "role-display", key = "#userId")
     })
     public void deleteRole(long userId, long roleId) {
@@ -148,7 +149,7 @@ public class RoleServiceImpl implements RoleService {
         }
         UserCriteria criteria = roleDal.createNewUserCriteriaForRole(definedCriteriaId, roleId, value, scoreInt);
         if (roleDal.countCriteriaForRole(roleId) > maxAllowedCriteria) {
-            roleDal.removeUserCriteriaFromRole(roleId, criteria.id());
+            roleDal.removeUserCriteriaFromRole(criteria.id());
             throw new RoleCriteriaLimitReachedException(userId, maxAllowedCriteria);
         }
         return criteria;

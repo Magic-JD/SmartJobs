@@ -9,6 +9,7 @@ import org.smartjobs.adaptors.service.ai.gpt.request.GptRequest;
 import org.smartjobs.adaptors.service.ai.gpt.response.GptChoices;
 import org.smartjobs.adaptors.service.ai.gpt.response.GptResponse;
 import org.smartjobs.adaptors.service.ai.gpt.response.GptUsage;
+import org.smartjobs.adaptors.view.web.controller.roles.RolesController;
 import org.smartjobs.core.constants.CreditType;
 import org.smartjobs.core.entities.*;
 import org.smartjobs.core.event.EventEmitter;
@@ -20,8 +21,10 @@ import org.smartjobs.core.service.candidate.FileHandler;
 import org.smartjobs.core.service.candidate.file.FileHandlerImpl;
 import org.smartjobs.core.service.credit.CreditServiceImpl;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.ui.ConcurrentModel;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
@@ -49,29 +52,35 @@ public class TestConstants {
     public static final int SCORE_VALUE_BAD = 0;
     public static final Score SCORE_BAD = new Score(JUSTIFICATION_NEGATIVE, SCORE_VALUE_BAD);
     public static final long USER_CRITERIA_ID = 22342L;
+    public static final long USER_CRITERIA_ID2 = 5435234L;
     public static final String CRITERIA_REQUEST_SCORE = "Does the candidate match the criteria score?";
     public static final String CRITERIA_REQUEST_PASS = "Does the candidate match the criteria pass?";
     public static final int MAX_SCORE_VALUE = 10;
     public static final UserScoringCriteria USER_SCORING_CRITERIA_BAD = new UserScoringCriteria(USER_CRITERIA_ID, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION, true, MAX_SCORE_VALUE, CRITERIA_REQUEST_PASS);
-    public static final UserScoringCriteria USER_SCORING_CRITERIA_GOOD = new UserScoringCriteria(USER_CRITERIA_ID, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION, false, MAX_SCORE_VALUE, CRITERIA_REQUEST_SCORE);
+    public static final UserScoringCriteria USER_SCORING_CRITERIA_GOOD = new UserScoringCriteria(USER_CRITERIA_ID2, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION, false, MAX_SCORE_VALUE, CRITERIA_REQUEST_SCORE);
     public static final List<UserScoringCriteria> USER_SCORING_CRITERIA_LIST = List.of(USER_SCORING_CRITERIA_GOOD, USER_SCORING_CRITERIA_BAD);
-    public static final ScoredCriteria SCORED_CRITERIA_GOOD = new ScoredCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, JUSTIFICATION_POSITIVE, SCORE_VALUE_GOOD, MAX_SCORE_VALUE);
-    public static final ScoredCriteria SCORED_CRITERIA_MEDIUM = new ScoredCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, JUSTIFICATION_MEDIUM, SCORE_VALUE_MEDIUM, MAX_SCORE_VALUE);
+    public static final List<UserScoringCriteria> USER_SCORING_CRITERIA_LIST2 = List.of(USER_SCORING_CRITERIA_GOOD, USER_SCORING_CRITERIA_BAD);
+    public static final ScoredCriteria SCORED_CRITERIA_GOOD = new ScoredCriteria(USER_CRITERIA_ID2, CRITERIA_DESCRIPTION, JUSTIFICATION_POSITIVE, SCORE_VALUE_GOOD, MAX_SCORE_VALUE);
+    public static final ScoredCriteria SCORED_CRITERIA_MEDIUM = new ScoredCriteria(USER_CRITERIA_ID2, CRITERIA_DESCRIPTION, JUSTIFICATION_MEDIUM, SCORE_VALUE_MEDIUM, MAX_SCORE_VALUE);
     public static final ScoredCriteria SCORED_CRITERIA_BAD = new ScoredCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, JUSTIFICATION_NEGATIVE, SCORE_VALUE_BAD, MAX_SCORE_VALUE);
     public static final List<ScoredCriteria> SCORED_CRITERIA_LIST = List.of(SCORED_CRITERIA_GOOD, SCORED_CRITERIA_BAD);
     public static final List<ScoredCriteria> SCORED_CRITERIA_LIST2 = List.of(SCORED_CRITERIA_MEDIUM, SCORED_CRITERIA_BAD);
     public static final CandidateScores CANDIDATE_SCORES = new CandidateScores(ANALYSIS_ID, CANDIDATE_NAME, SCORED_CRITERIA_LIST);
     public static final CandidateScores CANDIDATE_SCORES2 = new CandidateScores(ANALYSIS_ID2, CANDIDATE_NAME2, SCORED_CRITERIA_LIST2);
     public static final long USER_ID = 5345342L;
+    public static final long USER_ID2 = 63454353L;
     public static final long CV_ID = 5634253242L;
     public static final long CV_ID2 = 5634253242L;
     public static final long ROLE_ID = 5345654342L;
+    public static final long ROLE_ID2 = 64345L;
     public static final String CV_STRING_CONDENSED = "Condensed Cv String";
     public static final String CV_STRING_CONDENSED2 = "Condensed Cv String2";
     public static final String CV_STRING_FULL = "Full Cv String "; //Multipart file adds that space by default
     public static final String CV_STRING_FULL_FOR_CONVERSION = "Full Cv String";
     public static final String USERNAME = "Username";
+    public static final String USERNAME2 = "Username2";
     public static final String PASSWORD = "Password";
+    public static final String PASSWORD2 = "Password2";
     public static final GrantedAuthority GRANTED_AUTHORITY_USER = () -> "USER";
     public static final long CREDIT_AMOUNT = 543L;
     public static final int CREDIT_CHANGE_AMOUNT = 43;
@@ -97,16 +106,20 @@ public class TestConstants {
     public static final DefinedScoringCriteria DEFINED_SCORING_CRITERIA_SCORE = new DefinedScoringCriteria(DEFINED_SCORING_CRITERIA_ID_SCORE, DEFINED_SCORING_CRITERIA_DESCRIPTION, CriteriaCategory.SOFT_SKILLS, true, Optional.of(INPUT_EXAMPLE), CRITERIA_REQUEST_SCORE, TOOLTIP);
     public static final List<DefinedScoringCriteria> DEFINED_SCORING_CRITERIA_LIST = List.of(DEFINED_SCORING_CRITERIA_SCORE, DEFINED_SCORING_CRITERIA_PASS);
     public static final String POSITION = "Position";
+    public static final String POSITION2 = "Position2";
     public static final RoleDisplay ROLE_DISPLAY = new RoleDisplay(ROLE_ID, POSITION);
-    public static final List<RoleDisplay> ROLE_DISPLAY_LIST = List.of(ROLE_DISPLAY);
+    public static final RoleDisplay ROLE_DISPLAY2 = new RoleDisplay(ROLE_ID2, POSITION2);
+    public static final List<RoleDisplay> ROLE_DISPLAY_LIST = List.of(ROLE_DISPLAY, ROLE_DISPLAY2);
     public static final int ROLE_CRITERIA_COUNT = 5;
     public static final String VALUE = "Java";
     public static final UserCriteria USER_CRITERIA = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID_SCORE, Optional.of(VALUE), MAX_SCORE_VALUE);
     public static final UserCriteria USER_CRITERIA_WITHOUT_VALUE = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID_SCORE, Optional.empty(), MAX_SCORE_VALUE);
     public static final Role ROLE = new Role(ROLE_ID, POSITION, USER_SCORING_CRITERIA_LIST);
+    public static final Role ROLE2 = new Role(ROLE_ID2, POSITION2, USER_SCORING_CRITERIA_LIST2);
     public static final Role ROLE_NEW = new Role(ROLE_ID, POSITION, Collections.emptyList());
     public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID, USER_ID, POSITION);
-    public static final List<org.smartjobs.adaptors.data.repository.data.Role> DATABASE_ROLE_LIST = List.of(DATABASE_ROLE);
+    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE2 = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID2, USER_ID, POSITION2);
+    public static final List<org.smartjobs.adaptors.data.repository.data.Role> DATABASE_ROLE_LIST = List.of(DATABASE_ROLE, DATABASE_ROLE2);
     public static final long SELECTED_ROLE_ID = 4346453L;
     public static final SelectedRole SELECTED_ROLE = new SelectedRole(SELECTED_ROLE_ID, USER_ID, ROLE_ID);
     public static final long ZERO = 0L;
@@ -166,6 +179,22 @@ public class TestConstants {
             The candidate has an AWS certification. PASS true""";
 
     public static final String ANON_CV = "ANON_CV";
+    public static final ConcurrentModel MODEL = new ConcurrentModel();
+    public static final User USER = new User(USERNAME, PASSWORD, USER_ID, List.of(GRANTED_AUTHORITY_USER));
+    public static final User USER2 = new User(USERNAME2, PASSWORD2, USER_ID2, List.of(GRANTED_AUTHORITY_USER));
+    public static final RolesController.Category SOFT_SKILLS = new RolesController.Category("Soft Skills", Collections.emptyList());
+    public static final RolesController.Category RELEVANT_EXPERIENCE = new RolesController.Category("Relevant Experience", Collections.emptyList());
+    public static final RolesController.Category QUALIFICATIONS = new RolesController.Category("Qualifications", Collections.emptyList());
+    public static final RolesController.Category PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION = new RolesController.Category("Professional Engagement and Recognition", Collections.emptyList());
+    public static final RolesController.ScoringCriteria DISPLAY_SCORING_CRITERIA1 = new RolesController.ScoringCriteria(USER_CRITERIA_ID2, CRITERIA_DESCRIPTION, MAX_SCORE_VALUE);
+    public static final RolesController.ScoringCriteria DISPLAY_SCORING_CRITERIA2 = new RolesController.ScoringCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, MAX_SCORE_VALUE);
+    public static final RolesController.Category HARD_SKILLS = new RolesController.Category("Hard Skills", List.of(DISPLAY_SCORING_CRITERIA1, DISPLAY_SCORING_CRITERIA2));
+    public static final RolesController.Category HARD_SKILLS_EMPTY = new RolesController.Category("Hard Skills", Collections.emptyList());
+    public static final List<RolesController.Category> CATEGORY_LIST = List.of(SOFT_SKILLS, HARD_SKILLS, RELEVANT_EXPERIENCE, QUALIFICATIONS, PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION);
+    public static final List<RolesController.Category> CATEGORY_LIST_NEW = List.of(SOFT_SKILLS, HARD_SKILLS_EMPTY, RELEVANT_EXPERIENCE, QUALIFICATIONS, PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION);
+    public static final RolesController.Role DISPLAY_ROLE = new RolesController.Role(ROLE_ID, POSITION, CATEGORY_LIST);
+    public static final RolesController.Role DISPLAY_ROLE_NEW = new RolesController.Role(ROLE_ID, POSITION, CATEGORY_LIST_NEW);
+    public static final List<String> CATEGORY_STRINGS = List.of("Hard Skills", "Professional Engagement and Recognition", "Qualifications", "Relevant Experience", "Soft Skills");
 
     //PORT MOCKS
     public static AiService aiServiceMock() {
@@ -247,5 +276,10 @@ public class TestConstants {
                 "MultipartFileTestInput.txt",
                 "text/plain",
                 CV_STRING_FULL_FOR_CONVERSION.getBytes(StandardCharsets.UTF_8));
+    }
+
+
+    public static MockHttpServletResponse mockHttpServletResponse() {
+        return new MockHttpServletResponse();
     }
 }

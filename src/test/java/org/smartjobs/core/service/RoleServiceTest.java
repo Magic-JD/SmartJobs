@@ -84,7 +84,7 @@ class RoleServiceTest {
     @Test
     void testRemoveCriteriaFromRoleWillRemoveTheCriteriaFromTheRole() {
         roleService.removeCriteriaFromRole(USER_ID, ROLE_ID, USER_CRITERIA_ID);
-        verify(roleDal).removeUserCriteriaFromRole(ROLE_ID, USER_CRITERIA_ID);
+        verify(roleDal).removeUserCriteriaFromRole(USER_CRITERIA_ID);
     }
 
     @Test

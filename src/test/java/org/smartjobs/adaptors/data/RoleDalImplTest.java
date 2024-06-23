@@ -58,7 +58,7 @@ class RoleDalImplTest {
     void testGetRoleByIdReturnsTheCorrectRoleById() {
         Tuple tuple1 = new TupleImpl(
                 new TupleMetadata(null, new String[]{"ai_prompt", "value", "id", "category", "criteria", "is_boolean", "score", "input"}),
-                new Object[]{CRITERIA_REQUEST_SCORE, null, USER_CRITERIA_ID, CriteriaCategory.HARD_SKILLS.toString(), CRITERIA_DESCRIPTION, false, (long) MAX_SCORE_VALUE, false}
+                new Object[]{CRITERIA_REQUEST_SCORE, null, USER_CRITERIA_ID2, CriteriaCategory.HARD_SKILLS.toString(), CRITERIA_DESCRIPTION, false, (long) MAX_SCORE_VALUE, false}
         );
         Tuple tuple2 = new TupleImpl(
                 new TupleMetadata(null, new String[]{"ai_prompt", "value", "id", "category", "criteria", "is_boolean", "score", "input"}),
@@ -91,7 +91,7 @@ class RoleDalImplTest {
 
     @Test
     void testRemoveUserCriteriaFromRoleWillDeleteTheUserCriteriaFromTheRole() {
-        roleDal.removeUserCriteriaFromRole(ROLE_ID, USER_CRITERIA_ID);
+        roleDal.removeUserCriteriaFromRole(USER_CRITERIA_ID);
         verify(userCriteriaRepository).deleteById(USER_CRITERIA_ID);
     }
 
@@ -140,7 +140,7 @@ class RoleDalImplTest {
         when(roleRepository.findById(ROLE_ID)).thenReturn(Optional.of(DATABASE_ROLE));
         Tuple tuple1 = new TupleImpl(
                 new TupleMetadata(null, new String[]{"ai_prompt", "value", "id", "category", "criteria", "is_boolean", "score", "input"}),
-                new Object[]{CRITERIA_REQUEST_SCORE, null, USER_CRITERIA_ID, CriteriaCategory.HARD_SKILLS.toString(), CRITERIA_DESCRIPTION, false, (long) MAX_SCORE_VALUE, false}
+                new Object[]{CRITERIA_REQUEST_SCORE, null, USER_CRITERIA_ID2, CriteriaCategory.HARD_SKILLS.toString(), CRITERIA_DESCRIPTION, false, (long) MAX_SCORE_VALUE, false}
         );
         Tuple tuple2 = new TupleImpl(
                 new TupleMetadata(null, new String[]{"ai_prompt", "value", "id", "category", "criteria", "is_boolean", "score", "input"}),

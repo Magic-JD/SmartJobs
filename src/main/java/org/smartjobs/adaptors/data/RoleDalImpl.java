@@ -79,7 +79,7 @@ public class RoleDalImpl implements RoleDal {
 
 
     @Override
-    public void removeUserCriteriaFromRole(long roleId, long userCriteriaId) {
+    public void removeUserCriteriaFromRole(long userCriteriaId) {
         userCriteriaRepository.deleteById(userCriteriaId); //Handled through cascade
     }
 
