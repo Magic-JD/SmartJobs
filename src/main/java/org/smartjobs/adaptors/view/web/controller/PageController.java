@@ -23,7 +23,6 @@ import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 @Controller
 public class PageController {
 
-
     private final CreditService creditService;
     private final RoleService roleService;
     private final CandidateService candidateService;
