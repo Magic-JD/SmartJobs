@@ -9,7 +9,6 @@ import org.smartjobs.core.entities.UserScoringCriteria;
 import org.smartjobs.core.event.EventEmitter;
 import org.smartjobs.core.event.events.ErrorEvent;
 import org.smartjobs.core.event.events.ProgressEvent;
-import org.smartjobs.core.exception.categories.UserResolvedExceptions;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleCriteriaLimitReachedException;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.RoleHasNoCriteriaException;
 import org.smartjobs.core.ports.client.AiService;
@@ -25,6 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.smartjobs.core.constants.ProcessFailure.LLM_FAILURE_ANALYZING;
+import static org.smartjobs.core.exception.categories.UserResolvedExceptions.NoCandidatesSelectedException;
 import static org.smartjobs.core.utils.ConcurrencyUtil.virtualThreadListMap;
 
 @Service
@@ -49,7 +49,7 @@ public class AnalysisServiceImpl implements AnalysisService {
     @Override
     public List<CandidateScores> scoreToCriteria(long userId, long roleId, List<ProcessedCv> candidateInformation, List<UserScoringCriteria> userScoringCriteria) {
         if (candidateInformation.isEmpty()) {
-            throw new UserResolvedExceptions.NoCandidatesSelectedException(userId);
+            throw new NoCandidatesSelectedException(userId);
         }
         if (userScoringCriteria.isEmpty()) {
             throw new RoleHasNoCriteriaException(userId);

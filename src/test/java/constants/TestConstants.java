@@ -97,6 +97,7 @@ public class TestConstants {
     public static final int SELECTED_CANDIDATE_COUNT = 453;
     public static final String HASH = "12055492ce597b78066c49ec03405635";
     public static final ProcessedCv PROCESSED_CV = new ProcessedCv(CV_ID, CANDIDATE_NAME, true, HASH, CV_STRING_CONDENSED);
+    public static final ProcessedCv PROCESSED_CV_INVALID = new ProcessedCv(0L, "", true, HASH, "");
     public static final ProcessedCv PROCESSED_CV2 = new ProcessedCv(CV_ID2, CANDIDATE_NAME2, true, HASH, CV_STRING_CONDENSED2);
     public static final List<ProcessedCv> PROCESSED_CV_LIST = List.of(PROCESSED_CV2, PROCESSED_CV);
     public static final CvData CV_DATA = new CvData(CV_ID, HASH, CV_STRING_CONDENSED);
