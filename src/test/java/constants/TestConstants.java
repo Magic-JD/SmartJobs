@@ -1,7 +1,6 @@
 package constants;
 
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.smartjobs.adaptors.data.repository.data.SelectedRole;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptMessage;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
@@ -28,21 +27,25 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 public class TestConstants {
     public static final String CANDIDATE_NAME = "Joe Daunt";
+    public static final String CANDIDATE_NAME2 = "James Mottram";
     public static final String CRITERIA_DESCRIPTION = "Criteria Description";
     public static final long ANALYSIS_ID = 43532L;
+    public static final long ANALYSIS_ID2 = 653534L;
     public static final String JUSTIFICATION_POSITIVE = "The candidate meets the criteria";
+    public static final String JUSTIFICATION_MEDIUM = "The candidate almost meets the criteria";
     public static final String JUSTIFICATION_NEGATIVE = "The candidate does not meet the criteria";
     public static final int SCORE_VALUE_GOOD = 7;
+    public static final int SCORE_VALUE_MEDIUM = 5;
     public static final Score SCORE_GOOD = new Score(JUSTIFICATION_POSITIVE, SCORE_VALUE_GOOD);
+    public static final Score SCORE_MEDIUM = new Score(JUSTIFICATION_MEDIUM, SCORE_VALUE_MEDIUM);
     public static final int SCORE_VALUE_BAD = 0;
     public static final Score SCORE_BAD = new Score(JUSTIFICATION_NEGATIVE, SCORE_VALUE_BAD);
     public static final long USER_CRITERIA_ID = 22342L;
@@ -53,13 +56,18 @@ public class TestConstants {
     public static final UserScoringCriteria USER_SCORING_CRITERIA_GOOD = new UserScoringCriteria(USER_CRITERIA_ID, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION, false, MAX_SCORE_VALUE, CRITERIA_REQUEST_SCORE);
     public static final List<UserScoringCriteria> USER_SCORING_CRITERIA_LIST = List.of(USER_SCORING_CRITERIA_GOOD, USER_SCORING_CRITERIA_BAD);
     public static final ScoredCriteria SCORED_CRITERIA_GOOD = new ScoredCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, JUSTIFICATION_POSITIVE, SCORE_VALUE_GOOD, MAX_SCORE_VALUE);
+    public static final ScoredCriteria SCORED_CRITERIA_MEDIUM = new ScoredCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, JUSTIFICATION_MEDIUM, SCORE_VALUE_MEDIUM, MAX_SCORE_VALUE);
     public static final ScoredCriteria SCORED_CRITERIA_BAD = new ScoredCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, JUSTIFICATION_NEGATIVE, SCORE_VALUE_BAD, MAX_SCORE_VALUE);
     public static final List<ScoredCriteria> SCORED_CRITERIA_LIST = List.of(SCORED_CRITERIA_GOOD, SCORED_CRITERIA_BAD);
+    public static final List<ScoredCriteria> SCORED_CRITERIA_LIST2 = List.of(SCORED_CRITERIA_MEDIUM, SCORED_CRITERIA_BAD);
     public static final CandidateScores CANDIDATE_SCORES = new CandidateScores(ANALYSIS_ID, CANDIDATE_NAME, SCORED_CRITERIA_LIST);
+    public static final CandidateScores CANDIDATE_SCORES2 = new CandidateScores(ANALYSIS_ID2, CANDIDATE_NAME2, SCORED_CRITERIA_LIST2);
     public static final long USER_ID = 5345342L;
     public static final long CV_ID = 5634253242L;
+    public static final long CV_ID2 = 5634253242L;
     public static final long ROLE_ID = 5345654342L;
     public static final String CV_STRING_CONDENSED = "Condensed Cv String";
+    public static final String CV_STRING_CONDENSED2 = "Condensed Cv String2";
     public static final String CV_STRING_FULL = "Full Cv String "; //Multipart file adds that space by default
     public static final String CV_STRING_FULL_FOR_CONVERSION = "Full Cv String";
     public static final String USERNAME = "Username";
@@ -68,13 +76,17 @@ public class TestConstants {
     public static final long CREDIT_AMOUNT = 543L;
     public static final int CREDIT_CHANGE_AMOUNT = 43;
     public static final long CANDIDATE_ID = 654432L;
+    public static final long CANDIDATE_ID2 = 643532L;
     public static final CandidateData CANDIDATE_DATA = new CandidateData(CANDIDATE_ID, CANDIDATE_NAME, USER_ID, ROLE_ID, true);
+    public static final CandidateData CANDIDATE_DATA2 = new CandidateData(CANDIDATE_ID2, CANDIDATE_NAME2, USER_ID, ROLE_ID, true);
     public static final CandidateData CANDIDATE_DATA_UNSELECTED = new CandidateData(CANDIDATE_ID, CANDIDATE_NAME, USER_ID, ROLE_ID, false);
-    public static final List<CandidateData> CANDIDATE_DATA_LIST = List.of(CANDIDATE_DATA);
+    public static final List<CandidateData> CANDIDATE_DATA_LIST = List.of(CANDIDATE_DATA, CANDIDATE_DATA2);
+    public static final List<CandidateData> SINGLE_CANDIDATE_DATA_LIST = List.of(CANDIDATE_DATA);
     public static final int SELECTED_CANDIDATE_COUNT = 453;
     public static final String HASH = "12055492ce597b78066c49ec03405635";
     public static final ProcessedCv PROCESSED_CV = new ProcessedCv(CV_ID, CANDIDATE_NAME, true, HASH, CV_STRING_CONDENSED);
-    public static final List<ProcessedCv> PROCESSED_CV_LIST = List.of(PROCESSED_CV);
+    public static final ProcessedCv PROCESSED_CV2 = new ProcessedCv(CV_ID2, CANDIDATE_NAME2, true, HASH, CV_STRING_CONDENSED2);
+    public static final List<ProcessedCv> PROCESSED_CV_LIST = List.of(PROCESSED_CV2, PROCESSED_CV);
     public static final CvData CV_DATA = new CvData(CV_ID, HASH, CV_STRING_CONDENSED);
     public static final long DEFINED_SCORING_CRITERIA_ID_SCORE = 43543L;
     public static final long DEFINED_SCORING_CRITERIA_ID_PASS = 487673L;
@@ -98,7 +110,7 @@ public class TestConstants {
     public static final long SELECTED_ROLE_ID = 4346453L;
     public static final SelectedRole SELECTED_ROLE = new SelectedRole(SELECTED_ROLE_ID, USER_ID, ROLE_ID);
     public static final long ZERO = 0L;
-    public static final Date NOW =  Date.valueOf(LocalDate.now());
+    public static final Date NOW = Date.valueOf(LocalDate.now());
     public static final GptRequest GPT_REQUEST = new GptRequest(GptModel.GPT_3_5, 1.0, 0.5, List.of(new GptMessage(GptRole.SYSTEM, "Are you sentient yet")));
     public static final String GPT_RESPONSE_ID = "ID";
     public static final String GPT_RESPONSE_OBJECT = "OBJECT";
@@ -160,7 +172,9 @@ public class TestConstants {
         AiService aiService = mock(AiService.class);
         when(aiService.extractCandidateName(CV_STRING_FULL)).thenReturn(Optional.of(CANDIDATE_NAME));
         when(aiService.scoreForCriteria(CV_STRING_CONDENSED, CRITERIA_REQUEST_SCORE, MAX_SCORE_VALUE)).thenReturn(Optional.of(SCORE_GOOD));
+        when(aiService.scoreForCriteria(CV_STRING_CONDENSED2, CRITERIA_REQUEST_SCORE, MAX_SCORE_VALUE)).thenReturn(Optional.of(SCORE_MEDIUM));
         when(aiService.passForCriteria(CV_STRING_CONDENSED, CRITERIA_REQUEST_PASS, MAX_SCORE_VALUE)).thenReturn(Optional.of(SCORE_BAD));
+        when(aiService.passForCriteria(CV_STRING_CONDENSED2, CRITERIA_REQUEST_PASS, MAX_SCORE_VALUE)).thenReturn(Optional.of(SCORE_BAD));
         when(aiService.anonymizeCv(CV_STRING_FULL)).thenReturn(Optional.of(CV_STRING_CONDENSED));
         return aiService;
     }
@@ -168,15 +182,10 @@ public class TestConstants {
     public static AnalysisDal analysisDalMock() {
         ArgumentCaptor<List<ScoredCriteria>> scoredCriteriaCaptor = ArgumentCaptor.forClass(List.class);
         AnalysisDal analysisDal = mock(AnalysisDal.class);
-        when(analysisDal.getResultById(anyLong())).thenReturn(CANDIDATE_SCORES);
-        when(analysisDal.saveResults(ArgumentMatchers.eq(USER_ID), ArgumentMatchers.eq(CV_ID), ArgumentMatchers.eq(ROLE_ID), scoredCriteriaCaptor.capture()))
-                .thenAnswer(_ -> {
-                    Set<ScoredCriteria> expected = new HashSet<>(SCORED_CRITERIA_LIST);
-                    Set<ScoredCriteria> found = new HashSet<>(scoredCriteriaCaptor.getValue());
-                    assertEquals(expected.size(), found.size());
-                    SCORED_CRITERIA_LIST.forEach(sc -> assertFalse(found.add(sc)));
-                    return ANALYSIS_ID;
-                });
+        when(analysisDal.getResultById(ANALYSIS_ID)).thenReturn(CANDIDATE_SCORES);
+        when(analysisDal.getResultById(ANALYSIS_ID2)).thenReturn(CANDIDATE_SCORES2);
+        when(analysisDal.saveResults(USER_ID, CV_ID, ROLE_ID, SCORED_CRITERIA_LIST)).thenReturn(ANALYSIS_ID);
+        when(analysisDal.saveResults(USER_ID, CV_ID, ROLE_ID, SCORED_CRITERIA_LIST2)).thenReturn(ANALYSIS_ID2);
         return analysisDal;
     }
 
@@ -199,7 +208,7 @@ public class TestConstants {
         when(cvDal.updateCurrentlySelectedById(CV_ID, false)).thenReturn(Optional.of(CANDIDATE_DATA_UNSELECTED));
         when(cvDal.findSelectedCandidateCount(USER_ID, ROLE_ID)).thenReturn(SELECTED_CANDIDATE_COUNT);
         when(cvDal.getAllCandidates(USER_ID, ROLE_ID)).thenReturn(CANDIDATE_DATA_LIST);
-        when(cvDal.getByCvId(CV_ID)).thenReturn(CANDIDATE_DATA_LIST);
+        when(cvDal.getByCvId(CV_ID)).thenReturn(SINGLE_CANDIDATE_DATA_LIST);
         when(cvDal.getByHash(HASH)).thenReturn(Optional.empty());
         when(cvDal.knownHash(HASH)).thenReturn(false);
         when(cvDal.getAllSelected(USER_ID, ROLE_ID)).thenReturn(PROCESSED_CV_LIST);

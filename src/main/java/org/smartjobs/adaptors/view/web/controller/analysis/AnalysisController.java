@@ -1,7 +1,6 @@
 package org.smartjobs.adaptors.view.web.controller.analysis;
 
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.entities.CandidateScores;
 import org.smartjobs.core.entities.User;
@@ -27,10 +26,8 @@ import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 @RequestMapping("/analysis")
 public class AnalysisController {
 
-
     private final CandidateService candidateService;
     private final AnalysisService analysisService;
-
     private final RoleService roleService;
 
     @Autowired
@@ -46,7 +43,7 @@ public class AnalysisController {
 
     @HxRequest
     @GetMapping("/scoring")
-    public String scoreAllCandidates(@AuthenticationPrincipal User user, HttpServletResponse response, Model model) {
+    public String scoreAllCandidates(@AuthenticationPrincipal User user, Model model) {
         var userId = user.getId();
         var role = roleService.getCurrentlySelectedRole(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         var candidateInformation = candidateService.getFullCandidateInfo(userId, role.id());
@@ -60,14 +57,14 @@ public class AnalysisController {
 
     @HxRequest
     @GetMapping("/result/details/{resultId}")
-    public String retrieveResultDetails(@PathVariable Long resultId, Model model, HttpServletResponse response) {
+    public String retrieveResultDetails(@PathVariable Long resultId, Model model) {
         model.addAttribute("result", analysisService.getResultById(resultId));
         return RESULT_DETAILS_FRAGMENT;
     }
 
     @HxRequest
     @DeleteMapping("/result/details/{resultId}")
-    public String removeResultDetails(@PathVariable Long resultId, Model model, HttpServletResponse response) {
+    public String removeResultDetails(@PathVariable Long resultId, Model model) {
         model.addAttribute("result", analysisService.getResultById(resultId));
         return RESULT_COLLAPSED_FRAGMENT;
     }

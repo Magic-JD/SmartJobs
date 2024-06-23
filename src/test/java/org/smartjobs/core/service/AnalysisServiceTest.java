@@ -25,8 +25,10 @@ class AnalysisServiceTest {
     @Test
     void testScoreToCriteriaReturnsTheCorrectCandidateScores() {
         List<CandidateScores> candidateScores = analysisService.scoreToCriteria(USER_ID, ROLE_ID, PROCESSED_CV_LIST, USER_SCORING_CRITERIA_LIST);
-        assertEquals(1, candidateScores.size());
-        CandidateScores cs = candidateScores.get(0);
+        assertEquals(2, candidateScores.size());
+        CandidateScores cs2 = candidateScores.get(0);
+        CandidateScores cs = candidateScores.get(1);
+        assertEquals(CANDIDATE_SCORES2, cs2);
         assertEquals(CANDIDATE_SCORES, cs);
     }
 

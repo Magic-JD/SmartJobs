@@ -27,6 +27,7 @@ class CvDalImplTest {
 
     public static final Candidate CANDIDATE = new Candidate(CANDIDATE_ID, true, CANDIDATE_NAME, CV_ID, USER_ID, ROLE_ID, NOW);
     public static final List<Cv> CV_LIST = List.of(new Cv(CV_ID, HASH, CV_STRING_CONDENSED));
+    public static final Candidate CANDIDATE2 = new Candidate(CANDIDATE_ID2, true, CANDIDATE_NAME2, CV_ID, USER_ID, ROLE_ID, NOW);
     private final CvRepository cvRepository = mock(CvRepository.class);
     private final CandidateRepository candidateRepository = mock(CandidateRepository.class);
     private final DateSupplier dateSupplier = mock(DateSupplier.class);
@@ -75,7 +76,7 @@ class CvDalImplTest {
 
     @Test
     void testThatGetAllCandidatesReturnsTheCorrectCandidates(){
-        when(candidateRepository.findAllByUserIdAndRoleId(USER_ID, ROLE_ID)).thenReturn(List.of(new Candidate(CANDIDATE_ID, true, CANDIDATE_NAME, CV_ID, USER_ID, ROLE_ID, NOW)));
+        when(candidateRepository.findAllByUserIdAndRoleId(USER_ID, ROLE_ID)).thenReturn(List.of(CANDIDATE, CANDIDATE2));
         assertEquals(CANDIDATE_DATA_LIST, cvDal.getAllCandidates(USER_ID, ROLE_ID));
     }
 
@@ -84,7 +85,10 @@ class CvDalImplTest {
         Tuple tuple = new TupleImpl(
                 new TupleMetadata(new TupleElement[]{}, new String[]{"id", "name", "file_hash", "condensed_text"}),
                 new Object[]{CV_ID, CANDIDATE_NAME, HASH, CV_STRING_CONDENSED});
-        when(cvRepository.findByCurrentlySelected(true, USER_ID, ROLE_ID)).thenReturn(List.of(tuple));
+        Tuple tuple2 = new TupleImpl(
+                new TupleMetadata(new TupleElement[]{}, new String[]{"id", "name", "file_hash", "condensed_text"}),
+                new Object[]{CV_ID2, CANDIDATE_NAME2, HASH, CV_STRING_CONDENSED2});
+        when(cvRepository.findByCurrentlySelected(true, USER_ID, ROLE_ID)).thenReturn(List.of(tuple2, tuple));
         assertEquals(PROCESSED_CV_LIST, cvDal.getAllSelected(USER_ID, ROLE_ID));
     }
 
@@ -138,7 +142,7 @@ class CvDalImplTest {
 
     @Test
     void testThatGetByCvIdReturnsTheCorrectCandidate(){
-        when(candidateRepository.findAllByCvId(CV_ID)).thenReturn(List.of(CANDIDATE));
+        when(candidateRepository.findAllByCvId(CV_ID)).thenReturn(List.of(CANDIDATE, CANDIDATE2));
         assertEquals(CANDIDATE_DATA_LIST, cvDal.getByCvId(CV_ID));
     }
 }

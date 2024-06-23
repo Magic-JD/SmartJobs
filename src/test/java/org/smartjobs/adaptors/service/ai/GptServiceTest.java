@@ -18,8 +18,7 @@ import java.util.Optional;
 
 import static constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class GptServiceTest {
@@ -32,7 +31,9 @@ class GptServiceTest {
         GptRequest gptRequest = createGptRequest(NAME_IDENTIFY_SYSTEM_PROMPT, CV_SHORT);
         GptResponse gptResponse = createGptResponse(CANDIDATE_NAME);
         when(gptClient.makeServiceCall(gptRequest)).thenReturn(Optional.of(gptResponse));
-        assertEquals(Optional.of(CANDIDATE_NAME), gptService.extractCandidateName(CV_SHORT));
+        Optional<String> result = gptService.extractCandidateName(CV_SHORT);
+        verify(gptClient).makeServiceCall(gptRequest);
+        assertEquals(Optional.of(CANDIDATE_NAME), result);
     }
 
     @Test
@@ -41,7 +42,9 @@ class GptServiceTest {
         GptRequest gptRequest = createGptRequest(NAME_IDENTIFY_SYSTEM_PROMPT, CV_SHORT);
         GptResponse gptResponse = createGptResponse(CANDIDATE_NAME);
         when(gptClient.makeServiceCall(gptRequest)).thenReturn(Optional.of(gptResponse));
-        assertEquals(Optional.of(CANDIDATE_NAME), gptService.extractCandidateName(CV_LONG));
+        Optional<String> response = gptService.extractCandidateName(CV_LONG);
+        verify(gptClient).makeServiceCall(gptRequest);
+        assertEquals(Optional.of(CANDIDATE_NAME), response);
     }
 
     @Test
@@ -49,7 +52,9 @@ class GptServiceTest {
         GptRequest gptRequest = createGptRequest(ANON_CV_SYSTEM_PROMPT, CV_SHORT);
         GptResponse gptResponse = createGptResponse(ANON_CV);
         when(gptClient.makeServiceCall(gptRequest)).thenReturn(Optional.of(gptResponse));
-        assertEquals(Optional.of(ANON_CV), gptService.anonymizeCv(CV_SHORT));
+        Optional<String> response = gptService.anonymizeCv(CV_SHORT);
+        verify(gptClient).makeServiceCall(gptRequest);
+        assertEquals(Optional.of(ANON_CV), response);
     }
 
     @Test
@@ -57,7 +62,9 @@ class GptServiceTest {
         GptRequest gptRequest = createGptRequest(SCORE_CV_SYSTEM_PROMPT, "CV: CV_DATA. Scoring criteria: CRITERIA");
         GptResponse gptResponse = createGptResponse("Description. SCORE 10");
         when(gptClient.makeServiceCall(gptRequest)).thenReturn(Optional.of(gptResponse));
-        assertEquals(Optional.of(new Score("Description.", 20)), gptService.scoreForCriteria(CV_SHORT, "CRITERIA", 20));
+        Optional<Score> response = gptService.scoreForCriteria(CV_SHORT, "CRITERIA", 20);
+        verify(gptClient).makeServiceCall(gptRequest);
+        assertEquals(Optional.of(new Score("Description.", 20)), response);
     }
 
     @Test
@@ -75,7 +82,9 @@ class GptServiceTest {
         GptRequest gptRequest = createGptRequest(PASS_CV_SYSTEM_PROMPT, "CV: CV_DATA. Scoring criteria: CRITERIA");
         GptResponse gptResponse = createGptResponse("Description. PASS true");
         when(gptClient.makeServiceCall(gptRequest)).thenReturn(Optional.of(gptResponse));
-        assertEquals(Optional.of(new Score("Description.", 20)), gptService.passForCriteria(CV_SHORT, "CRITERIA", 20));
+        Optional<Score> response = gptService.passForCriteria(CV_SHORT, "CRITERIA", 20);
+        verify(gptClient).makeServiceCall(gptRequest);
+        assertEquals(Optional.of(new Score("Description.", 20)), response);
     }
 
     @Test
@@ -83,7 +92,9 @@ class GptServiceTest {
         GptRequest gptRequest = createGptRequest(PASS_CV_SYSTEM_PROMPT, "CV: CV_DATA. Scoring criteria: CRITERIA");
         GptResponse gptResponse = createGptResponse("Description. PASS false");
         when(gptClient.makeServiceCall(gptRequest)).thenReturn(Optional.of(gptResponse));
-        assertEquals(Optional.of(new Score("Description.", 0)), gptService.passForCriteria(CV_SHORT, "CRITERIA", 20));
+        Optional<Score> response = gptService.passForCriteria(CV_SHORT, "CRITERIA", 20);
+        verify(gptClient).makeServiceCall(gptRequest);
+        assertEquals(Optional.of(new Score("Description.", 0)), response);
     }
 
     private GptResponse createGptResponse(String content) {
