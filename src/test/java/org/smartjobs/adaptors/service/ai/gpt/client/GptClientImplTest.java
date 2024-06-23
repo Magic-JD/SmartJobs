@@ -36,13 +36,15 @@ class GptClientImplTest {
     private final GptProperties gptProperties = new GptProperties("https://test.client.com", "API_KEY", MAX_CLIENT_RETRIES, INITIAL_TIMEOUT_SECONDS);
     private final GptConfig gptConfig = new GptConfig();
     private final Gson gson = gptConfig.gson();
-    private final Bucket bucket = gptConfig.bucket(30_000);
+    private final Bucket bucket = mock(Bucket.class);
+    BlockingBucket blockingBucket = mock(BlockingBucket.class);
     private final GptClient gptClient = new GptClientImpl(httpClient, gptProperties, gson, bucket);
     private final HttpResponse<String> passingResponse = mock(HttpResponse.class);
     private final HttpResponse<String> failingResponse500 = mock(HttpResponse.class);
     private final HttpResponse<String> failingResponse400 = mock(HttpResponse.class);
 
     {
+        when(bucket.asBlocking()).thenReturn(blockingBucket);
         when(passingResponse.statusCode()).thenReturn(200);
         when(passingResponse.body()).thenReturn(gson.toJson(GPT_RESPONSE));
         when(failingResponse500.statusCode()).thenReturn(500);
@@ -115,9 +117,6 @@ class GptClientImplTest {
     @Test
     void testThatTheBucketWillPreventTooManyRequestsPerMinute() throws IOException, InterruptedException {
         when(httpClient.send(requestCaptor.capture(), eq(ofString()))).thenReturn(failingResponse500, passingResponse);
-        Bucket bucket = mock(Bucket.class);
-        BlockingBucket blockingBucket = mock(BlockingBucket.class);
-        when(bucket.asBlocking()).thenReturn(blockingBucket);
         GptClient gptClient = new GptClientImpl(httpClient, gptProperties, gson, bucket);
         gptClient.makeServiceCall(GPT_REQUEST);
         verify(blockingBucket, times(2)).consumeUninterruptibly(1);
