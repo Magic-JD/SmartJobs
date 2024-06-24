@@ -23,6 +23,10 @@ import java.util.Optional;
 @Slf4j
 public class FileHandlerImpl implements FileHandler {
 
+    private final PdfTextExtractor pdfTextExtractor = new PdfTextExtractor();
+    private final TxtTextExtractor txtTextExtractor = new TxtTextExtractor();
+    private final DocTextExtractor docTextExtractor = new DocTextExtractor();
+    private final DocxTextExtractor docxTextExtractor = new DocxTextExtractor();
 
     @Override
     public Optional<FileInformation> handleFile(MultipartFile file) {
@@ -32,10 +36,10 @@ public class FileHandlerImpl implements FileHandler {
             log.debug("File hash {}", hash);
             try {
                 String text = switch (getFileExtension(file.getOriginalFilename()).orElse("unsupported")) {
-                    case "pdf" -> new PdfTextExtractor().extractText(file);
-                    case "txt" -> new TxtTextExtractor().extractText(file);
-                    case "doc" -> new DocTextExtractor().extractText(file);
-                    case "docx" -> new DocxTextExtractor().extractText(file);
+                    case "pdf" -> pdfTextExtractor.extractText(file);
+                    case "txt" -> txtTextExtractor.extractText(file);
+                    case "doc" -> docTextExtractor.extractText(file);
+                    case "docx" -> docxTextExtractor.extractText(file);
                     default -> throw new FileTypeNotSupportedException(file.getOriginalFilename());
                 };
 

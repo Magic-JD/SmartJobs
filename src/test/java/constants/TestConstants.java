@@ -24,6 +24,7 @@ import org.smartjobs.core.service.candidate.file.FileHandlerImpl;
 import org.smartjobs.core.service.credit.CreditServiceImpl;
 import org.smartjobs.core.service.role.RoleServiceImpl;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.GrantedAuthority;
@@ -79,7 +80,7 @@ public class TestConstants {
     public static final String CV_STRING_CONDENSED = "Condensed Cv String";
     public static final String CV_STRING_CONDENSED2 = "Condensed Cv String2";
     public static final String CV_STRING_FULL = "Full Cv String "; //Multipart file adds that space by default
-    public static final String CV_STRING_FULL_FOR_CONVERSION = "Full Cv String";
+    public static final String CV_STRING_FULL_FOR_CONVERSION_TXT = "Full Cv String";
     public static final String USERNAME = "Username";
     public static final String USERNAME2 = "Username2";
     public static final String PASSWORD = "Password";
@@ -278,9 +279,29 @@ public class TestConstants {
         return new MockMultipartFile("MultipartFileTestInput.txt",
                 "MultipartFileTestInput.txt",
                 "text/plain",
-                CV_STRING_FULL_FOR_CONVERSION.getBytes(StandardCharsets.UTF_8));
+                CV_STRING_FULL_FOR_CONVERSION_TXT.getBytes(StandardCharsets.UTF_8));
     }
 
+    public static MultipartFile fileDocFailing() {
+        return new MockMultipartFile("MultipartFileTestInput.doc",
+                "MultipartFileTestInput.doc",
+                "application/msword",
+                "".getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static MultipartFile filePdfFailing() {
+        return new MockMultipartFile("MultipartFileTestInput.pdf",
+                "MultipartFileTestInput.pfd",
+                MediaType.APPLICATION_PDF_VALUE,
+                "".getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static MultipartFile fileWithoutAName() {
+        return new MockMultipartFile("No Name",
+                null,
+                "text/plain",
+                CV_STRING_FULL_FOR_CONVERSION_TXT.getBytes(StandardCharsets.UTF_8));
+    }
 
     public static MockHttpServletResponse mockHttpServletResponse() {
         return new MockHttpServletResponse();

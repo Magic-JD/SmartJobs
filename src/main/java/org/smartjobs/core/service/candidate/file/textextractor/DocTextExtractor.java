@@ -15,7 +15,7 @@ public class DocTextExtractor implements TextExtractor {
             String text = extractor.getText();
             extractor.close();
             return text;
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             throw new TextExtractionException(file.getOriginalFilename(), e);
         }
     }
