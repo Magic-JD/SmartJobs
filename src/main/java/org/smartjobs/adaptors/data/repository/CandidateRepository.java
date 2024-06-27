@@ -24,6 +24,17 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
     Optional<Candidate> updateCurrentlySelectedById(long id, boolean currentlySelected);
 
     @Transactional
+    @Query(value = """
+            UPDATE candidate
+            SET currently_selected = :currentlySelected
+            WHERE user_id = :userId
+            AND role_id = :roleId
+            RETURNING *
+            """,
+            nativeQuery = true)
+    List<Candidate> updateCurrentlySelectedAll(long userId, long roleId, boolean currentlySelected);
+
+    @Transactional
     int countByCurrentlySelectedAndUserIdAndRoleId(boolean currentlySelected, long userId, long roleId);
 
     @Transactional

@@ -155,6 +155,15 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
+            @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
+    })
+    public List<CandidateData> toggleCandidateSelectAll(long userId, long roleId, boolean select) {
+        return cvDal.updateCurrentlySelectedAll(userId, roleId, select);
+    }
+
+    @Override
     @Cacheable(value = "cv-currently-selected", key = "{#userId, #roleId}")
     public int findSelectedCandidateCount(long userId, long roleId) {
         return cvDal.findSelectedCandidateCount(userId, roleId);

@@ -96,6 +96,14 @@ public class CvDalImpl implements CvDal {
     }
 
     @Override
+    public List<CandidateData> updateCurrentlySelectedAll(long userId, long roleId, boolean select) {
+        return candidateRepository.updateCurrentlySelectedAll(userId, roleId, select)
+                .stream()
+                .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected()))
+                .toList();
+    }
+
+    @Override
     public int findSelectedCandidateCount(long userId, long roleId) {
         return candidateRepository.countByCurrentlySelectedAndUserIdAndRoleId(true, userId, roleId);
     }

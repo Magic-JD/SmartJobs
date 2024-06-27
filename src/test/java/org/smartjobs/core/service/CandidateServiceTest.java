@@ -51,6 +51,12 @@ class CandidateServiceTest {
     }
 
     @Test
+    void testToggleCandidateAllSelectSelecting() {
+        List<CandidateData> candidateData = CANDIDATE_SERVICE.toggleCandidateSelectAll(USER_ID, ROLE_ID, true);
+        assertEquals(CANDIDATE_DATA_LIST, candidateData);
+    }
+
+    @Test
     void testToggleCandidateSelectUnselecting() {
         Optional<CandidateData> candidateData = CANDIDATE_SERVICE.toggleCandidateSelect(USER_ID, ROLE_ID, CV_ID, false);
         assertEquals(Optional.of(CANDIDATE_DATA_UNSELECTED), candidateData);

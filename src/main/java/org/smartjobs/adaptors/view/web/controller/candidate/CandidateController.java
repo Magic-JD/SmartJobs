@@ -105,6 +105,19 @@ public class CandidateController {
     }
 
     @HxRequest
+    @PutMapping("/select/all")
+    public String selectAllCandidates(@AuthenticationPrincipal User user, @PathParam("select") boolean select, Model model, HttpServletResponse response) {
+        var userId = user.getId();
+        response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
+        long roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow();
+        var candidates = candidateService.toggleCandidateSelectAll(userId, roleId, select);
+        var sorted = candidates.stream().sorted(Comparator.comparing(CandidateData::name)).toList();
+        model.addAttribute("candidates", sorted);
+        return CANDIDATE_TABLE_FRAGMENT;
+
+    }
+
+    @HxRequest
     @GetMapping("/number/selected")
     public String findNumberOfCandidatesSelected(@AuthenticationPrincipal User user, Model model) {
         var userId = user.getId();

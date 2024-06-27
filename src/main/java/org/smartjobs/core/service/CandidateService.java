@@ -18,6 +18,8 @@ public interface CandidateService {
 
     Optional<CandidateData> toggleCandidateSelect(long userId, long roleId, long cvId, boolean select);
 
+    List<CandidateData> toggleCandidateSelectAll(long userId, long roleId, boolean select);
+
     int findSelectedCandidateCount(long userId, long roleId);
 
     void deleteAllCandidates(long userId, long roleId);

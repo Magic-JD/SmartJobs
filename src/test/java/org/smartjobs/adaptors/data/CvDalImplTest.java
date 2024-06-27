@@ -28,6 +28,7 @@ class CvDalImplTest {
     public static final Candidate CANDIDATE = new Candidate(CANDIDATE_ID, true, CANDIDATE_NAME, CV_ID, USER_ID, ROLE_ID, NOW);
     public static final List<Cv> CV_LIST = List.of(new Cv(CV_ID, HASH_TXT, CV_STRING_CONDENSED));
     public static final Candidate CANDIDATE2 = new Candidate(CANDIDATE_ID2, true, CANDIDATE_NAME2, CV_ID, USER_ID, ROLE_ID, NOW);
+    public static final List<Candidate> CANDIDATE_LIST = List.of(CANDIDATE, CANDIDATE2);
     private final CvRepository cvRepository = mock(CvRepository.class);
     private final CandidateRepository candidateRepository = mock(CandidateRepository.class);
     private final DateSupplier dateSupplier = mock(DateSupplier.class);
@@ -76,7 +77,7 @@ class CvDalImplTest {
 
     @Test
     void testThatGetAllCandidatesReturnsTheCorrectCandidates(){
-        when(candidateRepository.findAllByUserIdAndRoleId(USER_ID, ROLE_ID)).thenReturn(List.of(CANDIDATE, CANDIDATE2));
+        when(candidateRepository.findAllByUserIdAndRoleId(USER_ID, ROLE_ID)).thenReturn(CANDIDATE_LIST);
         assertEquals(CANDIDATE_DATA_LIST, cvDal.getAllCandidates(USER_ID, ROLE_ID));
     }
 
@@ -120,6 +121,12 @@ class CvDalImplTest {
     void testUpdateCurrentlySelectedByIdReturnsEmptyOptionalWhenCandidateNotFound(){
         when(candidateRepository.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.empty());
         assertEquals(Optional.empty(), cvDal.updateCurrentlySelectedById(CV_ID, true));
+    }
+
+    @Test
+    void testUpdateCurrentlySelectedAllReturnsTheUpdatedValue() {
+        when(candidateRepository.updateCurrentlySelectedAll(USER_ID, ROLE_ID, true)).thenReturn(CANDIDATE_LIST);
+        assertEquals(CANDIDATE_DATA_LIST, cvDal.updateCurrentlySelectedAll(USER_ID, ROLE_ID, true));
     }
 
     @Test

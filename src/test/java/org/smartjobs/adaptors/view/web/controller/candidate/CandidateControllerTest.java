@@ -65,6 +65,15 @@ class CandidateControllerTest {
     }
 
     @Test
+    void testSelectAllCandidatesReturnsTheCorrectCandidateInformation() {
+        MockHttpServletResponse response = mockHttpServletResponse();
+        String singleCandidateRowFragment = candidateController.selectAllCandidates(USER, true, MODEL, response);
+        assertEquals(List.of(CANDIDATE_DATA2, CANDIDATE_DATA), MODEL.getAttribute("candidates"));
+        assertEquals("candidate-count-updated", response.getHeader("HX-Trigger"));
+        assertEquals("candidate/table", singleCandidateRowFragment);
+    }
+
+    @Test
     void testSelectCandidateReturnsTheCorrectCandidateInformationWhenTheCandidateCanNotBeFound() {
         CvDal cvDal = cvDalMock();
         when(cvDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.empty());

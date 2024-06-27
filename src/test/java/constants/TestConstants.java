@@ -252,6 +252,7 @@ public class TestConstants {
         CvDal cvDal = mock(CvDal.class);
         when(cvDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.of(CANDIDATE_DATA));
         when(cvDal.updateCurrentlySelectedById(CV_ID, false)).thenReturn(Optional.of(CANDIDATE_DATA_UNSELECTED));
+        when(cvDal.updateCurrentlySelectedAll(USER_ID, ROLE_ID, true)).thenReturn(CANDIDATE_DATA_LIST);
         when(cvDal.findSelectedCandidateCount(USER_ID, ROLE_ID)).thenReturn(SELECTED_CANDIDATE_COUNT);
         when(cvDal.getAllCandidates(USER_ID, ROLE_ID)).thenReturn(CANDIDATE_DATA_LIST);
         when(cvDal.getByCvId(CV_ID)).thenReturn(SINGLE_CANDIDATE_DATA_LIST);
