@@ -6,8 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,6 +52,19 @@ class CandidateControllerIT extends IntegrationTest {
             </div>
                                     """ ;
 
+    public static final String CANDIDATES_TABLE_DELETED = STR. """
+            <div id="uploaded" hx-target="closest div" hx-swap="outerHTML"
+                 class="candidate-table flex-stack text-medium">
+                \{ TABLE_HEADING }
+                <div class="candidate-row flex-container">
+                    <p class="candidate-display-left">james</p>
+                    <button class='candidate-display-right button-dark'
+                            hx-swap="innerHTML" hx-put="/candidate/select/2?select=true">Select</button>
+                    <button class='button-dark' hx-delete="/candidate/delete/2">Delete
+                    </button>
+                </div>
+            </div>
+                                    """ ;
 
     public static final String CANDIDATES_TABLE_ALL_UNSELECTED = STR. """
             <div id="uploaded" hx-target="closest div" hx-swap="outerHTML"
@@ -112,6 +124,7 @@ class CandidateControllerIT extends IntegrationTest {
 
 
     @Test
+    @Sql("/init-db.sql")
     void testSelectCandidates() throws Exception {
         getMockMvc().perform(put("/candidate/select/1?select=false")
                         .with(user(USER))
@@ -128,5 +141,20 @@ class CandidateControllerIT extends IntegrationTest {
                         .headers(HTTP_HEADERS))
                 .andExpect(status().isOk())
                 .andExpect(content().string(CANDIDATES_TABLE_ALL_SELECTED));
+    }
+
+    @Test
+    @Sql("/init-db.sql")
+    void testDeleteCandidates() throws Exception {
+        getMockMvc().perform(delete("/candidate/delete/all")
+                        .with(user(USER))
+                        .headers(HTTP_HEADERS))
+                .andExpect(status().isOk());
+        getMockMvc().perform(get("/candidate")
+                        .with(user(USER))
+                        .headers(HTTP_HEADERS)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().string(CANDIDATES_TABLE_DELETED));
     }
 }

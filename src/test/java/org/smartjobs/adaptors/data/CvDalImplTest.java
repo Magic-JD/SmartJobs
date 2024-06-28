@@ -138,7 +138,7 @@ class CvDalImplTest {
     @Test
     void testThatDeleteAllCandidatesWillDeleteAllByUserIdAndRoleId(){
         cvDal.deleteAllCandidates(USER_ID, ROLE_ID);
-        verify(candidateRepository).deleteByUserIdAndRoleId(USER_ID, ROLE_ID);
+        verify(candidateRepository).deleteByCurrentlySelectedAndUserIdAndRoleId(true, USER_ID, ROLE_ID);
     }
 
     @Test

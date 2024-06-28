@@ -84,10 +84,11 @@ public class CandidateController {
     @DeleteMapping("/delete/all")
     public String deleteAllCandidates(@AuthenticationPrincipal User user, Model model, HttpServletResponse response) {
         var userId = user.getId();
-        Long roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
+        var roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         candidateService.deleteAllCandidates(userId, roleId);
+        var fullCandidateInfo = candidateService.getFullCandidateInfo(userId, roleId);
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
-        model.addAttribute("candidates", Collections.emptyList());
+        model.addAttribute("candidates", fullCandidateInfo);
         return CANDIDATE_TABLE_FRAGMENT;
     }
 

@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
@@ -49,6 +50,9 @@ class CandidateControllerTest {
     @Test
     void testDeleteAllCandidatesDeletesAllCandidates() {
         MockHttpServletResponse response = mockHttpServletResponse();
+        CvDal cvDal = cvDalMock();
+        doAnswer(_ -> when(cvDal.getAllSelected(USER_ID, ROLE_ID)).thenReturn(Collections.emptyList())).when(cvDal).deleteAllCandidates(USER_ID, ROLE_ID);
+        CandidateController candidateController = new CandidateController(new CandidateServiceImpl(AI_SERVICE, cvDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER), ROLE_SERVICE);
         String candidateCountUpdated = candidateController.deleteAllCandidates(USER, MODEL, response);
         assertEquals(Collections.emptyList(), MODEL.getAttribute("candidates"));
         assertEquals("candidate-count-updated", response.getHeader("HX-Trigger"));

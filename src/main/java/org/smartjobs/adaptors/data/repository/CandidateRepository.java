@@ -38,7 +38,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long> {
     int countByCurrentlySelectedAndUserIdAndRoleId(boolean currentlySelected, long userId, long roleId);
 
     @Transactional
-    void deleteByUserIdAndRoleId(long userId, long roleId);
+    void deleteByCurrentlySelectedAndUserIdAndRoleId(boolean currentlySelected, long userId, long roleId);
 
     List<Candidate> findAllByCvId(Long cvId);
 }

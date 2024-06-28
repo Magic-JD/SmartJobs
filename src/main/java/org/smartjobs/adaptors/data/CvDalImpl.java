@@ -110,7 +110,7 @@ public class CvDalImpl implements CvDal {
 
     @Override
     public void deleteAllCandidates(long userId, long roleId) {
-        candidateRepository.deleteByUserIdAndRoleId(userId, roleId);
+        candidateRepository.deleteByCurrentlySelectedAndUserIdAndRoleId(true, userId, roleId);
     }
 
     @Override
