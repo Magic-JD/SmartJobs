@@ -233,6 +233,7 @@
                 <version>3.0.0</version>
                 <configuration>
                     <argLine>--enable-preview</argLine>
+                    <skipTests>${skip.ut}</skipTests>
                 </configuration>
             </plugin>
             <plugin>
