@@ -49,7 +49,7 @@ jobs:
   build-docker-image:
     name: Publish to Docker Hub
     runs-on: ubuntu-latest
-    needs: [ build ]
+    needs: [ publish-job ]
 
     steps:
       - uses: actions/checkout@v2
