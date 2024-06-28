@@ -51,7 +51,7 @@ class CandidateControllerTest {
     void testDeleteAllCandidatesDeletesAllCandidates() {
         MockHttpServletResponse response = mockHttpServletResponse();
         CvDal cvDal = cvDalMock();
-        doAnswer(_ -> when(cvDal.getAllSelected(USER_ID, ROLE_ID)).thenReturn(Collections.emptyList())).when(cvDal).deleteAllCandidates(USER_ID, ROLE_ID);
+        doAnswer(_ -> when(cvDal.getAllCandidates(USER_ID, ROLE_ID)).thenReturn(Collections.emptyList())).when(cvDal).deleteAllCandidates(USER_ID, ROLE_ID);
         CandidateController candidateController = new CandidateController(new CandidateServiceImpl(AI_SERVICE, cvDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER), ROLE_SERVICE);
         String candidateCountUpdated = candidateController.deleteAllCandidates(USER, MODEL, response);
         assertEquals(Collections.emptyList(), MODEL.getAttribute("candidates"));
