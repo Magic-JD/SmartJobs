@@ -37,8 +37,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: test
-        run: ls
+      - name: Test with Maven
+        run: mvn clean install -Dmaven.test.skip=true
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
       - name: Build Container image
