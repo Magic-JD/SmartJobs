@@ -3,7 +3,6 @@ package integration.controller;
 import integration.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.jdbc.Sql;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -26,7 +25,7 @@ class CandidateControllerIT extends IntegrationTest {
                                 hx-delete="/candidate/delete/all"
                                 hx-target="#uploaded"
                                 hx-swap="outerHTML"
-                        >Delete All
+                        >Delete Selected
                         </button>
                     </div>
                 </div>""";
@@ -110,7 +109,6 @@ class CandidateControllerIT extends IntegrationTest {
                                     """ ;
 
     @Test
-    @Sql("/init-db.sql")
     void testCandidateReturnsTheGivenCandidates() throws Exception {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("HX-Request", "true");
@@ -124,7 +122,6 @@ class CandidateControllerIT extends IntegrationTest {
 
 
     @Test
-    @Sql("/init-db.sql")
     void testSelectCandidates() throws Exception {
         getMockMvc().perform(put("/candidate/select/1?select=false")
                         .with(user(USER))
@@ -144,7 +141,6 @@ class CandidateControllerIT extends IntegrationTest {
     }
 
     @Test
-    @Sql("/init-db.sql")
     void testDeleteCandidates() throws Exception {
         getMockMvc().perform(delete("/candidate/delete/all")
                         .with(user(USER))

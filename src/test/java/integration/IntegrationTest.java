@@ -13,17 +13,24 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
 import java.util.List;
 
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+
 @Getter
 @ContextConfiguration(initializers = {IntegrationTest.Initializer.class})
 @SpringBootTest(classes = {SmartJobs.class})
 @AutoConfigureMockMvc
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
+@Sql(
+        scripts = "/init-db.sql",
+        executionPhase = AFTER_TEST_METHOD
+)
 public abstract class IntegrationTest {
 
     public static final User USER = new User("username", "password", 1, List.of(() -> "USER"));
@@ -38,7 +45,7 @@ public abstract class IntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    ConfigurableApplicationContext configurableApplicationContext;
+    private ConfigurableApplicationContext configurableApplicationContext;
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("postgres")

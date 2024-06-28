@@ -86,9 +86,10 @@ public class CandidateController {
         var userId = user.getId();
         var roleId = roleService.getCurrentlySelectedRoleId(userId).orElseThrow(() -> new NoRoleSelectedException(userId));
         candidateService.deleteAllCandidates(userId, roleId);
-        var fullCandidateInfo = candidateService.getFullCandidateInfo(userId, roleId);
+        var candidates = candidateService.getCurrentCandidates(userId, roleId);
+        var sorted = candidates.stream().sorted(Comparator.comparing(CandidateData::name)).toList();
         response.addHeader(HX_TRIGGER, CANDIDATE_COUNT_UPDATED);
-        model.addAttribute("candidates", fullCandidateInfo);
+        model.addAttribute("candidates", sorted);
         return CANDIDATE_TABLE_FRAGMENT;
     }
 
