@@ -56,6 +56,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+      - name: Decode and save .p12 file
+        run: echo "${{ secrets.CERTIFICATE_P12 }}" | base64 --decode > src/main/resources/certificates/keystore.p12
       - name: Test with Maven
         run: mvn install -Dmaven.test.skip=true
       - name: Login to Docker Hub
