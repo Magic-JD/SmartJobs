@@ -1,5 +1,7 @@
 package constants;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.mockito.ArgumentCaptor;
 import org.smartjobs.adaptors.data.repository.data.SelectedRole;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptMessage;
@@ -24,10 +26,13 @@ import org.smartjobs.core.service.candidate.file.FileHandlerImpl;
 import org.smartjobs.core.service.credit.CreditServiceImpl;
 import org.smartjobs.core.service.role.RoleServiceImpl;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
+import org.smartjobs.core.service.user.UserService;
+import org.smartjobs.core.service.user.validation.UserDto;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -81,8 +86,8 @@ public class TestConstants {
     public static final String CV_STRING_CONDENSED2 = "Condensed Cv String2";
     public static final String CV_STRING_FULL = "Full Cv String "; //Multipart file adds that space by default
     public static final String CV_STRING_FULL_FOR_CONVERSION_TXT = "Full Cv String";
-    public static final String USERNAME = "Username";
-    public static final String USERNAME2 = "Username2";
+    public static final String USERNAME = "username";
+    public static final String USERNAME2 = "username2";
     public static final String PASSWORD = "Password";
     public static final String PASSWORD2 = "Password2";
     public static final GrantedAuthority GRANTED_AUTHORITY_USER = () -> "USER";
@@ -145,6 +150,9 @@ public class TestConstants {
     public static final String CV_SHORT = "CV_DATA";
     public static final String CV_LONG = "CV_DATA_EXTENDED";
     public static final int CV_NAME_CHUNK = 500;
+
+    public static final UserDto USER_DTO_EMPTY = new UserDto("", "", "");
+    public static final UserDto USER_DTO_NEW = new UserDto("new username", PASSWORD2, PASSWORD2);
     public static final String ANON_CV_SYSTEM_PROMPT = """
             You are an expert in information extraction.
             Summarize the candidate's CV, including work history, certifications, skills, condensed job roles, and self-description.
@@ -212,6 +220,8 @@ public class TestConstants {
     public static final int MAX_ALLOWED_CRITERIA = 10;
     public static final RoleServiceImpl ROLE_SERVICE = new RoleServiceImpl(ROLE_DAL, MAX_ALLOWED_CRITERIA);
     public static final AnalysisServiceImpl ANALYSIS_SERVICE = new AnalysisServiceImpl(AI_SERVICE, EVENT_EMITTER, CREDIT_SERVICE, ANALYSIS_DAL, ROLE_CRITERIA_COUNT);
+    public static final UserService USER_SERVICE = new UserService(credentialDalMock(), passwordEncoder(), validator());
+
 
     //PORT MOCKS
     public static AiService aiServiceMock() {
@@ -273,6 +283,24 @@ public class TestConstants {
         when(roleDal.createNewUserCriteriaForRole(DEFINED_SCORING_CRITERIA_ID_SCORE, ROLE_ID, VALUE, MAX_SCORE_VALUE)).thenReturn(USER_CRITERIA);
         when(roleDal.getAllDefinedScoringCriteria()).thenReturn(DEFINED_SCORING_CRITERIA_LIST);
         return roleDal;
+    }
+
+    public static PasswordEncoder passwordEncoder() {
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return rawPassword.toString();
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                return rawPassword.equals(encodedPassword);
+            }
+        };
+    }
+
+    public static Validator validator() {
+        return Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     //SERVICE OBJECTS

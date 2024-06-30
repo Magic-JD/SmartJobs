@@ -70,4 +70,11 @@ public class UserResolvedExceptions extends RuntimeException {
             super(userId, "There is no criteria selected for this role. Please select at least one criteria.");
         }
     }
+
+    public static class UserAlreadyExistsException extends RuntimeException {
+
+        public UserAlreadyExistsException(String username) {
+            super(STR. "A user already exists with the username \{ username }" );
+        }
+    }
 }

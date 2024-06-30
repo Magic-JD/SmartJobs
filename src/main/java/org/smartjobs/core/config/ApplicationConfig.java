@@ -1,7 +1,13 @@
 package org.smartjobs.core.config;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.text.DecimalFormat;
 
@@ -13,4 +19,16 @@ public class ApplicationConfig {
         return new DecimalFormat("#,###");
     }
 
+    @Bean
+    public Validator validation() {
+        return Validation.buildDefaultValidatorFactory().getValidator();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        DelegatingPasswordEncoder passwordEncoder =
+                (DelegatingPasswordEncoder) PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        passwordEncoder.setDefaultPasswordEncoderForMatches(new BCryptPasswordEncoder());
+        return passwordEncoder;
+    }
 }

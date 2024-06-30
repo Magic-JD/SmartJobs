@@ -87,11 +87,11 @@ picture {
   }
 }
 
-label {
+.padded-label {
     padding-right: 30px;
 }
 
-input[type=text] {
+input {
     margin-top: 10px;
     padding-left: 10px;
     background-color: var(--clr-text);

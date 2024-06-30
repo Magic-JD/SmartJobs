@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="header/head"></head>
+<link rel="shortcut icon" type="../image/png" th:href="@{/favicon/favicon.ico}"/>
+<body id="mainBody" class="background wrapper">
+<header th:fragment="header" class="primary-header flex-container highlight">
+    <a class="text-medium icon-link" th:href="@{/}">Smart Jobs</a>
+    <nav class="primary-navigation flex-container right-pushed">
+        <div th:if="${credits != null}"
+             class="text-small left-nudged"
+             hx-ext="sse"
+             sse-connect="/sse/register"
+             sse-swap="credit"
+             hx-swap="innerHtml"
+             hx-target="this"
+             hx-trigger="load"
+        >
+            <div th:text="|Credit: ${credits}|"></div>
+        </div>
+        <a class="button-dark right-pushed button-header-dark" th:each="navElement : ${navElements}"
+           th:attr="hx-get=@{|/${navElement.link}|}"
+           hx-swap="innerHtml"
+           hx-target="next main"
+           hx-trigger="click"
+           th:text="${navElement.name}"></a>
+        <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
+    </nav>
+    <div th:replace="${loggedIn} ? ~{trigger/message-trigger} : ~{trigger/empty-trigger}"></div>
+    <div id="message" class="error-message text-medium" th:if="${error != null}">Username or password is incorrect.
+    </div>
+</header>
+<main>
+    <div class="top-padding"></div>
+    <div class="text-medium right-nudged flex-stack">
+        <h1 class="text-large">Login</h1>
+        <form name='f' action="login" method='POST'>
+            <div class="flex-stack">
+                <label>
+                    <input type='text' name='username' value='' placeholder="Username">
+                </label>
+                <label>
+                    <input type='password' name='password' placeholder="Password"/>
+                </label>
+            </div>
+            <input name="submit" type="submit" value="Submit" class="button-light button-enlarge"/>
+            <button class="button-light button-enlarge"
+                    hx-get="/login/register"
+                    hx-swap="innerHtml"
+                    hx-target="closest main"
+                    hx-trigger="click"
+            >Register
+            </button>
+        </form>
+    </div>
+</main>
+<footer th:replace="footer/footer"></footer>
+</body>
+</html>

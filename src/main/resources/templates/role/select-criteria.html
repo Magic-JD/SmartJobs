@@ -11,7 +11,7 @@
           hx-target="#select-criteria"
     >
         <div class="flex-container">
-            <label th:if="${criteria.needsInput}" for="value">Criteria value: </label>
+            <label th:if="${criteria.needsInput}" for="value" class="padded-label">Criteria value: </label>
             <input
                 class="right-pushed"
                 th:if="${criteria.needsInput}"

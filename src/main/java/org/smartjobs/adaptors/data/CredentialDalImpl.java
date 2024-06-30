@@ -1,6 +1,7 @@
 package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.CredentialRepository;
+import org.smartjobs.adaptors.data.repository.data.Credential;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.ports.dal.CredentialDal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +24,12 @@ public class CredentialDalImpl implements CredentialDal {
     @Override
     public Optional<User> getUser(String username) {
         return repository.findByUsername(username).map(user -> new User(user.getUsername(), user.getPassword(), user.getId(), List.of((GrantedAuthority) () -> "USER")));
+    }
+
+    @Override
+    public boolean setUser(String username, String password) {
+        Credential credential = Credential.builder().username(username).password(password).build();
+        repository.save(credential);
+        return true;
     }
 }

@@ -2,6 +2,7 @@ package integration;
 
 import display.CamelCaseDisplayNameGenerator;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.smartjobs.SmartJobs;
 import org.smartjobs.core.entities.User;
@@ -15,12 +16,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @Getter
 @ContextConfiguration(initializers = {IntegrationTest.Initializer.class})
@@ -65,5 +69,10 @@ public abstract class IntegrationTest {
                     "spring.datasource.password=" + postgres.getPassword()
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
+    }
+
+    @NotNull
+    public static ResultMatcher matchesHtml(String expected) {
+        return content().string(equalToCompressingWhiteSpace(expected));
     }
 }
