@@ -46,6 +46,11 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 
 public class TestConstants {
+
+    private TestConstants() {
+        //Private construction to prevent instantiation.
+    }
+
     public static final String CANDIDATE_NAME = "Joe Daunt";
     public static final String CANDIDATE_NAME2 = "James Mottram";
     public static final String CRITERIA_DESCRIPTION = "Criteria Description";
