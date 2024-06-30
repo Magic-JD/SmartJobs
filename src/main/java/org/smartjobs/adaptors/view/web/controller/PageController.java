@@ -101,6 +101,7 @@ public class PageController {
             return;
         }
         model.addAllAttributes(Map.of(
+                "username", user.getUsername(),
                 "credits", decimalFormat.format(creditService.userCredit(user.getId())),
                 "loggedIn", true,
                 "navElements", List.of(

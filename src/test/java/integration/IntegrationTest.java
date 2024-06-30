@@ -2,6 +2,8 @@ package integration;
 
 import display.CamelCaseDisplayNameGenerator;
 import lombok.Getter;
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.smartjobs.SmartJobs;
@@ -22,7 +24,6 @@ import org.testcontainers.utility.MountableFile;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -73,6 +74,28 @@ public abstract class IntegrationTest {
 
     @NotNull
     public static ResultMatcher matchesHtml(String expected) {
-        return content().string(equalToCompressingWhiteSpace(expected));
+        return content().string(new HtmlMatcher(expected));
+    }
+
+    private static class HtmlMatcher extends TypeSafeMatcher<String> {
+
+        private final String expected;
+
+        public HtmlMatcher(String html) {
+            this.expected = html;
+        }
+
+        @Override
+        protected boolean matchesSafely(String item) {
+            String cleaned = item.replaceAll("\\s", "");
+            String cleanedExpected = expected.replaceAll("\\s", "");
+            return cleanedExpected.equals(cleaned);
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText(expected);
+
+        }
     }
 }

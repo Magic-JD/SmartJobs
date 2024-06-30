@@ -26,6 +26,7 @@ class PageControllerTest {
     void testOverviewShowsAllAvailableNavOptionsForASignedInUser() {
         String overview = pageController.overview(USER, MODEL);
         assertEquals(String.valueOf(CREDIT_AMOUNT), MODEL.getAttribute("credits"));
+        assertEquals(USERNAME, MODEL.getAttribute("username"));
         assertEquals(true, MODEL.getAttribute("loggedIn"));
         assertEquals(FULL_NAV_ELEMENTS, MODEL.getAttribute("navElements"));
         assertEquals("index", overview);
