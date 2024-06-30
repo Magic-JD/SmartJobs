@@ -1,22 +1,64 @@
 package org.smartjobs.adaptors.view.web.service.sse;
 
 import lombok.extern.slf4j.Slf4j;
+import org.smartjobs.adaptors.view.web.constants.DisplayMappings;
 import org.smartjobs.adaptors.view.web.service.SseService;
+import org.smartjobs.core.event.Event;
+import org.smartjobs.core.event.EventEmitter;
+import org.smartjobs.core.event.events.CreditEvent;
+import org.smartjobs.core.event.events.ErrorEvent;
+import org.smartjobs.core.event.events.ProgressEvent;
+import org.smartjobs.core.ports.listener.Listener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+
+import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.ERROR_BOX;
 
 @Service
 @Slf4j
-public class SseServiceImpl implements SseService {
+public class SseServiceImpl implements SseService, Listener {
 
+
+    private final TemplateEngine templateEngine;
+    private final DecimalFormat decimalFormat;
     private final ConcurrentMap<Long, ConcurrentLinkedQueue<SseEmitter>> sseEmitters = new ConcurrentHashMap<>();
+
+    public SseServiceImpl(EventEmitter eventEmitter, TemplateEngine templateEngine, DecimalFormat decimalFormat) {
+        this.templateEngine = templateEngine;
+        this.decimalFormat = decimalFormat;
+        eventEmitter.registerForEvents(this, ProgressEvent.class);
+        eventEmitter.registerForEvents(this, CreditEvent.class);
+        eventEmitter.registerForEvents(this, ErrorEvent.class);
+    }
+
+    @Override
+    public void processEvent(Event event) {
+        switch (event) {
+            case ProgressEvent(var userId, var currentState, var finalState) ->
+                    send(userId, "progress", STR. "\{ currentState }/\{ finalState }" );
+            case CreditEvent(var userId, var currentCredit, var creditType) ->
+                    send(userId, "credit", STR. "Credit: \{ decimalFormat.format(currentCredit) }" );
+            case ErrorEvent(var userId, var processingFailures) -> {
+                Context context = new Context();
+                context.setVariable("message", processingFailures.stream().map(DisplayMappings::mapProcessingFailure).collect(Collectors.joining("\n")));
+                String errorBoxHtml = templateEngine.process(ERROR_BOX, context);
+                send(userId, "message", errorBoxHtml);
+            }
+            default -> throw new UnsupportedOperationException();
+        }
+    }
+
 
     @Override
     public SseEmitter register(long userId) {
@@ -48,7 +90,7 @@ public class SseServiceImpl implements SseService {
     }
 
     @Scheduled(fixedRate = 1000)
-    private void heartBeat() {
+    protected void heartBeat() { //Needs to be protected to be able to be scheduled
         List<Link> list = sseEmitters.entrySet().stream().flatMap(entry -> {
             long key = entry.getKey();
             return entry.getValue().stream().map(e -> new Link(key, e));

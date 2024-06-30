@@ -6,21 +6,26 @@ import org.smartjobs.core.ports.listener.Listener;
 import org.smartjobs.core.utils.ConcurrencyUtil;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
 public class EventEmitterImpl implements EventEmitter {
 
-    private final List<Listener> listeners = new ArrayList<>();
+    private final Map<Class<? extends Event>, Collection<Listener>> listeners = new ConcurrentHashMap<>();
 
     @Override
     public void sendEvent(Event event) {
-        ConcurrencyUtil.virtualThreadListForEach(listeners, listener -> listener.processEvent(event));
+        Collection<Listener> eventListeners = this.listeners.getOrDefault(event.getClass(), Collections.emptyList());
+        ConcurrencyUtil.virtualThreadListForEach(eventListeners, listener -> listener.processEvent(event));
     }
 
     @Override
-    public void registerForEvents(Listener listener) {
-        listeners.add(listener);
+    public <E extends Event> void registerForEvents(Listener listener, Class<E> eventType) {
+        Collection<Listener> eventListeners = listeners.computeIfAbsent(eventType, _ -> new ConcurrentLinkedQueue<>());
+        eventListeners.add(listener);
     }
 }

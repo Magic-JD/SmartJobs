@@ -1,5 +1,6 @@
 package org.smartjobs.core.utils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -15,7 +16,7 @@ public class ConcurrencyUtil {
         // Private constructor to prevent instantiation.
     }
 
-    public static <T, R> List<R> virtualThreadListMap(List<T> list, Function<T, R> transform) {
+    public static <T, R> List<R> virtualThreadListMap(Collection<T> list, Function<T, R> transform) {
         List<CompletableFuture<R>> completableFuture = list.stream()
                 .map(item -> CompletableFuture.supplyAsync(() -> transform.apply(item), executorService)).toList();
         CompletableFuture.allOf(completableFuture.toArray(CompletableFuture[]::new)).join();
@@ -24,7 +25,7 @@ public class ConcurrencyUtil {
                 .toList();
     }
 
-    public static <T> void virtualThreadListForEach(List<T> list, Consumer<T> consumer) {
+    public static <T> void virtualThreadListForEach(Collection<T> list, Consumer<T> consumer) {
         list.forEach(i -> CompletableFuture.runAsync(() -> consumer.accept(i), executorService));
     }
 }

@@ -20,9 +20,9 @@ class EventEmitterImplTest {
     @Test
     void testAllListenersAreNotifiedWhenAnEventIsShared(){
         CountDownLatch countDownLatch = new CountDownLatch(3);
-        emitter.registerForEvents(_ -> countDownLatch.countDown());
-        emitter.registerForEvents(_ -> countDownLatch.countDown());
-        emitter.registerForEvents(_ -> countDownLatch.countDown());
+        emitter.registerForEvents(_ -> countDownLatch.countDown(), ErrorEvent.class);
+        emitter.registerForEvents(_ -> countDownLatch.countDown(), ErrorEvent.class);
+        emitter.registerForEvents(_ -> countDownLatch.countDown(), ErrorEvent.class);
         emitter.sendEvent(new ErrorEvent(0, Collections.emptyList()));
         try {
             assertTrue(countDownLatch.await(10, TimeUnit.MILLISECONDS), "Not all the listeners recieved events");

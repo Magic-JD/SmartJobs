@@ -6,6 +6,6 @@ public interface EventEmitter {
 
     void sendEvent(Event event);
 
-    void registerForEvents(Listener listener);
+    <E extends Event> void registerForEvents(Listener listener, Class<E> eventType);
 
 }
