@@ -13,10 +13,10 @@ import java.util.Arrays;
 @Component
 @Aspect
 @Slf4j
-@Profile({"dev", "prod"})
-public class LogAspect {
+@Profile("dev")
+public class LogAspectDev {
 
-    @Pointcut("execution(* org.smartjobs.core.ports.*.*.*(..))")
+    @Pointcut("within(org.smartjobs..*)")
     private void portPlugs() {
     }
 
@@ -24,12 +24,13 @@ public class LogAspect {
     public Object logPortCalledBefore(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         String methodName = joinPoint.getSignature().getName();
+        String className = Arrays.stream(joinPoint.getSignature().getDeclaringTypeName().split("\\.")).toList().getLast();
         if (log.isDebugEnabled()) {
-            log.debug(">> {}() - {}", methodName, Arrays.toString(args));
+            log.debug(">> {} - {}() - {}", className, methodName, Arrays.toString(args));
         }
         Object result = joinPoint.proceed();
         if (log.isDebugEnabled()) {
-            log.debug("<< {}() - {}", methodName, result);
+            log.debug("<< {} - {}() - {}", className, methodName, result);
         }
         return result;
     }

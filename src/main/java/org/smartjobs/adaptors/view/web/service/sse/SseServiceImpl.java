@@ -89,7 +89,7 @@ public class SseServiceImpl implements SseService, Listener {
         });
     }
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 100_000)
     protected void heartBeat() { //Needs to be protected to be able to be scheduled
         List<Link> list = sseEmitters.entrySet().stream().flatMap(entry -> {
             long key = entry.getKey();
