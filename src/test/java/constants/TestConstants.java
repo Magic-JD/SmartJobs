@@ -37,6 +37,7 @@ import org.springframework.ui.ConcurrentModel;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -217,6 +218,7 @@ public class TestConstants {
     public static final CvDal CV_DAL = cvDalMock();
     public static final EventEmitter EVENT_EMITTER = new EventEmitterImpl();
     public static final FileHandler FILE_HANDLER = new FileHandlerImpl();
+    public static final SecureRandom SECURE_RANDOM = mockSecureRandom();
     public static final RoleDal ROLE_DAL = roleDalMock();
     public static final AnalysisDal ANALYSIS_DAL = analysisDalMock();
     public static final CreditDal CREDIT_DAL = creditDalMock();
@@ -225,7 +227,7 @@ public class TestConstants {
     public static final int MAX_ALLOWED_CRITERIA = 10;
     public static final RoleServiceImpl ROLE_SERVICE = new RoleServiceImpl(ROLE_DAL, MAX_ALLOWED_CRITERIA);
     public static final AnalysisServiceImpl ANALYSIS_SERVICE = new AnalysisServiceImpl(AI_SERVICE, EVENT_EMITTER, CREDIT_SERVICE, ANALYSIS_DAL, ROLE_CRITERIA_COUNT);
-    public static final UserService USER_SERVICE = new UserService(credentialDalMock(), passwordEncoder(), validator());
+    public static final UserService USER_SERVICE = new UserService(credentialDalMock(), passwordEncoder(), validator(), EVENT_EMITTER, SECURE_RANDOM);
 
 
     //PORT MOCKS
@@ -339,5 +341,11 @@ public class TestConstants {
 
     public static MockHttpServletResponse mockHttpServletResponse() {
         return new MockHttpServletResponse();
+    }
+
+    public static SecureRandom mockSecureRandom() {
+        SecureRandom secureRandom = mock(SecureRandom.class);
+        when(secureRandom.nextInt(1_000_000)).thenReturn(12);
+        return secureRandom;
     }
 }

@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.smartjobs.core.entities.User;
+import org.smartjobs.core.event.EventEmitter;
+import org.smartjobs.core.event.events.SendEmailEvent;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.UserAlreadyExistsException;
 import org.smartjobs.core.ports.dal.CredentialDal;
 import org.smartjobs.core.service.UserRegistration;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,12 +27,16 @@ public class UserService implements UserDetailsService, UserRegistration {
     private final CredentialDal credentialDal;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
+    private final EventEmitter eventEmitter;
+    private final SecureRandom random;
 
     @Autowired
-    public UserService(CredentialDal credentialDal, PasswordEncoder passwordEncoder, Validator validator) {
+    public UserService(CredentialDal credentialDal, PasswordEncoder passwordEncoder, Validator validator, EventEmitter eventEmitter, SecureRandom random) {
         this.credentialDal = credentialDal;
         this.passwordEncoder = passwordEncoder;
         this.validator = validator;
+        this.eventEmitter = eventEmitter;
+        this.random = random;
     }
 
     @Override
@@ -53,7 +60,17 @@ public class UserService implements UserDetailsService, UserRegistration {
         }
         String password = passwordEncoder.encode(userDto.password());
         credentialDal.setUser(username, password);
+        eventEmitter.sendEvent(new SendEmailEvent(username, generateRandomIdentifier()));
         return Collections.emptyList();
+    }
+
+    private String generateRandomIdentifier() {
+        StringBuilder number = new StringBuilder(String.valueOf(random.nextInt(1_000_000)));
+        int zerosNeeded = 6 - number.length();
+        for (int i = 0; i < zerosNeeded; i++) {
+            number.insert(0, "0");
+        }
+        return number.toString();
     }
 
     private boolean userExists(String email) {

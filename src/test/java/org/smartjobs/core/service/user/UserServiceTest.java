@@ -43,7 +43,7 @@ class UserServiceTest {
     @Test
     void testRegisterNewUserAccountWillIgnoreCaseWhenCreatingIt() {
         CredentialDal credentialDal = credentialDalMock();
-        UserService userService = new UserService(credentialDal, passwordEncoder(), validator());
+        UserService userService = new UserService(credentialDal, passwordEncoder(), validator(), EVENT_EMITTER, SECURE_RANDOM);
         userService.registerNewUserAccount(new UserDto("NEW USERNAME", PASSWORD2, PASSWORD2));
         verify(credentialDal).setUser("new username", PASSWORD2);
     }
