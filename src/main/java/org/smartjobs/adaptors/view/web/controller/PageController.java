@@ -62,6 +62,11 @@ public class PageController {
         return UPLOAD_PAGE;
     }
 
+    @GetMapping("/credit")
+    public String getCreditPage(Model model) {
+        return "credit/credit";
+    }
+
     @GetMapping("/roles")
     public String getRolesPage(@AuthenticationPrincipal User user, HttpServletResponse response, Model model) {
         var userId = user.getId();
@@ -106,7 +111,9 @@ public class PageController {
                 "loggedIn", true,
                 "navElements", List.of(
                         new NavElement("roles", "Roles", false),
-                        new NavElement("candidates", "Candidates", false))));
+                        new NavElement("candidates", "Candidates", false),
+                        new NavElement("credit", "Credit", false)
+                )));
     }
 
     private void addInfoBoxInfo(User user, Model model) {

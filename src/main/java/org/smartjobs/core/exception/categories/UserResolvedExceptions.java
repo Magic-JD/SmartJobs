@@ -64,6 +64,12 @@ public class UserResolvedExceptions extends RuntimeException {
         }
     }
 
+    public static class IncorrectCodeForTrialException extends UserResolvedExceptions {
+        public IncorrectCodeForTrialException(long userId, String code) {
+            super(userId, STR. "The code \{ code } is not valid" );
+        }
+    }
+
     public static class RoleHasNoCriteriaException extends UserResolvedExceptions {
 
         public RoleHasNoCriteriaException(long userId) {

@@ -8,8 +8,7 @@ import org.smartjobs.core.ports.dal.CreditDal;
 import org.smartjobs.core.service.CreditService;
 import org.springframework.stereotype.Service;
 
-import static org.smartjobs.core.constants.CreditType.DEBIT;
-import static org.smartjobs.core.constants.CreditType.REFUND;
+import static org.smartjobs.core.constants.CreditType.*;
 
 
 @Service
@@ -47,6 +46,14 @@ public class CreditServiceImpl implements CreditService {
     public void refund(long userId, int amount) {
         log.error("User {} has had to be refunded {} credits.", userId, amount);
         creditDal.event(userId, amount, REFUND);
+        long remainingCredits = userCredit(userId);
+        eventEmitter.sendEvent(new CreditEvent(userId, remainingCredits, REFUND));
+    }
+
+    @Override
+    public void credit(long userId, int amount) {
+        log.error("User {} is credited with {} credits.", userId, amount);
+        creditDal.event(userId, amount, CREDIT);
         long remainingCredits = userCredit(userId);
         eventEmitter.sendEvent(new CreditEvent(userId, remainingCredits, REFUND));
     }

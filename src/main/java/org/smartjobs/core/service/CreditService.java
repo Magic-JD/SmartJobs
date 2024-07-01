@@ -7,4 +7,6 @@ public interface CreditService {
     void debit(long userId, int amount);
 
     void refund(long userId, int amount);
+
+    void credit(long userId, int amount);
 }

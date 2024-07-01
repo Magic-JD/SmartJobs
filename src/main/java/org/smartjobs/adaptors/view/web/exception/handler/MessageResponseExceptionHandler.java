@@ -73,6 +73,11 @@ public class MessageResponseExceptionHandler extends ResponseEntityExceptionHand
         return handleError(ex.getUserId(), "There is no criteria selected for this role. Please select at least one criteria.", response);
     }
 
+    @ExceptionHandler(value = IncorrectCodeForTrialException.class)
+    protected String handleIncorrectCodeForTrialException(IncorrectCodeForTrialException ex, HttpServletResponse response, Model model) {
+        return handleError(ex.getUserId(), "This is not the correct code for the trial.", response);
+    }
+
     private String handleError(long userId, String message, HttpServletResponse response) {
         Context context = new Context();
         context.setVariable("message", message);

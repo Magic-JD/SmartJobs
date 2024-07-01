@@ -1,0 +1,19 @@
+<div class="top-padding"></div>
+<div class="text-medium right-nudged flex-stack">
+    <h1 class=" text-large">Credit</h1>
+    <form>
+        <div class="flex-stack">
+            <label>
+                <input name='code' placeholder="Trial Code" type='text' value=''>
+            </label>
+            <input class="button-light button-enlarge"
+                   hx-post="/credit/trial"
+                   hx-swap="innerHtml"
+                   hx-target="closest main"
+                   hx-trigger="click"
+                   name="submit"
+                   type="submit"
+                   value="Submit"/>
+        </div>
+    </form>
+</div>
