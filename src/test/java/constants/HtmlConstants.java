@@ -378,10 +378,17 @@ public class HtmlConstants {
                     <a class="button-dark right-pushed button-header-dark" hx-swap="innerHtml"
                        hx-target="next main"
                        hx-trigger="click"
-                       hx-get="/roles">Roles</a><a class="button-dark right-pushed button-header-dark" hx-swap="innerHtml"
+                       hx-get="/roles">Roles</a>
+                    <a class="button-dark right-pushed button-header-dark" hx-swap="innerHtml"
                        hx-target="next main"
                        hx-trigger="click"
-                       hx-get="/candidates">Candidates</a>
+                       hx-get="/candidates">Candidates
+                    </a>
+                    <a class="button-dark right-pushed button-header-dark" hx-swap="innerHtml"
+                       hx-target="next main"
+                       hx-trigger="click"
+                       hx-get="/credit">Credit
+                    </a>
                     <a class="button-light right-pushed button-header-light" href="/logout">Logout</a>
                 </nav>
                 <div id="message-trigger"
