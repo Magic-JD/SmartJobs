@@ -41,6 +41,7 @@ public class UserService implements UserDetailsService, UserRegistration {
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        username = username.toLowerCase();
         return credentialDal.getUser(username).orElseThrow(() -> new UsernameNotFoundException("The user could not be found"));
     }
 
@@ -56,7 +57,7 @@ public class UserService implements UserDetailsService, UserRegistration {
         }
         String username = userDto.username().toLowerCase();
         if (userExists(username)) {
-            return List.of("An account for that username/email already exists");
+            return List.of("An account for that email already exists");
         }
         String password = passwordEncoder.encode(userDto.password());
         credentialDal.setUser(username, password);
