@@ -28,6 +28,8 @@ cache:
     expire-minutes-after-write: 30
 
 spring:
+  config:
+    import: optional:file:dev.env[.properties]
   profiles.active: dev
   servlet:
     multipart:
@@ -73,12 +75,13 @@ web:
   resources:
     static-locations: classpath:/static/,classpath:/public/,classpath:/resources/,classpath:/META-INF/resources/
 
-  mail:
-    smtp:
-      auth: true
-      starttls:
-        enable: true
-      host: sandbox.smtp.mailtrap.io
-      port: 25
-      ssl:
-        trust: sandbox.smtp.mailtrap.io
+site:
+  domain: localhost:8443
+  email: from@example.com
+
+mail:
+  smtp:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 1d25b729c23ddf
+    password: ${EMAIL_PASSWORD}

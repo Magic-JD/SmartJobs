@@ -133,7 +133,7 @@ public class HtmlConstants {
                     <form name='f' action="login" method='POST'>
                         <div class="flex-stack">
                             <label>
-                                <input type='text' name='username' value='' placeholder="Username">
+                                <input type='text' name='username' value='' placeholder="Email">
                             </label>
                             <label>
                                 <input type='password' name='password' placeholder="Password" />
@@ -170,7 +170,7 @@ public class HtmlConstants {
                     <form name='f' action="login" method='POST'>
                         <div class="flex-stack">
                             <label>
-                                <input type='text' name='username' value='' placeholder="Username">
+                                <input type='text' name='username' value='' placeholder="Email">
                             </label>
                             <label>
                                 <input type='password' name='password' placeholder="Password" />
@@ -200,7 +200,7 @@ public class HtmlConstants {
                 <h1 class="text-large">Register</h1>
                 <form class = flex-stack>
                     <label>
-                        <input id="username" placeholder="Username" type="text" name="username" value=""/>
+                        <input id="email" placeholder="Email" type="text" name="email" value=""/>
                     </label>
                     <label>
                         <input id="password" placeholder="Password" type="password" name="password" value=""/>
@@ -219,13 +219,19 @@ public class HtmlConstants {
                 
             </div>""";
 
+    public static final String VERIFY_EMAIL = """
+            <div class="top-padding"></div>
+            <div class="text-large flex-stack">
+                Please click on the link that has been sent to your email to verify your account.
+            </div>""";
+
     public static final String REGISTRATION_WITH_ERRORS = """
             <div class="top-padding"></div>
                 <div class="text-medium flex-stack">
                     <h1 class="text-large">Register</h1>
                     <form class = flex-stack>
                         <label>
-                            <input id="username" placeholder="Username" type="text" name="username" value="username"/>
+                            <input id="email" placeholder="Email" type="text" name="email" value="email@email.com"/>
                         </label>
                         <label>
                             <input id="password" placeholder="Password" type="password" name="password" value=""/>
@@ -241,7 +247,7 @@ public class HtmlConstants {
                         >Submit
                         </button>
                     </form>
-                    <p>An account for that username/email already exists</p>
+                    <p>An account for that email already exists</p>
                 </div>""";
 
 
@@ -363,7 +369,7 @@ public class HtmlConstants {
                 <a class="text-medium icon-link" href="/">Smart Jobs</a>
                 <nav class="primary-navigation flex-container right-pushed">
                     <div class="text-small left-nudged">
-                        <div>username</div>
+                        <div>email@email.com</div>
                     </div>
                     <div class="text-small left-nudged"
                          hx-ext="sse"

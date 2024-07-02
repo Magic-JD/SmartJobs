@@ -14,11 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 
 import static constants.HtmlConstants.*;
+import static constants.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class LoginControllerIT extends IntegrationTest {
@@ -50,24 +51,32 @@ class LoginControllerIT extends IntegrationTest {
                 .andExpect(matchesHtml(REGISTRATION_FORM));
     }
 
-
     @Test
     void testRegistrationWillRegisterANonExistingUserAndAllowSignup() throws Exception {
-        assertTrue(credentialDal.getUser("username2").isEmpty());
+        assertTrue(credentialDal.getUser(USERNAME2).isEmpty());
         getMockMvc().perform(post("/login/registration")
                         .headers(HTTP_HEADERS)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content(EntityUtils.toString(new UrlEncodedFormEntity(List.of(
-                                new BasicNameValuePair("username", "username2"),
-                                new BasicNameValuePair("password", "password2"),
-                                new BasicNameValuePair("matchingPassword", "password2")
+                                new BasicNameValuePair("email", USERNAME2),
+                                new BasicNameValuePair("password", PASSWORD2),
+                                new BasicNameValuePair("matchingPassword", PASSWORD2)
                         ))))
-                ).andExpect(status().isOk())
-                .andExpect(header().string("HX-Redirect", "/login"));
+        ).andExpectAll(
+                status().isOk(),
+                matchesHtml(VERIFY_EMAIL)
+        );
 
-        User user = credentialDal.getUser("username2").orElseThrow();
-        assertEquals("username2", user.getUsername());
-        assertTrue(passwordEncoder.matches("password2", user.getPassword()));
+        assertTrue(credentialDal.getUser(USERNAME2).isEmpty());
+        getMockMvc().perform(get("/login/verify/CODE")).andExpect(redirectedUrl("/login"));
+        User user = credentialDal.getUser(USERNAME2).orElseThrow();
+        assertEquals(USERNAME2, user.getUsername());
+        assertTrue(passwordEncoder.matches(PASSWORD2, user.getPassword()));
+    }
+
+    @Test
+    void testRedirectIsToErrorPageIfTheCodeIsNotValid() throws Exception {
+        getMockMvc().perform(get("/login/verify/INCORRECT")).andExpect(redirectedUrl("/error"));
     }
 
     @Test
@@ -76,9 +85,9 @@ class LoginControllerIT extends IntegrationTest {
                         .headers(HTTP_HEADERS)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content(EntityUtils.toString(new UrlEncodedFormEntity(List.of(
-                                new BasicNameValuePair("username", "username"),
-                                new BasicNameValuePair("password", "password2"),
-                                new BasicNameValuePair("matchingPassword", "password2")
+                                new BasicNameValuePair("email", USERNAME),
+                                new BasicNameValuePair("password", PASSWORD),
+                                new BasicNameValuePair("matchingPassword", PASSWORD)
                         ))))
                 ).andExpect(status().isOk())
                 .andExpect(matchesHtml(REGISTRATION_WITH_ERRORS));

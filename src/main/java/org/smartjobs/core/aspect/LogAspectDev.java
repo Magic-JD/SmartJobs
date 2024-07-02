@@ -14,7 +14,7 @@ import java.util.UUID;
 @Component
 @Aspect
 @Slf4j
-@Profile("dev")
+@Profile({"dev", "stub"})
 public class LogAspectDev {
 
     @Pointcut("within(org.smartjobs..*)")

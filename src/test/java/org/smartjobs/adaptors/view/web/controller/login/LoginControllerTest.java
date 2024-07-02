@@ -1,7 +1,6 @@
 package org.smartjobs.adaptors.view.web.controller.login;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ConcurrentModel;
 
 import java.util.Collections;
@@ -40,19 +39,18 @@ class LoginControllerTest {
     @Test
     void testRegisterUserAccountWillRegisterTheUserWithoutAnyIssuesIfThereAreNoProblems() {
         ConcurrentModel model = new ConcurrentModel();
-        MockHttpServletResponse response = mockHttpServletResponse();
-        String page = loginController.registerUserAccount(model, USER_DTO_NEW, response);
+        String page = loginController.registerUserAccount(model, USER_DTO_NEW);
         assertNull(model.getAttribute("errors"));
-        assertEquals("/login", response.getHeader("Hx-Redirect"));
-        assertEquals("candidate/empty-response", page);
+        assertNull(model.getAttribute("user"));
+        assertEquals("login/await-email", page);
     }
 
     @Test
     void testRegisterUserAccountWillReturnErrorsIfThereAreErrors() {
         ConcurrentModel model = new ConcurrentModel();
-        MockHttpServletResponse response = mockHttpServletResponse();
-        String page = loginController.registerUserAccount(model, USER_DTO_EMPTY, response);
-        assertEquals(List.of("Password must be more than 8 characters", "Password must not be empty", "Username must not be empty"), model.getAttribute("errors"));
+        String page = loginController.registerUserAccount(model, USER_DTO_EMPTY);
+        assertEquals(List.of("Email must be a well-formed email address", "Email must not be empty", "Password must be more than 8 characters", "Password must not be empty"), model.getAttribute("errors"));
+        assertEquals(USER_DTO_EMPTY, model.getAttribute("user"));
         assertEquals("login/register", page);
     }
 }

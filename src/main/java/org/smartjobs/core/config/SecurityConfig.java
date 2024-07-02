@@ -20,7 +20,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/**.html").denyAll()
-                .requestMatchers("/", "/login", "/login/register", "/login/registration", "/error", "/styles/style.css", "/favicon/favicon.ico").permitAll()
+                .requestMatchers("/", "/login", "/login/register", "/login/registration", "/login/verify/*", "/error", "/styles/style.css", "/favicon/favicon.ico").permitAll()
                 .anyRequest().authenticated());
         http.formLogin(formLogin -> formLogin
                 .loginPage("/login")

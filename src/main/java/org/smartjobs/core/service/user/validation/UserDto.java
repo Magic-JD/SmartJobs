@@ -1,5 +1,6 @@
 package org.smartjobs.core.service.user.validation;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,7 +10,8 @@ public record UserDto(
 
         @NotNull
         @NotEmpty
-        String username,
+        @Email(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+        String email,
 
         @NotNull
         @NotEmpty

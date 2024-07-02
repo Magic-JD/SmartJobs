@@ -26,6 +26,7 @@ import org.smartjobs.core.service.candidate.file.FileHandlerImpl;
 import org.smartjobs.core.service.credit.CreditServiceImpl;
 import org.smartjobs.core.service.role.RoleServiceImpl;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
+import org.smartjobs.core.service.user.CodeSupplier;
 import org.smartjobs.core.service.user.UserService;
 import org.smartjobs.core.service.user.validation.UserDto;
 import org.springframework.http.MediaType;
@@ -47,6 +48,8 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 
 public class TestConstants {
+
+    public static final String CODE = "CODE";
 
     private TestConstants() {
         //Private construction to prevent instantiation.
@@ -92,9 +95,10 @@ public class TestConstants {
     public static final String CV_STRING_CONDENSED2 = "Condensed Cv String2";
     public static final String CV_STRING_FULL = "Full Cv String "; //Multipart file adds that space by default
     public static final String CV_STRING_FULL_FOR_CONVERSION_TXT = "Full Cv String";
-    public static final String USERNAME = "username";
-    public static final String USERNAME2 = "username2";
-    public static final String PASSWORD = "Password";
+    public static final String USERNAME = "email@email.com";
+    public static final String USERNAME2 = "email2@email.com";
+    public static final String USERNAME3 = "email3@email.com";
+    public static final String PASSWORD = "Password1";
     public static final String PASSWORD2 = "Password2";
     public static final GrantedAuthority GRANTED_AUTHORITY_USER = () -> "USER";
     public static final long CREDIT_AMOUNT = 543L;
@@ -158,7 +162,7 @@ public class TestConstants {
     public static final int CV_NAME_CHUNK = 500;
 
     public static final UserDto USER_DTO_EMPTY = new UserDto("", "", "");
-    public static final UserDto USER_DTO_NEW = new UserDto("new username", PASSWORD2, PASSWORD2);
+    public static final UserDto USER_DTO_NEW = new UserDto(USERNAME3, PASSWORD2, PASSWORD2);
     public static final String ANON_CV_SYSTEM_PROMPT = """
             You are an expert in information extraction.
             Summarize the candidate's CV, including work history, certifications, skills, condensed job roles, and self-description.
@@ -218,7 +222,6 @@ public class TestConstants {
     public static final CvDal CV_DAL = cvDalMock();
     public static final EventEmitter EVENT_EMITTER = new EventEmitterImpl();
     public static final FileHandler FILE_HANDLER = new FileHandlerImpl();
-    public static final SecureRandom SECURE_RANDOM = mockSecureRandom();
     public static final RoleDal ROLE_DAL = roleDalMock();
     public static final AnalysisDal ANALYSIS_DAL = analysisDalMock();
     public static final CreditDal CREDIT_DAL = creditDalMock();
@@ -227,7 +230,11 @@ public class TestConstants {
     public static final int MAX_ALLOWED_CRITERIA = 10;
     public static final RoleServiceImpl ROLE_SERVICE = new RoleServiceImpl(ROLE_DAL, MAX_ALLOWED_CRITERIA);
     public static final AnalysisServiceImpl ANALYSIS_SERVICE = new AnalysisServiceImpl(AI_SERVICE, EVENT_EMITTER, CREDIT_SERVICE, ANALYSIS_DAL, ROLE_CRITERIA_COUNT);
-    public static final UserService USER_SERVICE = new UserService(credentialDalMock(), passwordEncoder(), validator(), EVENT_EMITTER, SECURE_RANDOM);
+    public static final CredentialDal CREDENTIAL_DAL = credentialDalMock();
+    public static final PasswordEncoder PASSWORD_ENCODER = passwordEncoder();
+    public static final Validator VALIDATOR = validator();
+    public static final CodeSupplier CODE_SUPPLIER = () -> CODE;
+    public static final UserService USER_SERVICE = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, EVENT_EMITTER, CODE_SUPPLIER);
 
 
     //PORT MOCKS

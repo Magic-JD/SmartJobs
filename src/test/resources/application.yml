@@ -21,7 +21,9 @@ cache:
     expire-minutes-after-write: 30
 
 spring:
-  profiles.active: dev
+  config:
+    import: optional:file:dev.env[.properties]
+  profiles.active: stub
   servlet:
     multipart:
       max-file-size: 10MB
@@ -65,3 +67,14 @@ thymeleaf:
 web:
   resources:
     static-locations: classpath:/static/,classpath:/public/,classpath:/resources/,classpath:/META-INF/resources/
+
+site:
+  domain: localhost:8443
+  email: from@example.com
+
+mail:
+  smtp:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 1d25b729c23ddf
+    password: ${EMAIL_PASSWORD}

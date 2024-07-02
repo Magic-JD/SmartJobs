@@ -123,7 +123,7 @@ CREATE TABLE public.role_criteria (
 );
 
 INSERT INTO public.credential (username,"password") VALUES
-	 ('username','{noop}password');
+	 ('email@email.com','{noop}password1');
 INSERT INTO public.cv (file_hash,condensed_text) VALUES
 	 ('HASH','The best in the world'),
 	 ('HASH2','The worst in the world');

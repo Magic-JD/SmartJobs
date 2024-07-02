@@ -9,5 +9,7 @@ import java.util.List;
 public interface UserRegistration {
 
     @Transactional
-    List<String> registerNewUserAccount(UserDto userDto) throws UserResolvedExceptions.UserAlreadyExistsException;
+    List<String> validateUser(UserDto userDto) throws UserResolvedExceptions.UserAlreadyExistsException;
+
+    boolean createUser(String uuid);
 }

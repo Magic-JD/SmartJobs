@@ -17,9 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.security.SecureRandom;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService implements UserDetailsService, UserRegistration {
@@ -28,15 +29,17 @@ public class UserService implements UserDetailsService, UserRegistration {
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
     private final EventEmitter eventEmitter;
-    private final SecureRandom random;
+    private final CodeSupplier codeSupplier;
+
+    private final Map<String, UnamePword> mapForLogin = new HashMap<>();//TODO Memory Leak
 
     @Autowired
-    public UserService(CredentialDal credentialDal, PasswordEncoder passwordEncoder, Validator validator, EventEmitter eventEmitter, SecureRandom random) {
+    public UserService(CredentialDal credentialDal, PasswordEncoder passwordEncoder, Validator validator, EventEmitter eventEmitter, CodeSupplier codeSupplier) {
         this.credentialDal = credentialDal;
         this.passwordEncoder = passwordEncoder;
         this.validator = validator;
         this.eventEmitter = eventEmitter;
-        this.random = random;
+        this.codeSupplier = codeSupplier;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class UserService implements UserDetailsService, UserRegistration {
 
     @Override
     @Transactional
-    public List<String> registerNewUserAccount(UserDto userDto) throws UserAlreadyExistsException {
+    public List<String> validateUser(UserDto userDto) throws UserAlreadyExistsException {
         var errors = validator.validate(userDto).stream()
                 .map(this::convertConstraintToMessage)
                 .sorted()
@@ -55,23 +58,24 @@ public class UserService implements UserDetailsService, UserRegistration {
         if (!errors.isEmpty()) {
             return errors;
         }
-        String username = userDto.username().toLowerCase();
+        String username = userDto.email().toLowerCase();
         if (userExists(username)) {
             return List.of("An account for that email already exists");
         }
         String password = passwordEncoder.encode(userDto.password());
-        credentialDal.setUser(username, password);
-        eventEmitter.sendEvent(new SendEmailEvent(username, generateRandomIdentifier()));
+        String code = codeSupplier.createCode();
+        eventEmitter.sendEvent(new SendEmailEvent(username, code));
+        mapForLogin.put(code, new UnamePword(username, password));
         return Collections.emptyList();
     }
 
-    private String generateRandomIdentifier() {
-        StringBuilder number = new StringBuilder(String.valueOf(random.nextInt(1_000_000)));
-        int zerosNeeded = 6 - number.length();
-        for (int i = 0; i < zerosNeeded; i++) {
-            number.insert(0, "0");
-        }
-        return number.toString();
+    @Override
+    public boolean createUser(String code) {
+        UnamePword unamePword = mapForLogin.get(code);
+        if (unamePword == null) return false;
+        mapForLogin.remove(code);
+        credentialDal.setUser(unamePword.username(), unamePword.password());
+        return true;
     }
 
     private boolean userExists(String email) {
@@ -80,5 +84,8 @@ public class UserService implements UserDetailsService, UserRegistration {
 
     private String convertConstraintToMessage(ConstraintViolation<UserDto> constraint) {
         return STR. "\{ StringUtils.capitalize(constraint.getPropertyPath().toString()) } \{ constraint.getMessage() }" .trim();
+    }
+
+    private record UnamePword(String username, String password) {
     }
 }

@@ -1,6 +1,7 @@
 package integration;
 
 import display.CamelCaseDisplayNameGenerator;
+import integration.configuration.TestingConfig;
 import lombok.Getter;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,17 +30,23 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @Getter
-@ContextConfiguration(initializers = {IntegrationTest.Initializer.class})
-@SpringBootTest(classes = {SmartJobs.class})
+@ContextConfiguration(
+        initializers = {IntegrationTest.Initializer.class}
+)
+@SpringBootTest(
+        classes = {SmartJobs.class, TestingConfig.class},
+        properties = "spring.main.allow-bean-definition-overriding=true"
+)
 @AutoConfigureMockMvc
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 @Sql(
         scripts = "/init-db.sql",
         executionPhase = AFTER_TEST_METHOD
 )
+@ActiveProfiles("stub")
 public abstract class IntegrationTest {
 
-    public static final User USER = new User("username", "password", 1, List.of(() -> "USER"));
+    public static final User USER = new User("email@email.com", "password", 1, List.of(() -> "USER"));
 
     public static final HttpHeaders HTTP_HEADERS = new HttpHeaders();
 
@@ -98,4 +106,6 @@ public abstract class IntegrationTest {
 
         }
     }
+
+
 }

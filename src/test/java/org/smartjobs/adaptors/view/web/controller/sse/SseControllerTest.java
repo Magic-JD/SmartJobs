@@ -3,7 +3,7 @@ package org.smartjobs.adaptors.view.web.controller.sse;
 import display.CamelCaseDisplayNameGenerator;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
-import org.smartjobs.adaptors.view.web.service.sse.SseServiceImpl;
+import org.smartjobs.adaptors.service.service.sse.SseServiceImpl;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.thymeleaf.TemplateEngine;
 

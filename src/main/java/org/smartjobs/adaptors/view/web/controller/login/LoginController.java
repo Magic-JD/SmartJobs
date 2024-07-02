@@ -7,15 +7,12 @@ import org.smartjobs.core.service.user.validation.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.HX_REDIRECT;
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 
 @Controller
@@ -53,14 +50,23 @@ public class LoginController {
     @HxRequest
     @PostMapping("/registration")
     public String registerUserAccount(Model model,
-                                      @ModelAttribute("user") UserDto userDto,
-                                      HttpServletResponse response) {
-        List<String> errors = userService.registerNewUserAccount(userDto);
+                                      @ModelAttribute("user") UserDto userDto) {
+        List<String> errors = userService.validateUser(userDto);
         if (!errors.isEmpty()) {
             model.addAttribute("errors", errors);
+            model.addAttribute("user", userDto);
             return REGISTER;
         }
-        response.addHeader(HX_REDIRECT, "/login");
+        return AWAIT_EMAIL;
+    }
+
+    @GetMapping("/verify/{uuid}")
+    public String verifyAccount(Model model, HttpServletResponse response, @PathVariable String uuid) throws IOException {
+        if (userService.createUser(uuid)) {
+            response.sendRedirect("/login");
+            return EMPTY_FRAGMENT;
+        }
+        response.sendRedirect("/error");
         return EMPTY_FRAGMENT;
     }
 }

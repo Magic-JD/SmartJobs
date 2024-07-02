@@ -32,5 +32,6 @@ public class ThymeleafConstants {
 
     public static final String LOGIN_PAGE = "login/login";
     public static final String REGISTER = "login/register";
+    public static final String AWAIT_EMAIL = "login/await-email";
 
 }
