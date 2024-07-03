@@ -40,6 +40,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+      - name: Export Variables
+        run: export EMAIL_PASSWORD=$TEST_EMAIL_PASSWORD
       - name: Integration Test with Maven
         run: mvn -Dskip.ut=true verify
 
@@ -62,6 +64,8 @@ jobs:
         run: mvn install -Dmaven.test.skip=true
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Export Variables
+        run: export EMAIL_PASSWORD=$PROD_EMAIL_PASSWORD
       - name: Build Container image
         run: docker build -t ${{ secrets.DOCKER_REPO }}:latest .
       - name: Publish Docker image
