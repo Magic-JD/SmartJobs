@@ -1,7 +1,9 @@
 package org.smartjobs.core.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -52,13 +54,27 @@ public class SpringCachingConfig implements CachingConfigurer {
     }
 
     @Bean
-    public CacheManager staticCacheManager(
-    ) {
+    public CacheManager staticCacheManager() {
         var cacheManager = new CaffeineCacheManager("defined-criteria");
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .initialCapacity(1)
                 .maximumSize(1)
                 .expireAfterWrite(Duration.ofMinutes(expireAfterWrite)));
         return cacheManager;
+    }
+
+    @Bean("emailValidationCacheManager")
+    public CacheManager emailValidationCacheManager() {
+        var cacheManager = new CaffeineCacheManager("email-validation");
+        cacheManager.setCaffeine(Caffeine.newBuilder()
+                .initialCapacity(500)
+                .maximumSize(5000)
+                .expireAfterWrite(Duration.ofMinutes(30)));
+        return cacheManager;
+    }
+
+    @Bean("emailValidationCache")
+    public Cache validationCache(@Qualifier("emailValidationCacheManager") CacheManager cacheManager) {
+        return cacheManager.getCache("email-validation");
     }
 }

@@ -29,6 +29,7 @@ import org.smartjobs.core.service.role.data.CriteriaCategory;
 import org.smartjobs.core.service.user.CodeSupplier;
 import org.smartjobs.core.service.user.UserService;
 import org.smartjobs.core.service.user.validation.UserDto;
+import org.springframework.cache.support.NoOpCache;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -234,7 +235,8 @@ public class TestConstants {
     public static final PasswordEncoder PASSWORD_ENCODER = passwordEncoder();
     public static final Validator VALIDATOR = validator();
     public static final CodeSupplier CODE_SUPPLIER = () -> CODE;
-    public static final UserService USER_SERVICE = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, EVENT_EMITTER, CODE_SUPPLIER);
+    public static final NoOpCache EMAIL_VALIDATION_CACHE = new NoOpCache("email-validation");
+    public static final UserService USER_SERVICE = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, EVENT_EMITTER, CODE_SUPPLIER, EMAIL_VALIDATION_CACHE);
 
 
     //PORT MOCKS

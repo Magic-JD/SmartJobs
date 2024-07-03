@@ -72,6 +72,7 @@ class LoginControllerIT extends IntegrationTest {
         User user = credentialDal.getUser(USERNAME2).orElseThrow();
         assertEquals(USERNAME2, user.getUsername());
         assertTrue(passwordEncoder.matches(PASSWORD2, user.getPassword()));
+        getMockMvc().perform(get("/login/verify/CODE")).andExpect(redirectedUrl("/error"));
     }
 
     @Test

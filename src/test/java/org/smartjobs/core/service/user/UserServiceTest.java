@@ -45,7 +45,7 @@ class UserServiceTest {
     @Test
     void testRegisterNewUserAccountWillIgnoreCaseWhenCreatingIt() {
         EventEmitter eventEmitter = mock(EventEmitter.class);
-        UserService userService = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, eventEmitter, CODE_SUPPLIER);
+        UserService userService = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, eventEmitter, CODE_SUPPLIER, EMAIL_VALIDATION_CACHE);
         userService.validateUser(new UserDto(USERNAME3, PASSWORD2, PASSWORD2));
         verify(eventEmitter).sendEvent(new SendEmailEvent(USERNAME3, CODE));
     }

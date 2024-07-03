@@ -11,6 +11,7 @@ import org.smartjobs.core.ports.dal.CredentialDal;
 import org.smartjobs.core.service.UserRegistration;
 import org.smartjobs.core.service.user.validation.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,9 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService, UserRegistration {
@@ -30,16 +30,16 @@ public class UserService implements UserDetailsService, UserRegistration {
     private final Validator validator;
     private final EventEmitter eventEmitter;
     private final CodeSupplier codeSupplier;
-
-    private final Map<String, UnamePword> mapForLogin = new HashMap<>();//TODO Memory Leak
+    private final Cache emailValidationCache;
 
     @Autowired
-    public UserService(CredentialDal credentialDal, PasswordEncoder passwordEncoder, Validator validator, EventEmitter eventEmitter, CodeSupplier codeSupplier) {
+    public UserService(CredentialDal credentialDal, PasswordEncoder passwordEncoder, Validator validator, EventEmitter eventEmitter, CodeSupplier codeSupplier, Cache emailValidationCache) {
         this.credentialDal = credentialDal;
         this.passwordEncoder = passwordEncoder;
         this.validator = validator;
         this.eventEmitter = eventEmitter;
         this.codeSupplier = codeSupplier;
+        this.emailValidationCache = emailValidationCache;
     }
 
     @Override
@@ -65,15 +65,19 @@ public class UserService implements UserDetailsService, UserRegistration {
         String password = passwordEncoder.encode(userDto.password());
         String code = codeSupplier.createCode();
         eventEmitter.sendEvent(new SendEmailEvent(username, code));
-        mapForLogin.put(code, new UnamePword(username, password));
+        emailValidationCache.put(code, new UnamePword(username, password));
         return Collections.emptyList();
     }
 
     @Override
     public boolean createUser(String code) {
-        UnamePword unamePword = mapForLogin.get(code);
-        if (unamePword == null) return false;
-        mapForLogin.remove(code);
+        var unamePwordOption = Optional.ofNullable(emailValidationCache.get(code))
+                .map(Cache.ValueWrapper::get)
+                .filter(UnamePword.class::isInstance)
+                .map(UnamePword.class::cast);
+        if (unamePwordOption.isEmpty()) return false;
+        emailValidationCache.evict(code);
+        UnamePword unamePword = unamePwordOption.get();
         credentialDal.setUser(unamePword.username(), unamePword.password());
         return true;
     }
