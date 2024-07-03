@@ -133,8 +133,10 @@ CREATE TABLE public.coupon (
 	code varchar NOT NULL,
 	CONSTRAINT coupon_pk PRIMARY KEY (id),
 	CONSTRAINT coupon_unique UNIQUE (code)
-    CONSTRAINT coupon_credential_fk FOREIGN KEY (user_id) REFERENCES public.credential(id);
 );
+ALTER TABLE public.coupon ADD CONSTRAINT coupon_credential_fk FOREIGN KEY (user_id) REFERENCES public.credential(id);
+
+-- THIS SECTION IS FOR CREATING THE DEFAULT DATA
 
 INSERT INTO public.credential (username,"password") VALUES
 	 ('email@email.com','{noop}password1');
