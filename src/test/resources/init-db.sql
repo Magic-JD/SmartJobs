@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS public.coupon;
 DROP TABLE IF EXISTS public.role_criteria;
 DROP TABLE IF EXISTS public.criteria_analysis;
 DROP TABLE IF EXISTS public.candidate;
@@ -120,6 +121,19 @@ CREATE TABLE public.role_criteria (
 	CONSTRAINT role_criteria_pk PRIMARY KEY (id),
 	CONSTRAINT role_criteria_role_fk FOREIGN KEY (role_id) REFERENCES public."role"(id) ON DELETE CASCADE ON UPDATE CASCADE DEFERRABLE INITIALLY DEFERRED,
 	CONSTRAINT role_criteria_user_criteria_fk FOREIGN KEY (user_criteria_id) REFERENCES public.user_criteria(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE public.coupon (
+	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	user_id int8 NOT NULL,
+	applied bool DEFAULT false NOT NULL,
+	created date NOT NULL,
+	expired bool DEFAULT false NOT NULL,
+	value int4 NOT NULL,
+	code varchar NOT NULL,
+	CONSTRAINT coupon_pk PRIMARY KEY (id),
+	CONSTRAINT coupon_unique UNIQUE (code)
+    CONSTRAINT coupon_credential_fk FOREIGN KEY (user_id) REFERENCES public.credential(id);
 );
 
 INSERT INTO public.credential (username,"password") VALUES

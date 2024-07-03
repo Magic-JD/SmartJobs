@@ -64,16 +64,31 @@ public class UserResolvedExceptions extends RuntimeException {
         }
     }
 
-    public static class IncorrectCodeForTrialException extends UserResolvedExceptions {
-        public IncorrectCodeForTrialException(long userId, String code) {
-            super(userId, STR. "The code \{ code } is not valid" );
-        }
-    }
-
     public static class RoleHasNoCriteriaException extends UserResolvedExceptions {
 
         public RoleHasNoCriteriaException(long userId) {
             super(userId, "There is no criteria selected for this role. Please select at least one criteria.");
+        }
+    }
+
+    public static class CouponDoesNotExistException extends UserResolvedExceptions {
+
+        public CouponDoesNotExistException(long userId) {
+            super(userId, "There is no coupon for that code");
+        }
+    }
+
+    public static class CouponAlreadyAppliedException extends UserResolvedExceptions {
+
+        public CouponAlreadyAppliedException(long userId) {
+            super(userId, "This coupon has already been applied");
+        }
+    }
+
+    public static class CouponExpiredException extends UserResolvedExceptions {
+
+        public CouponExpiredException(long userId) {
+            super(userId, "This coupon has expired");
         }
     }
 

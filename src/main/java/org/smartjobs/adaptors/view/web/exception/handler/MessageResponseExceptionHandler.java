@@ -73,9 +73,19 @@ public class MessageResponseExceptionHandler extends ResponseEntityExceptionHand
         return handleError(ex.getUserId(), "There is no criteria selected for this role. Please select at least one criteria.", response);
     }
 
-    @ExceptionHandler(value = IncorrectCodeForTrialException.class)
-    protected String handleIncorrectCodeForTrialException(IncorrectCodeForTrialException ex, HttpServletResponse response, Model model) {
-        return handleError(ex.getUserId(), "This is not the correct code for the trial.", response);
+    @ExceptionHandler(value = CouponDoesNotExistException.class)
+    protected String handleCouponDoesNotExistException(UserResolvedExceptions ex, HttpServletResponse response, Model model) {
+        return handleError(ex.getUserId(), "There is no coupon for that code", response);
+    }
+
+    @ExceptionHandler(value = CouponAlreadyAppliedException.class)
+    protected String handleCouponAlreadyAppliedException(UserResolvedExceptions ex, HttpServletResponse response, Model model) {
+        return handleError(ex.getUserId(), "This coupon has already been applied", response);
+    }
+
+    @ExceptionHandler(value = CouponExpiredException.class)
+    protected String handleCouponExpiredException(UserResolvedExceptions ex, HttpServletResponse response, Model model) {
+        return handleError(ex.getUserId(), "This coupon has expired", response);
     }
 
     private String handleError(long userId, String message, HttpServletResponse response) {
