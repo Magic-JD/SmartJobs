@@ -28,7 +28,7 @@ class CredentialDalImplTest {
 
     @Test
     void testThatGetUserGetsUserWithCorrectValues() {
-        when(credentialRepository.findByUsername(USERNAME)).thenReturn(Optional.of(new Credential(USER_ID, USERNAME, PASSWORD)));
+        when(credentialRepository.findByUsername(USERNAME)).thenReturn(Optional.of(new Credential(USER_ID, USERNAME, PASSWORD, AUTHORITY)));
         Optional<User> userOptional = credentialDal.getUser(USERNAME);
         assertTrue(userOptional.isPresent());
         User user = userOptional.get();
@@ -37,7 +37,7 @@ class CredentialDalImplTest {
         assertEquals(PASSWORD, user.getPassword());
         Collection<GrantedAuthority> authorities = user.getAuthorities();
         assertEquals(1, authorities.size());
-        assertEquals("USER", authorities.stream().findFirst().orElseThrow().getAuthority());
+        assertEquals(AUTHORITY, authorities.stream().findFirst().orElseThrow().getAuthority());
     }
 
     @Test

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<body class="background wrapper" id="mainBody">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <script crossorigin="anonymous"
+            integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0"
+            src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <title>Admin Console </title>
+</head>
+<main>
+    <form action="/admin/coupon/issue">
+        <label for="emails">Emails, comma seperated</label><br>
+        <input type="text" id="emails" name="emails" value=""><br>
+        <button hx-post="/admin/coupon/issue"
+                hx-swap="innerHtml"
+                hx-target="closest main"
+                hx-trigger="click"
+                type="submit"
+        >Submit
+        </button>
+
+    </form>
+</main>
+</body>
+</html>
+

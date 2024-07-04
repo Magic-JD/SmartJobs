@@ -8,4 +8,6 @@ public interface CouponDal {
 
     Optional<RedeemableCoupon> getCoupon(long userId, String code);
 
+    void issueCoupon(long userId, String code);
+
 }

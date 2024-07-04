@@ -3,7 +3,7 @@ package org.smartjobs.core.service.user;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.event.EventEmitter;
-import org.smartjobs.core.event.events.SendEmailEvent;
+import org.smartjobs.core.event.events.ValidateEmailEvent;
 import org.smartjobs.core.service.user.validation.UserDto;
 
 import java.util.Collections;
@@ -47,7 +47,7 @@ class UserServiceTest {
         EventEmitter eventEmitter = mock(EventEmitter.class);
         UserService userService = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, eventEmitter, CODE_SUPPLIER, EMAIL_VALIDATION_CACHE);
         userService.validateUser(new UserDto(USERNAME3, PASSWORD2, PASSWORD2));
-        verify(eventEmitter).sendEvent(new SendEmailEvent(USERNAME3, CODE));
+        verify(eventEmitter).sendEvent(new ValidateEmailEvent(USERNAME3, CODE));
     }
 
     @Test

@@ -100,6 +100,8 @@ public class TestConstants {
     public static final String USERNAME2 = "email2@email.com";
     public static final String USERNAME3 = "email3@email.com";
     public static final String PASSWORD = "Password1";
+
+    public static final String AUTHORITY = "USER";
     public static final String PASSWORD2 = "Password2";
     public static final GrantedAuthority GRANTED_AUTHORITY_USER = () -> "USER";
     public static final long CREDIT_AMOUNT = 543L;

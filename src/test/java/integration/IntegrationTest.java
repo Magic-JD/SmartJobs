@@ -47,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public abstract class IntegrationTest {
 
     public static final User USER = new User("email@email.com", "password", 1, List.of(() -> "USER"));
+    public static final User ADMIN = new User("email@email.com", "password", 1, List.of(() -> "ADMIN"));
 
     public static final HttpHeaders HTTP_HEADERS = new HttpHeaders();
 

@@ -21,6 +21,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/**.html").denyAll()
                 .requestMatchers("/", "/login", "/login/register", "/login/registration", "/login/verify/*", "/error", "/styles/style.css", "/favicon/favicon.ico").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
         http.formLogin(formLogin -> formLogin
                 .loginPage("/login")

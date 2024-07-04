@@ -1,0 +1,16 @@
+<form action="/admin/coupon/issue">
+    <label for="emails">Emails, comma seperated</label><br>
+    <input type="text" id="emails" name="emails" value=""><br>
+    <button hx-post="/admin/coupon/issue"
+            hx-swap="innerHtml"
+            hx-target="closest main"
+            hx-trigger="click"
+            type="submit"
+    >Submit
+    </button>
+
+</form>
+<div th:if="${results != null}">
+    <p th:each="result : ${results}" th:text="${result}"/>
+</div>
+

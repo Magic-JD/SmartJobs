@@ -23,12 +23,13 @@ public class CredentialDalImpl implements CredentialDal {
 
     @Override
     public Optional<User> getUser(String username) {
-        return repository.findByUsername(username).map(user -> new User(user.getUsername(), user.getPassword(), user.getId(), List.of((GrantedAuthority) () -> "USER")));
+        return repository.findByUsername(username).map(user -> new User(user.getUsername(), user.getPassword(), user.getId(),
+                List.of((GrantedAuthority) () -> "ROLE_" + user.getAuthority())));
     }
 
     @Override
     public boolean setUser(String username, String password) {
-        Credential credential = Credential.builder().username(username).password(password).build();
+        Credential credential = Credential.builder().username(username).password(password).authority("USER").build();
         repository.save(credential);
         return true;
     }

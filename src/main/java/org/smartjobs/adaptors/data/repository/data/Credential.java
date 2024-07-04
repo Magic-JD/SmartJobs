@@ -20,4 +20,5 @@ public class Credential {
 
     @Setter
     private String password;
+    private String authority;
 }
