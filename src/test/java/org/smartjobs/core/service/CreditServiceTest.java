@@ -33,7 +33,7 @@ class CreditServiceTest {
     @Test
     void testRefundReturnsTheUsersCredit() {
         CreditDal creditDal = creditDalMock();
-        CreditService creditService = new CreditServiceImpl(creditDal, EVENT_EMITTER);
+        CreditService creditService = new CreditServiceImpl(creditDal, EVENT_EMITTER, SIGNUP_BONUS);
         creditService.refund(USER_ID, AMOUNT_TO_CHANGE);
         verify(creditDal).event(USER_ID, AMOUNT_TO_CHANGE, REFUND);
     }

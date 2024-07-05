@@ -1,11 +1,15 @@
 package org.smartjobs.core.service.credit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.smartjobs.core.event.Event;
 import org.smartjobs.core.event.EventEmitter;
 import org.smartjobs.core.event.events.CreditEvent;
+import org.smartjobs.core.event.events.UserCreatedEvent;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.NotEnoughCreditException;
 import org.smartjobs.core.ports.dal.CreditDal;
+import org.smartjobs.core.ports.listener.Listener;
 import org.smartjobs.core.service.CreditService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import static org.smartjobs.core.constants.CreditType.*;
@@ -13,14 +17,17 @@ import static org.smartjobs.core.constants.CreditType.*;
 
 @Service
 @Slf4j
-public class CreditServiceImpl implements CreditService {
+public class CreditServiceImpl implements CreditService, Listener {
 
     private final CreditDal creditDal;
     private final EventEmitter eventEmitter;
+    private final int signupBonus;
 
-    public CreditServiceImpl(CreditDal creditDal, EventEmitter eventEmitter) {
+    public CreditServiceImpl(CreditDal creditDal, EventEmitter eventEmitter, @Value("${credit.signup.bonus}") int signupBonus) {
         this.creditDal = creditDal;
         this.eventEmitter = eventEmitter;
+        this.signupBonus = signupBonus;
+        eventEmitter.registerForEvents(this, UserCreatedEvent.class);
     }
 
     @Override
@@ -58,4 +65,11 @@ public class CreditServiceImpl implements CreditService {
         eventEmitter.sendEvent(new CreditEvent(userId, remainingCredits, REFUND));
     }
 
+    @Override
+    public void processEvent(Event event) {
+        switch (event) {
+            case UserCreatedEvent(long id) -> credit(id, signupBonus);
+            default -> throw new UnsupportedOperationException();
+        }
+    }
 }

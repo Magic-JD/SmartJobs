@@ -8,6 +8,10 @@ gpt:
     initial-timeout-seconds: 20
     cv-name-chunk: 500
 
+credit:
+  signup:
+    bonus: 10
+
 role:
   max:
     criteria: 10

@@ -8,5 +8,5 @@ public interface CredentialDal {
 
     Optional<User> getUser(String username);
 
-    boolean setUser(String username, String password);
+    User setUser(String username, String password);
 }

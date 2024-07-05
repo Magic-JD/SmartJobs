@@ -102,6 +102,7 @@ public class TestConstants {
     public static final String PASSWORD = "Password1";
 
     public static final String AUTHORITY = "USER";
+    public static final String AUTH_ROLE = "ROLE_" + AUTHORITY;
     public static final String PASSWORD2 = "Password2";
     public static final GrantedAuthority GRANTED_AUTHORITY_USER = () -> "USER";
     public static final long CREDIT_AMOUNT = 543L;
@@ -228,7 +229,8 @@ public class TestConstants {
     public static final RoleDal ROLE_DAL = roleDalMock();
     public static final AnalysisDal ANALYSIS_DAL = analysisDalMock();
     public static final CreditDal CREDIT_DAL = creditDalMock();
-    public static final CreditService CREDIT_SERVICE = new CreditServiceImpl(CREDIT_DAL, EVENT_EMITTER);
+    public static final int SIGNUP_BONUS = 10;
+    public static final CreditService CREDIT_SERVICE = new CreditServiceImpl(CREDIT_DAL, EVENT_EMITTER, SIGNUP_BONUS);
     public static final CandidateServiceImpl CANDIDATE_SERVICE = new CandidateServiceImpl(AI_SERVICE, CV_DAL, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
     public static final int MAX_ALLOWED_CRITERIA = 10;
     public static final RoleServiceImpl ROLE_SERVICE = new RoleServiceImpl(ROLE_DAL, MAX_ALLOWED_CRITERIA);

@@ -91,16 +91,7 @@ picture {
     padding-right: 30px;
 }
 
-input {
-    margin-top: 10px;
-    padding-left: 10px;
-    background-color: var(--clr-text);
-    color: var(--clr-background);
-    border: 1px solid var(--clr-highlight);
-    border-radius:10px;
-}
-
-/* Utility Classes */                                                
+/* Utility Classes */
 .text-small {
     color: var(--clr-text);
     font-size: var(--fs-small);
@@ -342,6 +333,15 @@ footer {
   color: var(--clr-text);
   text-align: center;
   transition: color .2s ease-in-out;
+}
+
+input[type=text], input[type=password] {
+    margin-top: 10px;
+    padding-left: 10px;
+    background-color: var(--clr-text);
+    color: var(--clr-background);
+    border: 1px solid var(--clr-highlight);
+    border-radius:10px;
 }
 
 input[type=file]::file-selector-button {

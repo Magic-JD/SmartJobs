@@ -14,9 +14,9 @@ import java.util.Collection;
 import java.util.Optional;
 
 import static constants.TestConstants.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class CredentialDalImplTest {
@@ -37,14 +37,18 @@ class CredentialDalImplTest {
         assertEquals(PASSWORD, user.getPassword());
         Collection<GrantedAuthority> authorities = user.getAuthorities();
         assertEquals(1, authorities.size());
-        assertEquals(AUTHORITY, authorities.stream().findFirst().orElseThrow().getAuthority());
+        assertEquals(AUTH_ROLE, authorities.stream().findFirst().orElseThrow().getAuthority());
     }
 
     @Test
     void testThatCreateUserWillCreateAUserWithTheRightSettings() {
-        boolean set = credentialDal.setUser(USERNAME, PASSWORD);
-        assertTrue(set);
-        verify(credentialRepository).save(credentialArgumentCaptor.capture());
+        when(credentialRepository.save(credentialArgumentCaptor.capture())).thenReturn(new Credential(USER_ID, USERNAME, PASSWORD, AUTHORITY));
+        User set = credentialDal.setUser(USERNAME, PASSWORD);
+        assertNotNull(set);
+        assertEquals(USERNAME, set.getUsername());
+        assertEquals(PASSWORD, set.getPassword());
+        assertEquals(USER_ID, set.getId());
+        assertEquals(AUTH_ROLE, set.getAuthorities().stream().findFirst().orElseThrow().getAuthority());
         Credential credential = credentialArgumentCaptor.getValue();
         assertEquals(USERNAME, credential.getUsername());
         assertEquals(PASSWORD, credential.getPassword());

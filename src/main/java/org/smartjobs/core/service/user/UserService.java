@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.event.EventEmitter;
+import org.smartjobs.core.event.events.UserCreatedEvent;
 import org.smartjobs.core.event.events.ValidateEmailEvent;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.UserAlreadyExistsException;
 import org.smartjobs.core.ports.dal.CredentialDal;
@@ -78,7 +79,8 @@ public class UserService implements UserDetailsService, UserRegistration {
         if (unamePwordOption.isEmpty()) return false;
         emailValidationCache.evict(code);
         UnamePword unamePword = unamePwordOption.get();
-        credentialDal.setUser(unamePword.username(), unamePword.password());
+        User user = credentialDal.setUser(unamePword.username(), unamePword.password());
+        eventEmitter.sendEvent(new UserCreatedEvent(user.getId()));
         return true;
     }
 
