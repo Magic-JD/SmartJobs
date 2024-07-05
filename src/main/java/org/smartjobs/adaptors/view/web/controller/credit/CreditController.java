@@ -31,7 +31,7 @@ public class CreditController {
     @PostMapping("/trial")
     public String applyTrialCredits(@AuthenticationPrincipal User user, @RequestParam String code, HttpServletResponse response, Model model) {
         long userId = user.getId();
-        couponService.validateCoupon(userId, code);
+        couponService.validateCoupon(userId, code.trim());
         response.addHeader(HX_REDIRECT, "/");
         return EMPTY_FRAGMENT;
     }
