@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static org.smartjobs.adaptors.view.web.constants.HtmxConstants.HX_REDIRECT;
 import static org.smartjobs.adaptors.view.web.constants.ThymeleafConstants.*;
 
 @Controller
@@ -27,12 +28,13 @@ public class LoginController {
     }
 
     @GetMapping()
-    public String showLogin(Model model) {
+    public String showLogin(HttpServletResponse response, Model model) {
+        response.addHeader(HX_REDIRECT, "/login");
         return LOGIN_PAGE;
     }
 
     @GetMapping(params = {"error"})
-    public String showLoginWithError(Model model) {
+    public String showLoginWithError(HttpServletResponse response, Model model) {
         model.addAttribute("error", true);
         return LOGIN_PAGE;
     }

@@ -15,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    public static final String LOGIN_URL = "/login";
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
@@ -24,8 +26,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
         http.formLogin(formLogin -> formLogin
-                .loginPage("/login")
-                .defaultSuccessUrl("/", true));
+                .loginPage(LOGIN_URL).defaultSuccessUrl("/", true));
         http.logout(logout -> logout.logoutSuccessUrl("/"));
         return http.build();
     }

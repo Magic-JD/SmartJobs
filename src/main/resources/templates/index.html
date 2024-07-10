@@ -17,48 +17,65 @@
                 now streamline the candidate screening process like never before, saving time, effort, and resources
                 while identifying the perfect fit for every position.
             </p>
-            <p class="spaced-paragraph">
-            <h3 class="text-medium">Efficiency Redefined</h3>
-            <snippet>
-                Gone are the days of manually sifting through countless resumes and cover letters. With Smart Jobs,
-                recruiters can upload CVs and let our AI algorithms do the heavy lifting. Our intelligent system swiftly
-                scans and analyzes applicant data, extracting key information such as skills, qualifications, and
-                experience with unmatched accuracy and speed.
-            </snippet>
-            </p><p class="spaced-paragraph">
-            <h3 class="text-medium">Precision Selection</h3>
-            <snippet>
-                Say goodbye to guesswork and hello to data-driven decision-making. Smart Jobs utilizes advanced machine
-                learning capabilities to intelligently rank and categorize candidates based on their suitability for the
-                role. By identifying the most promising candidates upfront, recruiters can focus their efforts on
-                engaging with the best prospects, leading to faster and more successful hires.
-            </snippet>
-            </p><p class="spaced-paragraph">
-            <h3 class="text-medium">Bias-Free Recruitment </h3>
-            <snippet>
-                Diversity and inclusion are at the core of our mission. Smart Jobs helps mitigate unconscious bias by
-                evaluating candidates solely on their qualifications and potential, regardless of demographic background
-                or personal characteristics. By promoting fairness and objectivity in the hiring process, we empower
-                organizations to build more diverse and high-performing teams.
-            </snippet>
-            </p><p class="spaced-paragraph">
-            <h3 class="text-medium"> Insightful Analytics </h3>
-            <snippet>
-                Empower your recruitment strategy with actionable insights and comprehensive analytics. Smart Jobs
-                provides real-time visibility into recruitment metrics, allowing recruiters to track key performance
-                indicators such as time-to-fill, cost-per-hire, and candidate quality. With our intuitive dashboard, you
-                can make informed decisions, identify areas for improvement, and optimize your hiring process for
-                maximum efficiency.
-            </snippet>
-            </p><p class="spaced-paragraph">
-            <h3 class="text-medium"> Get Started Today </h3>
-            <snippet>
-                Join the ranks of leading organizations that trust Smart Jobs to transform their recruitment efforts.
-                Whether you're a small business looking to expand your team or a large enterprise seeking top talent,
-                our AI-powered platform is your ultimate recruitment solution. Sign up now and experience the future of
-                hiring with Smart Jobs.
-            </snippet>
-            </p>
+            <div class="info-area">
+                <h3 class="text-medium">How to get started</h3>
+                <div class="info">
+                    Ready to start analyzing candidates? The guide below will take you through it step-by-step.
+                </div>
+                <h3 class="text-medium">Set up a Role</h3>
+                <div class="info">
+                    You can start by creating a new role and customising your criteria on the <a hx-get="/roles"
+                                                                                                 hx-swap="innerHtml"
+                                                                                                 hx-target="closest main"
+                                                                                                 hx-trigger="click"
+                                                                                                 class="highlighted">Roles</a>
+                    page.
+                    Select a criteria you'd like to add and choose your max score - this is the weighting you apply to
+                    the criteria. The more important the criteria, the higher the max score!
+                    <br/>
+                    <br/>
+                    You can apply up to 10 criteria per role. For a summary of the scoring rules for each criteria, just
+                    hover over the information symbol next to it.
+                </div>
+                <h3 class="text-medium">Add Candidates</h3>
+                <div class="info">
+                    Once you're happy with your role criteria, jump to the <a hx-get="/candidates" hx-swap="innerHtml"
+                                                                              hx-target="closest main"
+                                                                              hx-trigger="click" class="highlighted">Candidates</a>
+                    page, where you can upload resumes. Resumes uploaded into the system are anonymised and any
+                    information which might indicate age, ethnicity or gender is removed (don't worry, you'll still be
+                    able to see their name).
+                    <br/>
+                    <br/>
+                    Start by running just a few - you may want to go back and tweak your criteria.
+                </div>
+                <h3 class="text-medium">Analyze</h3>
+                <div class="info">
+                    From the <a hx-get="/candidates" hx-swap="innerHtml" hx-target="closest main" hx-trigger="click"
+                                class="highlighted">Candidates</a> page, select the candidates you'd like to analyse and
+                    click 'Analyze Selected Candidates'.
+                    <br/>
+                    <br/>
+                    The analysis should take just a few seconds, then you'll be able to see your overall scores and
+                    score breakdowns, as well as an explanation for why that score was awarded.
+                </div>
+                <h3 class="text-medium">How do credits work?</h3>
+                <div class="info">
+                    One credit is used each time a candidate is uploaded or analysed.
+                </div>
+                <h3 class="text-medium">Want more free credits?</h3>
+                <div class="info">
+                    Join our free beta trial! Email us at support@secretsauce.site
+                </div>
+                <h3 class="text-medium">Do you integrate with any applicant tracking systems?</h3>
+                <div class="info">
+                    Not just yet, but watch this space! We're still in beta, so we're not quite at the level of the
+                    finished product just yet.
+                    <br/>
+                    <br/>
+                    As we are in beta, any loss of free credits through bugs or accident will not be returned.
+                </div>
+            </div>
         </div>
     </div>
 </main>

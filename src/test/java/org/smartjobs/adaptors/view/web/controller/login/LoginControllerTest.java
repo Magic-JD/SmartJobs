@@ -16,14 +16,14 @@ class LoginControllerTest {
     @Test
     void testShowLoginWillReturnTheLoginPage() {
         ConcurrentModel model = new ConcurrentModel();
-        String page = loginController.showLogin(model);
+        String page = loginController.showLogin(mockHttpServletResponse(), model);
         assertNull(model.getAttribute("error"));
         assertEquals("login/login", page);
     }
 
     @Test
     void testShowLoginWithErrorWillAddTheErrorAttributeAndThenReturnTheLoginPage() {
-        String page = loginController.showLoginWithError(MODEL);
+        String page = loginController.showLoginWithError(mockHttpServletResponse(), MODEL);
         assertTrue((boolean) MODEL.getAttribute("error"));
         assertEquals("login/login", page);
     }

@@ -1,5 +1,6 @@
 :root {
     --clr-highlight: rgb(1, 19, 45);
+    --clr-white: rgb(255, 255, 255);
     --clr-background: rgb(8, 10, 19);
     --clr-text: rgb(204, 207, 235);
     --clr-error: rgb(102, 2, 29);
@@ -240,8 +241,14 @@ picture {
     opacity: 0.75;
 }
 
+.highlighted {
+    color: var(--clr-white);
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 .spaced-paragraph {
-    padding-bottom: 30px;
+    margin-bottom: 6%;
 }
 
 .primary-footer {
@@ -333,6 +340,16 @@ footer {
   color: var(--clr-text);
   text-align: center;
   transition: color .2s ease-in-out;
+}
+
+.info {
+    margin-top: 3%;
+    margin-bottom: 3%;
+}
+
+.info-area {
+    text-align: left;
+    width: 100%;
 }
 
 input[type=text], input[type=password] {
