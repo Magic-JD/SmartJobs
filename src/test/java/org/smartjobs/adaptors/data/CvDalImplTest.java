@@ -12,7 +12,7 @@ import org.smartjobs.adaptors.data.repository.CandidateRepository;
 import org.smartjobs.adaptors.data.repository.CvRepository;
 import org.smartjobs.adaptors.data.repository.data.Candidate;
 import org.smartjobs.adaptors.data.repository.data.Cv;
-import org.smartjobs.core.config.DateSupplier;
+import org.smartjobs.core.provider.DateProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,14 +31,13 @@ class CvDalImplTest {
     public static final List<Candidate> CANDIDATE_LIST = List.of(CANDIDATE, CANDIDATE2);
     private final CvRepository cvRepository = mock(CvRepository.class);
     private final CandidateRepository candidateRepository = mock(CandidateRepository.class);
-    private final DateSupplier dateSupplier = mock(DateSupplier.class);
-    private final CvDalImpl cvDal = new CvDalImpl(cvRepository, candidateRepository, dateSupplier);
+    private final DateProvider dateProvider = () -> NOW;
+    private final CvDalImpl cvDal = new CvDalImpl(cvRepository, candidateRepository, dateProvider);
     private final ArgumentCaptor<Candidate> candidateArgumentCaptor = ArgumentCaptor.forClass(Candidate.class);
     private final ArgumentCaptor<Cv> cvArgumentCaptor = ArgumentCaptor.forClass(Cv.class);
 
     @Test
     void testAddingCvsToRepositoryWillAddAllProcessedCvsCorrectlyWhenTheFileAlreadyExistsByHash() {
-        when(dateSupplier.getDate()).thenReturn(NOW);
         when(cvRepository.findByFileHash(HASH_TXT)).thenReturn(CV_LIST);
         when(candidateRepository.save(candidateArgumentCaptor.capture())).thenAnswer(_ -> candidateArgumentCaptor.getValue());
         cvDal.addCvsToRepository(USER_ID, ROLE_ID, PROCESSED_CV_LIST);
@@ -56,7 +55,6 @@ class CvDalImplTest {
     @Test
     void testAddingCvsToRepositoryWillAddAllProcessedCvsCorrectlyWhenTheFileDoesNotExistByHash() {
         //Given
-        when(dateSupplier.getDate()).thenReturn(NOW);
         when(cvRepository.findByFileHash(HASH_TXT)).thenReturn(Collections.emptyList());
         when(candidateRepository.save(candidateArgumentCaptor.capture())).thenAnswer(_ -> candidateArgumentCaptor.getValue());
         when(cvRepository.save(cvArgumentCaptor.capture())).thenReturn(new Cv(CV_ID, "", ""));

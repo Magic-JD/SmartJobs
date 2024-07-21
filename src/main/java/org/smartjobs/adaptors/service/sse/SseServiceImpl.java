@@ -1,7 +1,6 @@
-package org.smartjobs.adaptors.service.service.sse;
+package org.smartjobs.adaptors.service.sse;
 
 import lombok.extern.slf4j.Slf4j;
-import org.smartjobs.adaptors.service.service.SseService;
 import org.smartjobs.adaptors.view.web.constants.DisplayMappings;
 import org.smartjobs.core.event.Event;
 import org.smartjobs.core.event.EventEmitter;

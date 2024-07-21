@@ -9,6 +9,7 @@ import org.smartjobs.core.event.events.UserCreatedEvent;
 import org.smartjobs.core.event.events.ValidateEmailEvent;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.UserAlreadyExistsException;
 import org.smartjobs.core.ports.dal.CredentialDal;
+import org.smartjobs.core.provider.CodeProvider;
 import org.smartjobs.core.service.UserRegistration;
 import org.smartjobs.core.service.user.validation.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +31,16 @@ public class UserService implements UserDetailsService, UserRegistration {
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
     private final EventEmitter eventEmitter;
-    private final CodeSupplier codeSupplier;
+    private final CodeProvider codeProvider;
     private final Cache emailValidationCache;
 
     @Autowired
-    public UserService(CredentialDal credentialDal, PasswordEncoder passwordEncoder, Validator validator, EventEmitter eventEmitter, CodeSupplier codeSupplier, Cache emailValidationCache) {
+    public UserService(CredentialDal credentialDal, PasswordEncoder passwordEncoder, Validator validator, EventEmitter eventEmitter, CodeProvider codeProvider, Cache emailValidationCache) {
         this.credentialDal = credentialDal;
         this.passwordEncoder = passwordEncoder;
         this.validator = validator;
         this.eventEmitter = eventEmitter;
-        this.codeSupplier = codeSupplier;
+        this.codeProvider = codeProvider;
         this.emailValidationCache = emailValidationCache;
     }
 
@@ -64,7 +65,7 @@ public class UserService implements UserDetailsService, UserRegistration {
             return List.of("An account for that email already exists");
         }
         String password = passwordEncoder.encode(userDto.password());
-        String code = codeSupplier.createCode();
+        String code = codeProvider.createCode();
         eventEmitter.sendEvent(new ValidateEmailEvent(username, code));
         emailValidationCache.put(code, new UnamePword(username, password));
         return Collections.emptyList();

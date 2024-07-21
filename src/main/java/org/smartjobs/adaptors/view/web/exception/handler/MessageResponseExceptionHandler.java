@@ -1,7 +1,7 @@
 package org.smartjobs.adaptors.view.web.exception.handler;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.smartjobs.adaptors.service.service.SseService;
+import org.smartjobs.adaptors.service.sse.SseService;
 import org.smartjobs.adaptors.view.web.constants.ThymeleafConstants;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions;
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.*;

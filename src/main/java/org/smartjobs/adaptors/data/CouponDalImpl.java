@@ -3,9 +3,9 @@ package org.smartjobs.adaptors.data;
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.adaptors.data.repository.CouponRepository;
 import org.smartjobs.adaptors.data.repository.data.Coupon;
-import org.smartjobs.core.config.DateSupplier;
 import org.smartjobs.core.entities.RedeemableCoupon;
 import org.smartjobs.core.ports.dal.CouponDal;
+import org.smartjobs.core.provider.DateProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -16,11 +16,11 @@ public class CouponDalImpl implements CouponDal {
 
 
     private final CouponRepository couponRepository;
-    private final DateSupplier dateSupplier;
+    private final DateProvider dateProvider;
 
-    public CouponDalImpl(CouponRepository couponRepository, DateSupplier dateSupplier) {
+    public CouponDalImpl(CouponRepository couponRepository, DateProvider dateProvider) {
         this.couponRepository = couponRepository;
-        this.dateSupplier = dateSupplier;
+        this.dateProvider = dateProvider;
     }
 
 
@@ -42,7 +42,7 @@ public class CouponDalImpl implements CouponDal {
         Coupon coupon = Coupon.builder()
                 .code(code)
                 .value(250)
-                .created(dateSupplier.getDate())
+                .created(dateProvider.provideDate())
                 .userId(userId)
                 .build();
         couponRepository.save(coupon);

@@ -18,6 +18,7 @@ import org.smartjobs.core.event.EventEmitter;
 import org.smartjobs.core.event.implementation.EventEmitterImpl;
 import org.smartjobs.core.ports.client.AiService;
 import org.smartjobs.core.ports.dal.*;
+import org.smartjobs.core.provider.CodeProvider;
 import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.analysis.AnalysisServiceImpl;
 import org.smartjobs.core.service.candidate.CandidateServiceImpl;
@@ -26,7 +27,6 @@ import org.smartjobs.core.service.candidate.file.FileHandlerImpl;
 import org.smartjobs.core.service.credit.CreditServiceImpl;
 import org.smartjobs.core.service.role.RoleServiceImpl;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
-import org.smartjobs.core.service.user.CodeSupplier;
 import org.smartjobs.core.service.user.UserService;
 import org.smartjobs.core.service.user.validation.UserDto;
 import org.springframework.cache.support.NoOpCache;
@@ -238,7 +238,7 @@ public class TestConstants {
     public static final CredentialDal CREDENTIAL_DAL = credentialDalMock();
     public static final PasswordEncoder PASSWORD_ENCODER = passwordEncoder();
     public static final Validator VALIDATOR = validator();
-    public static final CodeSupplier CODE_SUPPLIER = () -> CODE;
+    public static final CodeProvider CODE_SUPPLIER = () -> CODE;
     public static final NoOpCache EMAIL_VALIDATION_CACHE = new NoOpCache("email-validation");
     public static final UserService USER_SERVICE = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, EVENT_EMITTER, CODE_SUPPLIER, EMAIL_VALIDATION_CACHE);
 

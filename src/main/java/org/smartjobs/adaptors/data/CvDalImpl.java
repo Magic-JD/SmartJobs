@@ -6,11 +6,11 @@ import org.smartjobs.adaptors.data.repository.CandidateRepository;
 import org.smartjobs.adaptors.data.repository.CvRepository;
 import org.smartjobs.adaptors.data.repository.data.Candidate;
 import org.smartjobs.adaptors.data.repository.data.Cv;
-import org.smartjobs.core.config.DateSupplier;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.ports.dal.CvDal;
+import org.smartjobs.core.provider.DateProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,13 +24,13 @@ public class CvDalImpl implements CvDal {
 
     private final CvRepository cvRepository;
     private final CandidateRepository candidateRepository;
-    private final DateSupplier dateSupplier;
+    private final DateProvider dateProvider;
 
     @Autowired
-    public CvDalImpl(CvRepository repository, CandidateRepository candidateRepository, DateSupplier dateSupplier) {
+    public CvDalImpl(CvRepository repository, CandidateRepository candidateRepository, DateProvider dateProvider) {
         this.cvRepository = repository;
         this.candidateRepository = candidateRepository;
-        this.dateSupplier = dateSupplier;
+        this.dateProvider = dateProvider;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CvDalImpl implements CvDal {
             Candidate candidate = Candidate.builder()
                     .name(pc.name())
                     .cvId(cvId)
-                    .lastAccessed(dateSupplier.getDate())
+                    .lastAccessed(dateProvider.provideDate())
                     .userId(userId)
                     .roleId(roleId)
                     .currentlySelected(pc.currentlySelected())

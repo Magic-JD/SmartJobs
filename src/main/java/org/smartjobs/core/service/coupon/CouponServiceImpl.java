@@ -8,10 +8,10 @@ import org.smartjobs.core.exception.categories.UserResolvedExceptions.CouponAlre
 import org.smartjobs.core.exception.categories.UserResolvedExceptions.CouponDoesNotExistException;
 import org.smartjobs.core.ports.dal.CouponDal;
 import org.smartjobs.core.ports.dal.CredentialDal;
+import org.smartjobs.core.provider.CodeProvider;
 import org.smartjobs.core.service.CouponService;
 import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.service.coupon.dto.EmailSendingResult;
-import org.smartjobs.core.service.user.CodeSupplier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,14 +28,14 @@ public class CouponServiceImpl implements CouponService {
     private final CredentialDal credentialDal;
     private final CreditService creditService;
     private final EventEmitter emitter;
-    private final CodeSupplier codeSupplier;
+    private final CodeProvider codeProvider;
 
-    public CouponServiceImpl(CouponDal couponDal, CredentialDal credentialDal, CreditService creditService, EventEmitter emitter, CodeSupplier codeSupplier) {
+    public CouponServiceImpl(CouponDal couponDal, CredentialDal credentialDal, CreditService creditService, EventEmitter emitter, CodeProvider codeProvider) {
         this.couponDal = couponDal;
         this.credentialDal = credentialDal;
         this.creditService = creditService;
         this.emitter = emitter;
-        this.codeSupplier = codeSupplier;
+        this.codeProvider = codeProvider;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public List<EmailSendingResult> issueCouponsFor(List<String> emails) {
         return emails.stream().map(e -> credentialDal.getUser(e).map(u -> {
-            String code = codeSupplier.createCode();
+            String code = codeProvider.createCode();
             couponDal.issueCoupon(u.getId(), code);
             emitter.sendEvent(new IssueCouponEvent(u.getUsername(), code));
             return new EmailSendingResult(u.getUsername(), true);

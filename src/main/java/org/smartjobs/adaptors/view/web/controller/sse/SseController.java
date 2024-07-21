@@ -1,7 +1,7 @@
 package org.smartjobs.adaptors.view.web.controller.sse;
 
 import lombok.extern.slf4j.Slf4j;
-import org.smartjobs.adaptors.service.service.SseService;
+import org.smartjobs.adaptors.service.sse.SseService;
 import org.smartjobs.core.entities.User;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
