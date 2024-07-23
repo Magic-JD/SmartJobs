@@ -1,7 +1,8 @@
 package org.smartjobs.adaptors.view.web.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.smartjobs.adaptors.view.web.controller.roles.RolesController;
+import org.smartjobs.adaptors.view.web.controller.roles.display.Category;
+import org.smartjobs.adaptors.view.web.controller.roles.display.ScoringCriteria;
 import org.smartjobs.adaptors.view.web.entities.NavElement;
 import org.smartjobs.core.entities.Role;
 import org.smartjobs.core.entities.User;
@@ -73,16 +74,16 @@ public class PageController {
         Optional<Role> currentlySelectedRole = roleService.getCurrentlySelectedRole(userId);
         Long currentlySelected = currentlySelectedRole.map(Role::id).orElse(0L);
         CriteriaCategory[] values = CriteriaCategory.values();
-        var role = currentlySelectedRole.map(internalRole -> new RolesController.Role(
+        var role = currentlySelectedRole.map(internalRole -> new org.smartjobs.adaptors.view.web.controller.roles.display.Role(
                 internalRole.id(),
                 internalRole.position(),
                 Arrays.stream(values).map(cc ->
-                                new RolesController.Category(
+                                new Category(
                                         cc.toString(),
                                         internalRole.userScoringCriteria()
                                                 .stream()
                                                 .filter(crit -> crit.category().equals(cc))
-                                                .map(crit -> new RolesController.ScoringCriteria(crit.id(), crit.criteriaDescription(), crit.weighting()))
+                                                .map(crit -> new ScoringCriteria(crit.id(), crit.criteriaDescription(), crit.weighting()))
                                                 .toList()
                                 )
                         )
@@ -118,12 +119,9 @@ public class PageController {
 
     private void addInfoBoxInfo(User user, Model model) {
         long userId = user.getId();
-        Optional<Role> role = roleService.getCurrentlySelectedRoleId(userId)
-                .map(roleService::getRole);
-        var currentRole = role
-                .map(Role::position)
-                .orElse("NONE");
-        int selectedCount = role.map(role1 -> candidateService.findSelectedCandidateCount(userId, role1.id())).orElse(0);
+        Optional<Role> role = roleService.getCurrentlySelectedRole(userId);
+        var currentRole = role.map(Role::position).orElse("NONE");
+        int selectedCount = role.map(Role::id).map(roleId -> candidateService.findSelectedCandidateCount(userId, roleId)).orElse(0);
 
         model.addAttribute("selectedCount", selectedCount);
         model.addAttribute("currentRole", currentRole);

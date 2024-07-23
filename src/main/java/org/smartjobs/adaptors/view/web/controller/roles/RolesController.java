@@ -3,6 +3,9 @@ package org.smartjobs.adaptors.view.web.controller.roles;
 import io.github.wimdeblauwe.htmx.spring.boot.mvc.HxRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
+import org.smartjobs.adaptors.view.web.controller.roles.display.Category;
+import org.smartjobs.adaptors.view.web.controller.roles.display.Role;
+import org.smartjobs.adaptors.view.web.controller.roles.display.ScoringCriteria;
 import org.smartjobs.core.entities.User;
 import org.smartjobs.core.service.RoleService;
 import org.smartjobs.core.service.role.data.CriteriaCategory;
@@ -13,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.smartjobs.adaptors.view.web.constants.EventConstants.*;
@@ -146,14 +148,4 @@ public class RolesController {
                         .toList());
 
     }
-
-    public record Role(long id, String position, List<Category> categories) {
-    }
-
-    public record Category(String name, List<ScoringCriteria> criteria) {
-    }
-
-    public record ScoringCriteria(long id, String description, long weight) {
-    }
-
 }

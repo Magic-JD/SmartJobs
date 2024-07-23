@@ -2,7 +2,6 @@ package constants;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import org.mockito.ArgumentCaptor;
 import org.smartjobs.adaptors.data.repository.data.SelectedRole;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptMessage;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
@@ -11,7 +10,8 @@ import org.smartjobs.adaptors.service.ai.gpt.request.GptRequest;
 import org.smartjobs.adaptors.service.ai.gpt.response.GptChoices;
 import org.smartjobs.adaptors.service.ai.gpt.response.GptResponse;
 import org.smartjobs.adaptors.service.ai.gpt.response.GptUsage;
-import org.smartjobs.adaptors.view.web.controller.roles.RolesController;
+import org.smartjobs.adaptors.view.web.controller.roles.display.Category;
+import org.smartjobs.adaptors.view.web.controller.roles.display.ScoringCriteria;
 import org.smartjobs.core.constants.CreditType;
 import org.smartjobs.core.entities.*;
 import org.smartjobs.core.event.EventEmitter;
@@ -209,18 +209,18 @@ public class TestConstants {
     public static final ConcurrentModel MODEL = new ConcurrentModel();
     public static final User USER = new User(USERNAME, PASSWORD, USER_ID, List.of(GRANTED_AUTHORITY_USER));
     public static final User USER2 = new User(USERNAME2, PASSWORD2, USER_ID2, List.of(GRANTED_AUTHORITY_USER));
-    public static final RolesController.Category SOFT_SKILLS = new RolesController.Category("Soft Skills", Collections.emptyList());
-    public static final RolesController.Category RELEVANT_EXPERIENCE = new RolesController.Category("Relevant Experience", Collections.emptyList());
-    public static final RolesController.Category QUALIFICATIONS = new RolesController.Category("Qualifications", Collections.emptyList());
-    public static final RolesController.Category PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION = new RolesController.Category("Professional Engagement and Recognition", Collections.emptyList());
-    public static final RolesController.ScoringCriteria DISPLAY_SCORING_CRITERIA1 = new RolesController.ScoringCriteria(USER_CRITERIA_ID2, CRITERIA_DESCRIPTION, MAX_SCORE_VALUE);
-    public static final RolesController.ScoringCriteria DISPLAY_SCORING_CRITERIA2 = new RolesController.ScoringCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, MAX_SCORE_VALUE);
-    public static final RolesController.Category HARD_SKILLS = new RolesController.Category("Hard Skills", List.of(DISPLAY_SCORING_CRITERIA1, DISPLAY_SCORING_CRITERIA2));
-    public static final RolesController.Category HARD_SKILLS_EMPTY = new RolesController.Category("Hard Skills", Collections.emptyList());
-    public static final List<RolesController.Category> CATEGORY_LIST = List.of(SOFT_SKILLS, HARD_SKILLS, RELEVANT_EXPERIENCE, QUALIFICATIONS, PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION);
-    public static final List<RolesController.Category> CATEGORY_LIST_NEW = List.of(SOFT_SKILLS, HARD_SKILLS_EMPTY, RELEVANT_EXPERIENCE, QUALIFICATIONS, PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION);
-    public static final RolesController.Role DISPLAY_ROLE = new RolesController.Role(ROLE_ID, POSITION, CATEGORY_LIST);
-    public static final RolesController.Role DISPLAY_ROLE_NEW = new RolesController.Role(ROLE_ID, POSITION, CATEGORY_LIST_NEW);
+    public static final Category SOFT_SKILLS = new Category("Soft Skills", Collections.emptyList());
+    public static final Category RELEVANT_EXPERIENCE = new Category("Relevant Experience", Collections.emptyList());
+    public static final Category QUALIFICATIONS = new Category("Qualifications", Collections.emptyList());
+    public static final Category PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION = new Category("Professional Engagement and Recognition", Collections.emptyList());
+    public static final ScoringCriteria DISPLAY_SCORING_CRITERIA1 = new ScoringCriteria(USER_CRITERIA_ID2, CRITERIA_DESCRIPTION, MAX_SCORE_VALUE);
+    public static final ScoringCriteria DISPLAY_SCORING_CRITERIA2 = new ScoringCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, MAX_SCORE_VALUE);
+    public static final Category HARD_SKILLS = new Category("Hard Skills", List.of(DISPLAY_SCORING_CRITERIA1, DISPLAY_SCORING_CRITERIA2));
+    public static final Category HARD_SKILLS_EMPTY = new Category("Hard Skills", Collections.emptyList());
+    public static final List<Category> CATEGORY_LIST = List.of(SOFT_SKILLS, HARD_SKILLS, RELEVANT_EXPERIENCE, QUALIFICATIONS, PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION);
+    public static final List<Category> CATEGORY_LIST_NEW = List.of(SOFT_SKILLS, HARD_SKILLS_EMPTY, RELEVANT_EXPERIENCE, QUALIFICATIONS, PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION);
+    public static final org.smartjobs.adaptors.view.web.controller.roles.display.Role DISPLAY_ROLE = new org.smartjobs.adaptors.view.web.controller.roles.display.Role(ROLE_ID, POSITION, CATEGORY_LIST);
+    public static final org.smartjobs.adaptors.view.web.controller.roles.display.Role DISPLAY_ROLE_NEW = new org.smartjobs.adaptors.view.web.controller.roles.display.Role(ROLE_ID, POSITION, CATEGORY_LIST_NEW);
     public static final List<String> CATEGORY_STRINGS = List.of("Hard Skills", "Professional Engagement and Recognition", "Qualifications", "Relevant Experience", "Soft Skills");
     public static final AiService AI_SERVICE = aiServiceMock();
     public static final CvDal CV_DAL = cvDalMock();
@@ -256,7 +256,6 @@ public class TestConstants {
     }
 
     public static AnalysisDal analysisDalMock() {
-        ArgumentCaptor<List<ScoredCriteria>> scoredCriteriaCaptor = ArgumentCaptor.forClass(List.class);
         AnalysisDal analysisDal = mock(AnalysisDal.class);
         when(analysisDal.getResultById(ANALYSIS_ID)).thenReturn(CANDIDATE_SCORES);
         when(analysisDal.getResultById(ANALYSIS_ID2)).thenReturn(CANDIDATE_SCORES2);
