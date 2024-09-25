@@ -19,7 +19,6 @@ public class LogAspectDev {
 
     @Pointcut("within(org.smartjobs..*)")
     private void portPlugs() {
-
     }
 
     @Around(value = "portPlugs()")
