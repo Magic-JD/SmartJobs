@@ -2,12 +2,12 @@ server:
   port: 443
   ssl:
     key-store: classpath:keystore.p12
-    key-store-password: MurderBeforeEvensong
+    key-store-password: ${KEYSTORE_PASSWORD}
     key-store-type: PKCS12
 
 gpt:
   api:
-    key: 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
+    key: ${GPT_KEY}
     url: https://api.openai.com/v1/chat/completions
     user-base-score: 10
     requests-per-minute: 600
