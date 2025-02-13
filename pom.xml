@@ -246,6 +246,7 @@
                 <configuration>
                     <mainClass>org.smartjobs.SmartJobs</mainClass>
                     <layout>JAR</layout>
+                    <jvmArguments>--enable-preview</jvmArguments>
                 </configuration>
             </plugin>
             <plugin>
