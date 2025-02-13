@@ -21,8 +21,22 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/**.html").denyAll()
-                .requestMatchers("/", "/login", "/login/register", "/login/registration", "/login/verify/*", "/error", "/styles/style.css", "/favicon/favicon.ico").permitAll()
+                .requestMatchers("/",
+                        "/login",
+                        "/login/register",
+                        "/login/registration",
+                        "/login/verify/*",
+                        "/error",
+                        "/styles/style.css",
+                        "/favicon/favicon.ico",
+                        "/swagger-ui/**",
+                        "/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/webjars/**"
+                ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated());
         http.formLogin(formLogin -> formLogin
