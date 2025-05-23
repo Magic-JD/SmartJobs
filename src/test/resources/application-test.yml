@@ -8,6 +8,9 @@ gpt:
     initial-timeout-seconds: 20
     cv-name-chunk: 500
 
+server:
+  port: 8080
+
 credit:
   signup:
     bonus: 10
@@ -27,11 +30,13 @@ cache:
 spring:
   config:
     import: optional:file:dev.env[.properties]
-  profiles.active: stub
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  sql:
+    init:
+      mode: always
 
 app:
   file:
@@ -40,9 +45,10 @@ logging:
   file:
     path: ./data/logs
   level:
-    root: ERROR
+    root: INFO
     org:
       smartjobs: TRACE
+      springframework: DEBUG
   org:
     springframework:
       boot:

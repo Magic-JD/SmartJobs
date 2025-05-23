@@ -1,6 +1,7 @@
 package integration;
 
 import display.CamelCaseDisplayNameGenerator;
+import org.smartjobs.config.TestcontainersConfiguration;
 import integration.configuration.TestingConfig;
 import lombok.Getter;
 import org.hamcrest.Description;
@@ -12,38 +13,28 @@ import org.smartjobs.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.utility.MountableFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @Getter
-@ContextConfiguration(
-        initializers = {IntegrationTest.Initializer.class}
-)
 @SpringBootTest(
         classes = {SmartJobs.class, TestingConfig.class},
         properties = "spring.main.allow-bean-definition-overriding=true"
 )
 @AutoConfigureMockMvc
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
-@Sql(
-        scripts = "/init-db.sql",
-        executionPhase = AFTER_TEST_METHOD
-)
-@ActiveProfiles("stub")
+@Transactional
+@Import(TestcontainersConfiguration.class)
+@ActiveProfiles("test")
 public abstract class IntegrationTest {
 
     public static final User USER = new User("email@email.com", "password", 1, List.of(() -> "USER"));
@@ -60,26 +51,6 @@ public abstract class IntegrationTest {
 
     @Autowired
     private ConfigurableApplicationContext configurableApplicationContext;
-
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
-            .withDatabaseName("postgres")
-            .withUsername("integrationUser")
-            .withPassword("testPass")
-            .withCopyFileToContainer(MountableFile.forClasspathResource("init-db.sql"), "/docker-entrypoint-initdb.d/");
-
-    static {
-        postgres.start();
-    }
-
-    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-            TestPropertyValues.of(
-                    "spring.datasource.url=" + postgres.getJdbcUrl(),
-                    "spring.datasource.username=" + postgres.getUsername(),
-                    "spring.datasource.password=" + postgres.getPassword()
-            ).applyTo(configurableApplicationContext.getEnvironment());
-        }
-    }
 
     @NotNull
     public static ResultMatcher matchesHtml(String expected) {

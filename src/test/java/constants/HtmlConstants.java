@@ -50,7 +50,7 @@ public class HtmlConstants {
 
     public static final String CANDIDATE_2_SELECTED = """
             <div class="candidate-row flex-container">
-                    <p class="candidate-display-left">james</p>
+                    <p class="candidate-display-left">James</p>
                     <button class='candidate-display-right button-light'
                             hx-swap="innerHTML" hx-put="/candidate/select/2?select=false">Selected</button>
                     <button class='button-dark' hx-delete="/candidate/delete/2">Delete
@@ -60,7 +60,7 @@ public class HtmlConstants {
 
     public static final String CANDIDATE_2_UNSELECTED = """
             <div class="candidate-row flex-container">
-                <p class="candidate-display-left">james</p>
+                <p class="candidate-display-left">James</p>
                 <button class='candidate-display-right button-dark'
                         hx-swap="innerHTML" hx-put="/candidate/select/2?select=true">Select</button>
                 <button class='button-dark' hx-delete="/candidate/delete/2">Delete
@@ -69,8 +69,8 @@ public class HtmlConstants {
             """;
     public static final String CANDIDATES_TABLE_DEFAULT = STR. """
                 \{ TABLE_HEADING }
-                \{ CANDIDATE_1_SELECTED }
                 \{ CANDIDATE_2_UNSELECTED }
+                \{ CANDIDATE_1_SELECTED }
             </div>
                                     """ ;
 
@@ -82,16 +82,16 @@ public class HtmlConstants {
 
     public static final String CANDIDATES_TABLE_ALL_UNSELECTED = STR. """
                 \{ TABLE_HEADING }
-                \{ CANDIDATE_1_UNSELECTED }
                 \{ CANDIDATE_2_UNSELECTED }
+                \{ CANDIDATE_1_UNSELECTED }
             </div>
                                     """ ;
 
 
     public static final String CANDIDATES_TABLE_ALL_SELECTED = STR. """
                 \{ TABLE_HEADING }
-                \{ CANDIDATE_1_SELECTED }
                 \{ CANDIDATE_2_SELECTED }
+                \{ CANDIDATE_1_SELECTED }
             </div>
                                     """ ;
 

@@ -59,7 +59,7 @@ public class EmailConfig {
     }
 
     @Bean
-    @Profile({"dev", "stub"})
+    @Profile({"dev", "test"})
     public EmailSender fakeEmailSender(@Value("${site.email}") String sendingEmail) {
         return (email, messageText) -> {
             log.debug("Sending email from {} to {}", sendingEmail, email);

@@ -34,7 +34,6 @@ cache:
 spring:
   config:
     import: optional:file:dev.env[.properties]
-  profiles.active: dev
   servlet:
     multipart:
       max-file-size: 10MB
