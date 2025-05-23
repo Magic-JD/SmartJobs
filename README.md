@@ -6,6 +6,48 @@ SmartJobs is a sophisticated web application designed to revolutionize the job s
 
 ---
 
+## Design
+
+This section outlines the key architectural decisions and patterns employed in SmartJobs.
+
+### Hexagonal Architecture (Ports and Adapters)
+
+SmartJobs is built upon a Hexagonal Architecture, also known as the Ports and Adapters pattern. This architectural style promotes a clear separation of concerns, making the application more modular, testable, and maintainable.
+
+*   **`core` (Domain Logic):** This is the heart of the application, containing the business logic, entities, and use cases. It is completely independent of any specific technology or framework. The `core` defines "ports" (interfaces) that dictate how it interacts with the outside world.
+*   **`adaptors` (Infrastructure and UI):** These are the external components that interact with the `core` through the defined ports. Adapters are responsible for concerns like:
+    *   **UI (Web Interface):** Handling HTTP requests, rendering web pages (using Spring MVC, Thymeleaf, HTMX).
+    *   **Database Persistence:** Implementing data storage and retrieval (using Spring Data JPA, PostgreSQL).
+    *   **External Services:** Integrating with third-party APIs or services.
+    *   **Messaging:** Handling asynchronous communication if applicable.
+
+This separation ensures that the `core` domain logic remains pure and can be easily tested in isolation. Changes in technology (e.g., switching database providers or UI frameworks) primarily affect the `adaptors` layer, minimizing impact on the core business rules.
+
+### High Concurrency Model
+
+SmartJobs is designed to handle a high volume of concurrent users and requests efficiently.
+
+*   **Java 21 Virtual Threads:** The application leverages Java 21's virtual threads (Project Loom) to manage concurrent operations. Virtual threads are lightweight and allow for a significantly higher number of concurrent tasks compared to traditional platform threads, reducing resource overhead and improving scalability.
+*   **`ConcurrencyUtil` Class:** A dedicated utility class, `org.smartjobs.shared.ConcurrencyUtil`, provides helper methods and configurations for managing concurrency, ensuring optimal use of virtual threads and other concurrency primitives. This might include custom thread pools or executors tailored for specific tasks.
+
+### Other Key Architectural Aspects
+
+*   **Technology Stack:**
+    *   **Spring Boot 3.5.0:** Provides a robust and convention-over-configuration framework for building the application.
+    *   **Java 21:** The primary programming language, offering modern features like virtual threads.
+    *   **PostgreSQL:** Used as the relational database for persistent storage.
+    *   **Spring Data JPA & Hibernate:** For Object-Relational Mapping (ORM) and simplified data access.
+    *   **Spring Security:** For handling authentication and authorization.
+    *   **HTMX & Thymeleaf:** For creating dynamic and interactive user interfaces with server-side rendering.
+*   **Project Setup:**
+    *   **Maven:** Used for dependency management and building the project.
+    *   **Docker (via Testcontainers):** Employed for creating isolated and reproducible environments for integration testing, particularly for the PostgreSQL database.
+    *   **GitHub Actions:** Utilized for continuous integration and continuous deployment (CI/CD) pipelines, automating builds, tests, and deployments.
+*   **Modularity:** The project is structured into modules (e.g., `core`, `adaptors`, `app`) to enforce separation of concerns and improve maintainability.
+*   **Resilience:** Patterns like rate limiting (Bucket4j) and caching (Caffeine) are used to enhance application stability and performance under load.
+
+---
+
 ## Features
 
 * **AI-Powered Role Matching:** Automatically match candidate profiles against job roles based on predefined criteria.
@@ -66,7 +108,9 @@ Before you begin, ensure you have the following installed:
 
 ## Trialing the Application (Testcontainers Environment)
 
-To experience SmartJobs, you can run a local instance that uses a PostgreSQL database spun up automatically by Testcontainers. This setup ensures a clean and isolated environment for your trial, without connecting to any external backend services.
+To experience SmartJobs, you can run a local instance that uses a PostgreSQL database spun up automatically by Testcontainers. The `TestSmartJobs` main class is specifically designed for this trial mode, ensuring that all necessary services, like the Testcontainers-managed PostgreSQL, are correctly initialized for a seamless out-of-the-box experience. The `test` profile activates this self-contained configuration.
+
+This setup ensures a clean and isolated environment for your trial, without connecting to any external backend services.
 
 To start the application in trial mode:
 
@@ -88,6 +132,15 @@ You can log in with the following trial credentials:
 
 * **Username:** `email@email.com`
 * **Password:** `password1`
+
+### Accessing API Documentation
+
+Once the application is running in trial mode (or any other mode where Springdoc OpenAPI is enabled), you can access the API documentation through your web browser:
+
+*   **Swagger UI:** `https://localhost:<PORT>/swagger-ui.html`
+*   **OpenAPI Spec (JSON):** `https://localhost:<PORT>/v3/api-docs`
+
+Replace `<PORT>` with the actual port number shown in your console output when the application starts. This documentation provides detailed information about all available API endpoints, request parameters, and response structures.
 
 ---
 
