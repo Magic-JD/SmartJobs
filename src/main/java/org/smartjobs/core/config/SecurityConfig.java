@@ -30,7 +30,8 @@ public class SecurityConfig {
                         "/styles/style.css",
                         "/favicon/favicon.ico",
                         "/swagger-ui/**",
-                        "/v2/api-docs",
+                        "/v3/api-docs/**", // Added for OpenAPI v3
+                        "/v2/api-docs",   // Kept for compatibility if needed
                         "/configuration/ui",
                         "/swagger-resources/**",
                         "/configuration/security",

@@ -158,6 +158,11 @@
             <version>${postgresql.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope> <!-- Typically runtime or test, but runtime for dev profile -->
+        </dependency>
+        <dependency>
             <groupId>org.webjars.npm</groupId>
             <artifactId>hyperscript.org</artifactId>
             <version>${hyperscript.org.version}</version>

@@ -142,6 +142,16 @@ Once the application is running in trial mode (or any other mode where Springdoc
 
 Replace `<PORT>` with the actual port number shown in your console output when the application starts. This documentation provides detailed information about all available API endpoints, request parameters, and response structures.
 
+**Note for Local Testing:** The default application configuration (`application.yml`) enables HTTPS and expects a specific keystore (`keystore.p12`) and database setup. For easier local testing and verification of the API documentation:
+1.  Ensure you have an H2 dependency in your `pom.xml` (it was added during recent setup tasks).
+2.  The `dev` profile (`application-dev.yml`) has been configured to use HTTP on port `8080` and an H2 in-memory database, with SSL disabled.
+3.  Run the application with the `dev` profile:
+    ```bash
+    mvn spring-boot:run -Dspring-boot.run.profiles=dev
+    ```
+4.  You may need to provide dummy environment variables if prompted during startup (e.g., for `GPT_KEY`, `EMAIL_PASSWORD` if not already hardcoded for the `dev` run in `application.yml`).
+Once started, the API documentation will be available at `http://localhost:8080/swagger-ui.html` and `http://localhost:8080/v3/api-docs`.
+
 ---
 
 ## Running Tests
