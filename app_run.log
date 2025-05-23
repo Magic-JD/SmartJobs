@@ -1,0 +1,135 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------------------< [0;36morg.smartjobs:smart-jobs[0;1m >----------------------[m
+[[1;34mINFO[m] [1mBuilding smart-jobs 0.0.1-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m>>> [0;32mspring-boot-maven-plugin:3.5.0:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36msmart-jobs[0;1m >>>[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36msmart-jobs[0;1m ---[m
+[[1;34mINFO[m] Copying 3 resources from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 37 resources from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.0:compile[m [1m(default-compile)[m @ [36msmart-jobs[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged source code[m.
+[[1;34mINFO[m] Compiling 142 source files with javac [debug parameters release 21] to target/classes
+[[1;34mINFO[m] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[[1;34mINFO[m] /app/src/main/java/org/smartjobs/adaptors/service/ai/gpt/client/GptClientImpl.java: Some input files use preview features of Java SE 21.
+[[1;34mINFO[m] /app/src/main/java/org/smartjobs/adaptors/service/ai/gpt/client/GptClientImpl.java: Recompile with -Xlint:preview for details.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mkotlin-maven-plugin:1.9.25:compile[m [1m(compile)[m @ [36msmart-jobs[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mbuild-helper-maven-plugin:1.9.1:add-test-source[m [1m(add-integration-test-source-as-test-sources)[m @ [36msmart-jobs[0;1m ---[m
+[[1;34mINFO[m] Test Source directory: /app/src/test/java added.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36msmart-jobs[0;1m ---[m
+[[1;34mINFO[m] Copying 4 resources from src/test/resources to target/test-classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.0:testCompile[m [1m(default-testCompile)[m @ [36msmart-jobs[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 37 source files with javac [debug parameters release 21] to target/test-classes
+[[1;34mINFO[m] Annotation processing is enabled because one or more processors were found
+  on the class path. A future release of javac may disable annotation processing
+  unless at least one processor is specified by name (-processor), or a search
+  path is specified (--processor-path, --processor-module-path), or annotation
+  processing is enabled explicitly (-proc:only, -proc:full).
+  Use -Xlint:-options to suppress this message.
+  Use -proc:none to disable annotation processing.
+[[1;34mINFO[m] /app/src/test/java/display/CamelCaseDisplayNameGenerator.java: /app/src/test/java/display/CamelCaseDisplayNameGenerator.java uses or overrides a deprecated API.
+[[1;34mINFO[m] /app/src/test/java/display/CamelCaseDisplayNameGenerator.java: Recompile with -Xlint:deprecation for details.
+[[1;34mINFO[m] /app/src/test/java/org/smartjobs/adaptors/data/AnalysisDalImplTest.java: Some input files use unchecked or unsafe operations.
+[[1;34mINFO[m] /app/src/test/java/org/smartjobs/adaptors/data/AnalysisDalImplTest.java: Recompile with -Xlint:unchecked for details.
+[[1;34mINFO[m] /app/src/test/java/constants/HtmlConstants.java: Some input files use preview features of Java SE 21.
+[[1;34mINFO[m] /app/src/test/java/constants/HtmlConstants.java: Recompile with -Xlint:preview for details.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mkotlin-maven-plugin:1.9.25:test-compile[m [1m(test-compile)[m @ [36msmart-jobs[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m<<< [0;32mspring-boot-maven-plugin:3.5.0:run[m [1m(default-cli)[0;1m < [0;1mtest-compile[m @ [36msmart-jobs[0;1m <<<[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.0:run[m [1m(default-cli)[m @ [36msmart-jobs[0;1m ---[m
+[[1;34mINFO[m] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.5.0)
+
+2025-05-23 12:28:19.373 [main] INFO  org.smartjobs.SmartJobs - Starting SmartJobs using Java 21.0.7 with PID 5912 (/app/target/classes started by jules in /app)
+2025-05-23 12:28:19.375 [main] DEBUG org.smartjobs.SmartJobs - Running with Spring Boot v3.5.0, Spring v6.2.7
+2025-05-23 12:28:19.375 [main] INFO  org.smartjobs.SmartJobs - The following 1 profile is active: "dev"
+2025-05-23 12:28:22.523 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 994a77c0-2214-4fac-b854-606c4ece71f0 >> MyWebMvcConfigurer - sameSiteCookiesConfig() - []
+2025-05-23 12:28:22.525 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 994a77c0-2214-4fac-b854-606c4ece71f0 << MyWebMvcConfigurer - sameSiteCookiesConfig() - org.smartjobs.adaptors.view.web.config.MyWebMvcConfigurer$$Lambda/0x00007f253c4ca110@2fca3eb5
+2025-05-23 12:28:23.173 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 89c0f079-2d12-433d-8663-353c27b4f6bc >> TomcatContextCustomizer - customize() - [StandardEngine[Tomcat].StandardHost[localhost].TomcatEmbeddedContext[]]
+2025-05-23 12:28:23.174 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 89c0f079-2d12-433d-8663-353c27b4f6bc << TomcatContextCustomizer - customize() - null
+2025-05-23 12:28:26.844 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 28967360-8b8a-4ff4-bc79-6892462b8b7c >> ApplicationConfig - dateProvider() - []
+2025-05-23 12:28:26.845 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 28967360-8b8a-4ff4-bc79-6892462b8b7c << ApplicationConfig - dateProvider() - org.smartjobs.core.config.ApplicationConfig$$Lambda/0x00007f253c9e1aa0@726e780a
+2025-05-23 12:28:27.638 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 61db9a28-4c5c-4177-b2e9-fbe39c28b535 >> GptConfig - httpClient() - []
+2025-05-23 12:28:27.787 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 61db9a28-4c5c-4177-b2e9-fbe39c28b535 << GptConfig - httpClient() - jdk.internal.net.http.HttpClientImpl@40b0436e(1)
+2025-05-23 12:28:27.809 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 9ae0c9d7-4473-475d-9fec-2298c20b9918 >> GptConfig - gson() - []
+2025-05-23 12:28:27.838 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 9ae0c9d7-4473-475d-9fec-2298c20b9918 << GptConfig - gson() - {serializeNulls:false,factories:[Factory[typeHierarchy=com.google.gson.JsonElement,adapter=com.google.gson.internal.bind.JsonElementTypeAdapter@278e721e], com.google.gson.internal.bind.ObjectTypeAdapter$1@65354578, com.google.gson.internal.Excluder@5c176a0f, com.google.gson.internal.bind.TypeAdapters$28@5f30bcf3, com.google.gson.internal.bind.TypeAdapters$28@b7a2b89, Factory[type=java.lang.String,adapter=com.google.gson.internal.bind.TypeAdapters$15@442bb11b], Factory[type=java.lang.Integer+int,adapter=com.google.gson.internal.bind.TypeAdapters$7@238bec83], Factory[type=java.lang.Boolean+boolean,adapter=com.google.gson.internal.bind.TypeAdapters$3@79860b25], Factory[type=java.lang.Byte+byte,adapter=com.google.gson.internal.bind.TypeAdapters$5@237a41ff], Factory[type=java.lang.Short+short,adapter=com.google.gson.internal.bind.TypeAdapters$6@3ac09fe2], Factory[type=java.lang.Long+long,adapter=com.google.gson.internal.bind.TypeAdapters$11@46d393cd], Factory[type=java.lang.Double+double,adapter=com.google.gson.Gson$1@f456711], Factory[type=java.lang.Float+float,adapter=com.google.gson.Gson$2@7e41aabf], com.google.gson.internal.bind.NumberTypeAdapter$1@40c0151a, Factory[type=java.util.concurrent.atomic.AtomicInteger,adapter=NullSafeTypeAdapter[com.google.gson.internal.bind.TypeAdapters$8@1a57bb34]], Factory[type=java.util.concurrent.atomic.AtomicBoolean,adapter=NullSafeTypeAdapter[com.google.gson.internal.bind.TypeAdapters$9@3e0e2a80]], Factory[type=java.util.concurrent.atomic.AtomicLong,adapter=NullSafeTypeAdapter[com.google.gson.Gson$4@4d696bac]], Factory[type=java.util.concurrent.atomic.AtomicLongArray,adapter=NullSafeTypeAdapter[com.google.gson.Gson$5@dc1cfde]], Factory[type=java.util.concurrent.atomic.AtomicIntegerArray,adapter=NullSafeTypeAdapter[com.google.gson.internal.bind.TypeAdapters$10@2ae84b49]], Factory[type=java.lang.Character+char,adapter=com.google.gson.internal.bind.TypeAdapters$14@65fd3ebe], Factory[type=java.lang.StringBuilder,adapter=com.google.gson.internal.bind.TypeAdapters$19@63cf0da6], Factory[type=java.lang.StringBuffer,adapter=com.google.gson.internal.bind.TypeAdapters$20@60f3813e], Factory[type=java.math.BigDecimal,adapter=com.google.gson.internal.bind.TypeAdapters$16@8292c6a], Factory[type=java.math.BigInteger,adapter=com.google.gson.internal.bind.TypeAdapters$17@4adfb1f], Factory[type=com.google.gson.internal.LazilyParsedNumber,adapter=com.google.gson.internal.bind.TypeAdapters$18@1f146411], Factory[type=java.net.URL,adapter=com.google.gson.internal.bind.TypeAdapters$21@6392ecbc], Factory[type=java.net.URI,adapter=com.google.gson.internal.bind.TypeAdapters$22@2219d6d8], Factory[type=java.util.UUID,adapter=com.google.gson.internal.bind.TypeAdapters$24@4907b487], Factory[type=java.util.Currency,adapter=NullSafeTypeAdapter[com.google.gson.internal.bind.TypeAdapters$25@758f755a]], Factory[type=java.util.Locale,adapter=com.google.gson.internal.bind.TypeAdapters$27@18c805b], Factory[typeHierarchy=java.net.InetAddress,adapter=com.google.gson.internal.bind.TypeAdapters$23@6d4f29a4], Factory[type=java.util.BitSet,adapter=NullSafeTypeAdapter[com.google.gson.internal.bind.TypeAdapters$2@19181b06]], DefaultDateTypeAdapter#DEFAULT_STYLE_FACTORY, Factory[type=java.util.Calendar+java.util.GregorianCalendar,adapter=com.google.gson.internal.bind.TypeAdapters$26@173398da], com.google.gson.internal.sql.SqlTimeTypeAdapter$1@72584c3f, com.google.gson.internal.sql.SqlDateTypeAdapter$1@66ce59d9, com.google.gson.internal.sql.SqlTimestampTypeAdapter$1@3fd7be2d, com.google.gson.internal.bind.ArrayTypeAdapter$1@34a91445, Factory[type=java.lang.Class,adapter=NullSafeTypeAdapter[com.google.gson.internal.bind.TypeAdapters$1@4a09f5b]], com.google.gson.internal.bind.CollectionTypeAdapterFactory@10b40e87, com.google.gson.internal.bind.MapTypeAdapterFactory@1290fc6a, com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory@6ee7c941, com.google.gson.internal.bind.EnumTypeAdapter$1@6ebdd981, com.google.gson.internal.bind.ReflectiveTypeAdapterFactory@5ecd22e7],instanceCreators:{}}
+2025-05-23 12:28:27.848 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - d4c7f9d0-548e-401a-9897-291a34841b0d >> GptConfig - bucket() - [600]
+2025-05-23 12:28:27.859 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - d4c7f9d0-548e-401a-9897-291a34841b0d << GptConfig - bucket() - LockFreeBucket{state=BucketState{bandwidthStates=[1748003307857000000, 1, 0]}, configuration=BucketConfiguration{bandwidths=[Bandwidth{capacity=1, initialTokens=1, refillPeriodNanos=60000000000, refillTokens=600, refillIntervally=false, timeOfFirstRefillMillis=-9223372036854775808, useAdaptiveInitialTokens=false}]}}
+2025-05-23 12:28:27.881 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 46c555a6-ea07-4d34-a6cd-00398cbd9500 >> GptProperties - getUri() - []
+2025-05-23 12:28:27.882 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 46c555a6-ea07-4d34-a6cd-00398cbd9500 << GptProperties - getUri() - https://api.openai.com/v1/chat/completions
+2025-05-23 12:28:27.882 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 53832566-bdb8-4194-955a-9f2a14cbd228 >> GptProperties - getApiKey() - []
+2025-05-23 12:28:27.882 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 53832566-bdb8-4194-955a-9f2a14cbd228 << GptProperties - getApiKey() - dummy_gpt_key
+2025-05-23 12:28:27.883 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - bb61ac8e-57a6-40a0-893a-27bda776779c >> GptProperties - getMaxRetries() - []
+2025-05-23 12:28:27.883 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - bb61ac8e-57a6-40a0-893a-27bda776779c << GptProperties - getMaxRetries() - 3
+2025-05-23 12:28:27.883 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 1fd28e50-125f-42a0-a145-aa2d55e98d44 >> GptProperties - getInitialTimeoutSeconds() - []
+2025-05-23 12:28:27.883 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 1fd28e50-125f-42a0-a145-aa2d55e98d44 << GptProperties - getInitialTimeoutSeconds() - 20
+2025-05-23 12:28:27.918 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - ab8e5397-7d83-4452-80cd-cdc56b5895e1 >> EmailConfig - fakeEmailSender() - [from@example.com]
+2025-05-23 12:28:27.919 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - ab8e5397-7d83-4452-80cd-cdc56b5895e1 << EmailConfig - fakeEmailSender() - org.smartjobs.adaptors.service.email.config.EmailConfig$$Lambda/0x00007f253cb25210@5f1908c5
+2025-05-23 12:28:27.923 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - d6a6a617-7935-4c6c-a66c-0f08c5b644db >> EventEmitterImpl - registerForEvents() - [org.smartjobs.adaptors.service.email.EmailServiceImpl@24e0989e, class org.smartjobs.core.event.events.ValidateEmailEvent]
+2025-05-23 12:28:27.925 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - d6a6a617-7935-4c6c-a66c-0f08c5b644db << EventEmitterImpl - registerForEvents() - null
+2025-05-23 12:28:27.925 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - da482fa3-7192-4fe0-bcf1-3d9e2e321738 >> EventEmitterImpl - registerForEvents() - [org.smartjobs.adaptors.service.email.EmailServiceImpl@24e0989e, class org.smartjobs.core.event.events.IssueCouponEvent]
+2025-05-23 12:28:27.925 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - da482fa3-7192-4fe0-bcf1-3d9e2e321738 << EventEmitterImpl - registerForEvents() - null
+2025-05-23 12:28:27.991 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 11246867-9f97-4aa6-9a07-c0ca5c438651 >> ApplicationConfig - decimalFormat() - []
+2025-05-23 12:28:27.991 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 11246867-9f97-4aa6-9a07-c0ca5c438651 << ApplicationConfig - decimalFormat() - java.text.DecimalFormat@674dc
+2025-05-23 12:28:28.006 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 4b165cc6-56ac-4b46-87a2-c7e6e5e95a27 >> EventEmitterImpl - registerForEvents() - [org.smartjobs.adaptors.service.sse.SseServiceImpl@4812c244, class org.smartjobs.core.event.events.ProgressEvent]
+2025-05-23 12:28:28.006 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 4b165cc6-56ac-4b46-87a2-c7e6e5e95a27 << EventEmitterImpl - registerForEvents() - null
+2025-05-23 12:28:28.007 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 50632e27-3041-465a-8d9f-f8cc5f448653 >> EventEmitterImpl - registerForEvents() - [org.smartjobs.adaptors.service.sse.SseServiceImpl@4812c244, class org.smartjobs.core.event.events.CreditEvent]
+2025-05-23 12:28:28.007 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 50632e27-3041-465a-8d9f-f8cc5f448653 << EventEmitterImpl - registerForEvents() - null
+2025-05-23 12:28:28.007 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 161adbc5-d207-44d1-b685-7bbf7c93311e >> EventEmitterImpl - registerForEvents() - [org.smartjobs.adaptors.service.sse.SseServiceImpl@4812c244, class org.smartjobs.core.event.events.ErrorEvent]
+2025-05-23 12:28:28.007 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 161adbc5-d207-44d1-b685-7bbf7c93311e << EventEmitterImpl - registerForEvents() - null
+2025-05-23 12:28:28.025 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - ea3f20dc-e83d-48f0-8f83-24fc715e77c7 >> EventEmitterImpl - registerForEvents() - [org.smartjobs.core.service.credit.CreditServiceImpl@3bd99944, class org.smartjobs.core.event.events.UserCreatedEvent]
+2025-05-23 12:28:28.026 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - ea3f20dc-e83d-48f0-8f83-24fc715e77c7 << EventEmitterImpl - registerForEvents() - null
+2025-05-23 12:28:28.075 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 0f65b85e-21c0-4781-b672-0c857625780e >> ApplicationConfig - codeProvider() - []
+2025-05-23 12:28:28.075 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 0f65b85e-21c0-4781-b672-0c857625780e << ApplicationConfig - codeProvider() - org.smartjobs.core.config.ApplicationConfig$$Lambda/0x00007f253cb3f020@3c403b36
+2025-05-23 12:28:28.205 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - ee5850b5-0348-4e23-b6c0-52ddd542e7a9 >> ApplicationConfig - passwordEncoder() - []
+2025-05-23 12:28:28.220 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - ee5850b5-0348-4e23-b6c0-52ddd542e7a9 << ApplicationConfig - passwordEncoder() - org.springframework.security.crypto.password.DelegatingPasswordEncoder@5901caf8
+2025-05-23 12:28:28.231 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - bf4ff67f-2c37-450e-8cb8-78b5b22e74a0 >> ApplicationConfig - validation() - []
+2025-05-23 12:28:28.238 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - bf4ff67f-2c37-450e-8cb8-78b5b22e74a0 << ApplicationConfig - validation() - org.hibernate.validator.internal.engine.ValidatorImpl@43c16e17
+2025-05-23 12:28:28.276 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 55b5fedd-8769-4626-98df-ee57b9c31613 >> SpringCachingConfig - emailValidationCacheManager() - []
+2025-05-23 12:28:28.306 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 55b5fedd-8769-4626-98df-ee57b9c31613 << SpringCachingConfig - emailValidationCacheManager() - org.springframework.cache.caffeine.CaffeineCacheManager@5944fbf0
+2025-05-23 12:28:28.312 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - a141de26-b01e-4584-ad0e-260d8536ba36 >> SpringCachingConfig - validationCache() - [org.springframework.cache.caffeine.CaffeineCacheManager@5944fbf0]
+2025-05-23 12:28:28.312 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - a141de26-b01e-4584-ad0e-260d8536ba36 << SpringCachingConfig - validationCache() - org.springframework.cache.caffeine.CaffeineCache@4037fcc
+2025-05-23 12:28:28.413 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 3b30de8f-aa96-4816-a24f-ffc414339f68 >> EmailConfig - session() - [sandbox.smtp.mailtrap.io, 2525, 1d25b729c23ddf, dummy_email_password]
+2025-05-23 12:28:28.439 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 3b30de8f-aa96-4816-a24f-ffc414339f68 << EmailConfig - session() - jakarta.mail.Session@2f9b33f1
+2025-05-23 12:28:28.912 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - d7ab4e23-c502-4b99-b780-a21727444e67 >> SecurityConfig - authProvider() - [org.smartjobs.core.service.user.UserService@e1c387e, org.springframework.security.crypto.password.DelegatingPasswordEncoder@5901caf8]
+2025-05-23 12:28:28.918 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - d7ab4e23-c502-4b99-b780-a21727444e67 << SecurityConfig - authProvider() - org.springframework.security.authentication.dao.DaoAuthenticationProvider@52a2c66
+2025-05-23 12:28:29.068 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 4ee2068e-f689-4e11-94eb-0facbe0fc88a >> MyWebMvcConfigurer - addInterceptors() - [org.springframework.web.servlet.config.annotation.InterceptorRegistry@281edf6b]
+2025-05-23 12:28:29.069 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 4ee2068e-f689-4e11-94eb-0facbe0fc88a << MyWebMvcConfigurer - addInterceptors() - null
+2025-05-23 12:28:29.682 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 5f350adb-2dbc-4286-8466-3406dab089ec >> SecurityConfig - filterChain() - [org.springframework.security.config.annotation.web.builders.HttpSecurity@2ff19416]
+2025-05-23 12:28:29.825 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 5f350adb-2dbc-4286-8466-3406dab089ec << SecurityConfig - filterChain() - DefaultSecurityFilterChain matching [any request] and having filters [DisableEncodeUrl, WebAsyncManagerIntegration, SecurityContextHolder, HeaderWriter, Logout, UsernamePasswordAuthentication, RequestCacheAware, SecurityContextHolderAwareRequest, AnonymousAuthentication, ExceptionTranslation, Authorization]
+2025-05-23 12:28:29.868 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - f110ad9c-627a-47c4-999b-d4fb01a7aba0 >> SpringCachingConfig - cacheManager() - []
+2025-05-23 12:28:29.870 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - f110ad9c-627a-47c4-999b-d4fb01a7aba0 << SpringCachingConfig - cacheManager() - org.springframework.cache.caffeine.CaffeineCacheManager@1f2eb34c
+2025-05-23 12:28:29.872 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - caed5ab0-b7ec-491a-b825-707bdf8d097c >> SpringCachingConfig - staticCacheManager() - []
+2025-05-23 12:28:29.873 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - caed5ab0-b7ec-491a-b825-707bdf8d097c << SpringCachingConfig - staticCacheManager() - org.springframework.cache.caffeine.CaffeineCacheManager@721af8d0
+2025-05-23 12:28:31.204 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 853d9cf6-4219-44dd-952a-f325ffae053c >> SpringCachingConfig - cacheManager() - []
+2025-05-23 12:28:31.205 [main] DEBUG o.smartjobs.core.aspect.LogAspectDev - 853d9cf6-4219-44dd-952a-f325ffae053c << SpringCachingConfig - cacheManager() - org.springframework.cache.caffeine.CaffeineCacheManager@1f2eb34c
+2025-05-23 12:28:31.301 [main] INFO  org.smartjobs.SmartJobs - Started SmartJobs in 12.679 seconds (process running for 13.325)
+2025-05-23 12:28:31.310 [scheduling-1] DEBUG o.smartjobs.core.aspect.LogAspectDev - 79022907-3a78-4299-9b20-3e089c4b5b83 >> SseServiceImpl - heartBeat() - []
+2025-05-23 12:28:31.311 [scheduling-1] DEBUG o.smartjobs.core.aspect.LogAspectDev - 79022907-3a78-4299-9b20-3e089c4b5b83 << SseServiceImpl - heartBeat() - null

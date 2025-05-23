@@ -1,13 +1,14 @@
 server:
-  port: 443
+  port: 8080 # HTTP port
   ssl:
+    enabled: false # SSL disabled
     key-store: classpath:keystore.p12
-    key-store-password: ${KEYSTORE_PASSWORD}
+    key-store-password: password # Hardcoded dummy
     key-store-type: PKCS12
 
 gpt:
   api:
-    key: ${GPT_KEY}
+    key: dummy_gpt_key # Hardcoded dummy
     url: https://api.openai.com/v1/chat/completions
     user-base-score: 10
     requests-per-minute: 600
@@ -87,4 +88,4 @@ mail:
     host: sandbox.smtp.mailtrap.io
     port: 2525
     username: 1d25b729c23ddf
-    password: ${EMAIL_PASSWORD}
+    password: dummy_email_password # Hardcoded dummy
