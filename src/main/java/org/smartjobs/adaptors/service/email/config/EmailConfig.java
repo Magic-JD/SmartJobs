@@ -21,6 +21,7 @@ public class EmailConfig {
     private static final String SUBJECT = "Smart Jobs email Verification";
 
     @Bean
+    @Profile("prod")
     public Session session(@Value("${mail.smtp.host}") String host,
                            @Value("${mail.smtp.port}") String port,
                            @Value("${mail.smtp.username}") String username,
