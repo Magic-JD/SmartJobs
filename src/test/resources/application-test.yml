@@ -10,6 +10,8 @@ gpt:
 
 server:
   port: 8080
+  ssl:
+    enabled: false
 
 credit:
   signup:
@@ -41,14 +43,12 @@ spring:
 app:
   file:
     upload-dir: ./data/uploads/files
+
 logging:
   file:
     path: ./data/logs
   level:
-    root: INFO
-    org:
-      smartjobs: TRACE
-      springframework: DEBUG
+    root: ERROR
   org:
     springframework:
       boot:
@@ -84,7 +84,7 @@ site:
 
 mail:
   smtp:
-    host: sandbox.smtp.mailtrap.io
+    host: dummy-host
     port: 2525
-    username: 1d25b729c23ddf
-    password: ${EMAIL_PASSWORD}
+    username: dummy-username
+    password: dummy-password
