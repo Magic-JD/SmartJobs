@@ -49,6 +49,9 @@ logging:
     path: ./data/logs
   level:
     root: ERROR
+    org:
+      smartjobs: ERROR
+      springframework: ERROR
   org:
     springframework:
       boot:
