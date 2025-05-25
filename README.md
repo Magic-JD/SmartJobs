@@ -17,23 +17,45 @@ SmartJobs is a sophisticated web application designed to revolutionize the job s
 
 ---
 
-## Technologies Used
+## Design
 
-* **Spring Boot 3.5.0:** Core application framework.
-* **Java 21:** Programming language.
-* **PostgreSQL:** Primary database.
-* **Testcontainers 1.20.2:** For providing isolated, real database environments for integration testing.
-* **Spring Data JPA / Hibernate:** For database interaction and ORM.
-* **Spring Security 6.4.2:** For authentication and authorization.
-* **Maven:** Build automation tool.
-* **Lombok:** To reduce boilerplate code.
-* **Resilience4j 2.2.0:** For fault tolerance and resilience patterns.
-* **OpenAPI (Springdoc) 2.8.4:** For API documentation.
-* **Apache PDFBox 3.0.2 & Apache POI 5.2.5:** For document processing.
-* **HTMX 1.5.0 & Hyperscript 0.8.1:** For dynamic frontend interactions.
-* **Thymeleaf & j2html 1.5.0:** For server-side templating.
-* **Bucket4j 8.10.1 & Caffeine 3.0.4:** For rate limiting and caching.
-* **Vavr 0.10.4:** Functional programming library for Java.
+This section outlines the key architectural decisions and patterns employed in SmartJobs.
+
+### Hexagonal Architecture (Ports and Adapters)
+
+SmartJobs is built upon a Hexagonal Architecture, also known as the Ports and Adapters pattern. This architectural style promotes a clear separation of concerns, making the application more modular, testable, and maintainable.
+
+*   **`core` (Domain Logic):** This is the heart of the application, containing the business logic, entities, and use cases. It is completely independent of any specific technology or framework. The `core` defines "ports" (interfaces) that dictate how it interacts with the outside world.
+*   **`adaptors` (Infrastructure and UI):** These are the external components that interact with the `core` through the defined ports. Adapters are responsible for concerns like:
+    *   **UI (Web Interface):** Handling HTTP requests, rendering web pages (using Spring MVC, Thymeleaf, HTMX).
+    *   **Database Persistence:** Implementing data storage and retrieval (using Spring Data JPA, PostgreSQL).
+    *   **External Services:** Integrating with third-party APIs or services.
+    *   **Messaging:** Handling asynchronous communication if applicable.
+
+This separation ensures that the `core` domain logic remains pure and can be easily tested in isolation. Changes in technology (e.g., switching database providers or UI frameworks) primarily affect the `adaptors` layer, minimizing impact on the core business rules.
+
+### High Concurrency Model
+
+SmartJobs is designed to handle a high volume of concurrent users and requests efficiently.
+
+*   **Java 21 Virtual Threads:** The application leverages Java 21's virtual threads (Project Loom) to manage concurrent operations. Virtual threads are lightweight and allow for a significantly higher number of concurrent tasks compared to traditional platform threads, reducing resource overhead and improving scalability.
+*   **`ConcurrencyUtil` Class:** A dedicated utility class, `org.smartjobs.shared.ConcurrencyUtil`, provides helper methods and configurations for managing concurrency, ensuring optimal use of virtual threads and other concurrency primitives. This might include custom thread pools or executors tailored for specific tasks.
+
+### Other Key Architectural Aspects
+
+*   **Technology Stack:**
+    *   **Spring Boot 3.5.0:** Provides a robust and convention-over-configuration framework for building the application.
+    *   **Java 21:** The primary programming language, offering modern features like virtual threads.
+    *   **PostgreSQL:** Used as the relational database for persistent storage.
+    *   **Spring Data JPA & Hibernate:** For Object-Relational Mapping (ORM) and simplified data access.
+    *   **Spring Security:** For handling authentication and authorization.
+    *   **HTMX & Thymeleaf:** For creating dynamic and interactive user interfaces with server-side rendering.
+*   **Project Setup:**
+    *   **Maven:** Used for dependency management and building the project.
+    *   **Docker (via Testcontainers):** Employed for creating isolated and reproducible environments for integration testing, particularly for the PostgreSQL database.
+    *   **GitHub Actions:** Utilized for continuous integration and continuous deployment (CI/CD) pipelines, automating builds, tests, and deployments.
+*   **Modularity:** The project is structured into modules (e.g., `core`, `adaptors`, `app`) to enforce separation of concerns and improve maintainability.
+*   **Resilience:** Patterns like rate limiting (Bucket4j) and caching (Caffeine) are used to enhance application stability and performance under load.
 
 ---
 
