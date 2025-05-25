@@ -17,12 +17,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 @Getter
@@ -32,9 +34,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 @AutoConfigureMockMvc
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
-@Transactional
+@Sql(
+        scripts = {"/schema.sql", "/data.sql"},
+        executionPhase = BEFORE_TEST_METHOD
+)
 @Import(TestcontainersConfiguration.class)
 @ActiveProfiles("test")
+
 public abstract class IntegrationTest {
 
     public static final User USER = new User("email@email.com", "password", 1, List.of(() -> "USER"));
