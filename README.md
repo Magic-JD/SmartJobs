@@ -77,7 +77,7 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/your-username/SmartJobs.git](https://github.com/your-username/SmartJobs.git)
+   git clone git@github.com:Magic-JD/SmartJobs.git
    cd smart-jobs
    ```
 2. **Build the project:**
@@ -104,7 +104,7 @@ This command will:
 * Initialize the database schema (`schema.sql`) and populate it with sample data (`data.sql`).
 * Launch the SmartJobs application, connecting it to this temporary PostgreSQL database.
 
-The application will be available on **HTTP port 8080** (e.g., `https://localhost:8080`).
+The application will be available on **HTTP port 8080** (e.g., `http://localhost:8080`).
 
 You can log in with the following trial credentials:
 
