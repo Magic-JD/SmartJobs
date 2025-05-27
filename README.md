@@ -95,9 +95,7 @@ To experience SmartJobs, you can run a local instance that uses a PostgreSQL dat
 To start the application in trial mode:
 
 ```bash
-mvn spring-boot:test-run \
-  -Dspring-boot.run.main-class=org.smartjobs.TestSmartJobs \
-  -Dspring.profiles.active=test
+mvn spring-boot:test-run
 ```
 
 This command will:
@@ -106,7 +104,7 @@ This command will:
 * Initialize the database schema (`schema.sql`) and populate it with sample data (`data.sql`).
 * Launch the SmartJobs application, connecting it to this temporary PostgreSQL database.
 
-The application will be available on a random, available **HTTPS port** (e.g., `https://localhost:54321`). Please **check your console output** for the exact assigned port.
+The application will be available on **HTTP port 8080** (e.g., `https://localhost:8080`).
 
 You can log in with the following trial credentials:
 
@@ -119,12 +117,18 @@ You can log in with the following trial credentials:
 
 SmartJobs includes a comprehensive suite of unit and integration tests.
 
+To run just the unit tests run:
+
+```bash
+mvn test
+```
+
 ### Running All Tests
 
 To run all tests (unit and integration), execute:
 
 ```bash
-mvn test
+mvn verify
 ```
 
 ### Running Integration Tests Specifically
