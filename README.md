@@ -4,6 +4,8 @@
 
 SmartJobs is a sophisticated web application designed to revolutionize the job search and recruitment process. It leverages advanced AI to provide intelligent matching between candidates and roles, deep CV analysis, and comprehensive insights into career trajectories and criteria.
 
+![smart jobs demo](demos/smartjobs.gif)
+
 ---
 
 ## Features
