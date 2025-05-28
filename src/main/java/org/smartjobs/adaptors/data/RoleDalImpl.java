@@ -47,29 +47,33 @@ public class RoleDalImpl implements RoleDal {
 
     @Override
     public org.smartjobs.core.entities.Role getRoleById(long id) {
-        Optional<Role> role = roleRepository.findById(id);
-        return convertToCoreRole(role)
+        return roleRepository.findById(id)
+                .map(this::convertToCoreRole)
                 .orElseThrow(() -> new IncorrectIdForRoleRetrievalException(id));
     }
 
-    private static Optional<org.smartjobs.core.entities.Role> convertToCoreRole(Optional<Role> role) {
-        return role
-                .map(r -> new org.smartjobs.core.entities.Role(r.getId(), r.getPosition(), r.getRoleCriteria().stream().map(rc -> {
-                    UserCriteria userCriteria = rc.getUserCriteria();
-                    DefinedCriteria definedCriteria = userCriteria.getDefinedCriteria();
-                    String aiPrompt = definedCriteria.getAiPrompt();
-                    String value = userCriteria.getValue();
-                    if(value != null){
-                        aiPrompt = aiPrompt.replace("X", value);
-                    }
-                    return new UserScoringCriteria(
-                            rc.getId(),
-                            CriteriaCategory.getFromName(definedCriteria.getCategory()),
-                            definedCriteria.getCriteria() + (definedCriteria.isInput() ? STR.": \{value}" : ""),
-                            definedCriteria.isBoolean(),
-                            userCriteria.getScore(),
-                            aiPrompt);
-                }).toList()));
+    private org.smartjobs.core.entities.Role convertToCoreRole(Role role) {
+        return new org.smartjobs.core.entities.Role(
+                role.getId(),
+                role.getPosition(),
+                role.getRoleCriteria().stream().map(this::convertRoleCriteria).toList());
+    }
+
+    private UserScoringCriteria convertRoleCriteria(RoleCriteria rc) {
+        UserCriteria userCriteria = rc.getUserCriteria();
+        DefinedCriteria definedCriteria = userCriteria.getDefinedCriteria();
+        String aiPrompt = definedCriteria.getAiPrompt();
+        String value = userCriteria.getValue();
+        if(value != null){
+            aiPrompt = aiPrompt.replace("X", value);
+        }
+        return new UserScoringCriteria(
+                rc.getId(),
+                CriteriaCategory.getFromName(definedCriteria.getCategory()),
+                definedCriteria.getCriteria() + (definedCriteria.isInput() ? STR.": \{value}" : ""),
+                definedCriteria.isBoolean(),
+                userCriteria.getScore(),
+                aiPrompt);
     }
 
     @Override
@@ -107,7 +111,9 @@ public class RoleDalImpl implements RoleDal {
 
     @Override
     public Optional<org.smartjobs.core.entities.Role> getCurrentlySelectedRole(long userId) {
-        return convertToCoreRole(selectedRoleRepository.findByUserId(userId).map(SelectedRole::getRole));
+        return selectedRoleRepository.findByUserId(userId)
+                .map(SelectedRole::getRole)
+                .map(this::convertToCoreRole);
     }
 
     @Transactional
