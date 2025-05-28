@@ -2,6 +2,8 @@ package constants;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import org.smartjobs.adaptors.data.repository.data.DefinedCriteria;
+import org.smartjobs.adaptors.data.repository.data.RoleCriteria;
 import org.smartjobs.adaptors.data.repository.data.SelectedRole;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptMessage;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
@@ -58,7 +60,8 @@ public class TestConstants {
 
     public static final String CANDIDATE_NAME = "Joe Daunt";
     public static final String CANDIDATE_NAME2 = "James Mottram";
-    public static final String CRITERIA_DESCRIPTION = "Criteria Description";
+    public static final String CRITERIA_DESCRIPTION = "Criteria Description: Java";
+    public static final String CRITERIA_DESCRIPTION_BASE = "Criteria Description";
     public static final long ANALYSIS_ID = 43532L;
     public static final long ANALYSIS_ID2 = 653534L;
     public static final String JUSTIFICATION_POSITIVE = "The candidate meets the criteria";
@@ -72,16 +75,17 @@ public class TestConstants {
     public static final Score SCORE_BAD = new Score(JUSTIFICATION_NEGATIVE, SCORE_VALUE_BAD);
     public static final long USER_CRITERIA_ID = 22342L;
     public static final long USER_CRITERIA_ID2 = 5435234L;
-    public static final String CRITERIA_REQUEST_SCORE = "Does the candidate match the criteria score?";
+    public static final String CRITERIA_REQUEST_SCORE = "Does the candidate match the criteria Java score?";
     public static final String CRITERIA_REQUEST_PASS = "Does the candidate match the criteria pass?";
+    public static final String CRITERIA_REQUEST_SCORE_BASE = "Does the candidate match the criteria X score?";
     public static final int MAX_SCORE_VALUE = 10;
-    public static final UserScoringCriteria USER_SCORING_CRITERIA_BAD = new UserScoringCriteria(USER_CRITERIA_ID, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION, true, MAX_SCORE_VALUE, CRITERIA_REQUEST_PASS);
+    public static final UserScoringCriteria USER_SCORING_CRITERIA_BAD = new UserScoringCriteria(USER_CRITERIA_ID, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION_BASE, true, MAX_SCORE_VALUE, CRITERIA_REQUEST_PASS);
     public static final UserScoringCriteria USER_SCORING_CRITERIA_GOOD = new UserScoringCriteria(USER_CRITERIA_ID2, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION, false, MAX_SCORE_VALUE, CRITERIA_REQUEST_SCORE);
     public static final List<UserScoringCriteria> USER_SCORING_CRITERIA_LIST = List.of(USER_SCORING_CRITERIA_GOOD, USER_SCORING_CRITERIA_BAD);
     public static final List<UserScoringCriteria> USER_SCORING_CRITERIA_LIST2 = List.of(USER_SCORING_CRITERIA_GOOD, USER_SCORING_CRITERIA_BAD);
     public static final ScoredCriteria SCORED_CRITERIA_GOOD = new ScoredCriteria(USER_CRITERIA_ID2, CRITERIA_DESCRIPTION, JUSTIFICATION_POSITIVE, SCORE_VALUE_GOOD, MAX_SCORE_VALUE);
     public static final ScoredCriteria SCORED_CRITERIA_MEDIUM = new ScoredCriteria(USER_CRITERIA_ID2, CRITERIA_DESCRIPTION, JUSTIFICATION_MEDIUM, SCORE_VALUE_MEDIUM, MAX_SCORE_VALUE);
-    public static final ScoredCriteria SCORED_CRITERIA_BAD = new ScoredCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, JUSTIFICATION_NEGATIVE, SCORE_VALUE_BAD, MAX_SCORE_VALUE);
+    public static final ScoredCriteria SCORED_CRITERIA_BAD = new ScoredCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION_BASE, JUSTIFICATION_NEGATIVE, SCORE_VALUE_BAD, MAX_SCORE_VALUE);
     public static final List<ScoredCriteria> SCORED_CRITERIA_LIST = List.of(SCORED_CRITERIA_GOOD, SCORED_CRITERIA_BAD);
     public static final List<ScoredCriteria> SCORED_CRITERIA_LIST2 = List.of(SCORED_CRITERIA_MEDIUM, SCORED_CRITERIA_BAD);
     public static final CandidateScores CANDIDATE_SCORES = new CandidateScores(ANALYSIS_ID, CANDIDATE_NAME, SCORED_CRITERIA_LIST);
@@ -124,6 +128,8 @@ public class TestConstants {
     public static final long DEFINED_SCORING_CRITERIA_ID_SCORE = 43543L;
     public static final long DEFINED_SCORING_CRITERIA_ID_PASS = 487673L;
     public static final String DEFINED_SCORING_CRITERIA_DESCRIPTION = "Description";
+    public static final DefinedCriteria DEFINED_CRITERIA_PASS = DefinedCriteria.builder().id(DEFINED_SCORING_CRITERIA_ID_PASS).criteria(CRITERIA_DESCRIPTION_BASE).category(CriteriaCategory.HARD_SKILLS.toString()).aiPrompt(CRITERIA_REQUEST_PASS).isBoolean(true).input(false).build();
+    public static final DefinedCriteria DEFINED_CRITERIA_SCORE = DefinedCriteria.builder().id(DEFINED_SCORING_CRITERIA_ID_SCORE).criteria(CRITERIA_DESCRIPTION_BASE).category(CriteriaCategory.HARD_SKILLS.toString()).aiPrompt(CRITERIA_REQUEST_SCORE_BASE).isBoolean(false).input(true).build();
     public static final String INPUT_EXAMPLE = "Input Example";
     public static final String TOOLTIP = "Tooltip";
     public static final DefinedScoringCriteria DEFINED_SCORING_CRITERIA_PASS = new DefinedScoringCriteria(DEFINED_SCORING_CRITERIA_ID_PASS, DEFINED_SCORING_CRITERIA_DESCRIPTION, CriteriaCategory.HARD_SKILLS, false, Optional.empty(), CRITERIA_REQUEST_PASS, TOOLTIP);
@@ -141,12 +147,15 @@ public class TestConstants {
     public static final Role ROLE = new Role(ROLE_ID, POSITION, USER_SCORING_CRITERIA_LIST);
     public static final Role ROLE2 = new Role(ROLE_ID2, POSITION2, USER_SCORING_CRITERIA_LIST2);
     public static final Role ROLE_NEW = new Role(ROLE_ID, POSITION, Collections.emptyList());
-    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID, USER_ID, POSITION);
-    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE2 = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID2, USER_ID, POSITION2);
+    public static final org.smartjobs.adaptors.data.repository.data.UserCriteria DATABASE_USER_CRITERIA_PASS = new org.smartjobs.adaptors.data.repository.data.UserCriteria(53242342L, DEFINED_CRITERIA_PASS, null, 10);
+    public static final org.smartjobs.adaptors.data.repository.data.UserCriteria DATABASE_USER_CRITERIA_SCORE = new org.smartjobs.adaptors.data.repository.data.UserCriteria(53242342L, DEFINED_CRITERIA_SCORE, VALUE, 10);
+    public static final RoleCriteria ROLE_CRITERIA_PASS = new RoleCriteria(USER_CRITERIA_ID, null, DATABASE_USER_CRITERIA_PASS);
+    public static final RoleCriteria ROLE_CRITERIA_SCORE = new RoleCriteria(USER_CRITERIA_ID2, null, DATABASE_USER_CRITERIA_SCORE);
+    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID, USER_ID, POSITION, List.of(ROLE_CRITERIA_SCORE, ROLE_CRITERIA_PASS));
+    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE2 = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID2, USER_ID, POSITION2, Collections.emptyList());
     public static final List<org.smartjobs.adaptors.data.repository.data.Role> DATABASE_ROLE_LIST = List.of(DATABASE_ROLE, DATABASE_ROLE2);
     public static final long SELECTED_ROLE_ID = 4346453L;
-    public static final SelectedRole SELECTED_ROLE = new SelectedRole(SELECTED_ROLE_ID, USER_ID, ROLE_ID);
-    public static final long ZERO = 0L;
+    public static final SelectedRole SELECTED_ROLE = new SelectedRole(SELECTED_ROLE_ID, USER_ID, DATABASE_ROLE);
     public static final Date NOW = Date.valueOf(LocalDate.now());
     public static final GptRequest GPT_REQUEST = new GptRequest(GptModel.GPT_3_5, 1.0, 0.5, List.of(new GptMessage(GptRole.SYSTEM, "Are you sentient yet")));
     public static final String GPT_RESPONSE_ID = "ID";
@@ -214,7 +223,7 @@ public class TestConstants {
     public static final Category QUALIFICATIONS = new Category("Qualifications", Collections.emptyList());
     public static final Category PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION = new Category("Professional Engagement and Recognition", Collections.emptyList());
     public static final ScoringCriteria DISPLAY_SCORING_CRITERIA1 = new ScoringCriteria(USER_CRITERIA_ID2, CRITERIA_DESCRIPTION, MAX_SCORE_VALUE);
-    public static final ScoringCriteria DISPLAY_SCORING_CRITERIA2 = new ScoringCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION, MAX_SCORE_VALUE);
+    public static final ScoringCriteria DISPLAY_SCORING_CRITERIA2 = new ScoringCriteria(USER_CRITERIA_ID, CRITERIA_DESCRIPTION_BASE, MAX_SCORE_VALUE);
     public static final Category HARD_SKILLS = new Category("Hard Skills", List.of(DISPLAY_SCORING_CRITERIA1, DISPLAY_SCORING_CRITERIA2));
     public static final Category HARD_SKILLS_EMPTY = new Category("Hard Skills", Collections.emptyList());
     public static final List<Category> CATEGORY_LIST = List.of(SOFT_SKILLS, HARD_SKILLS, RELEVANT_EXPERIENCE, QUALIFICATIONS, PROFESSIONAL_ENGAGEMENT_AND_RECOGNITION);

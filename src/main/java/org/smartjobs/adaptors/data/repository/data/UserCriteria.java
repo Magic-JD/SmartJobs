@@ -19,7 +19,9 @@ public class UserCriteria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long definedCriteriaId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "defined_criteria_id", nullable = false)
+    private DefinedCriteria definedCriteria;
 
     @Nullable
     private String value;

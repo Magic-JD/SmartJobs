@@ -22,7 +22,7 @@ class AnalysisDalImplTest {
     public static final long CRITERIA_ANALYSIS_ID = 534543L;
     public static final List<CriteriaAnalysis> CRITERIA_ANALYSIS_LIST = List.of(
             new CriteriaAnalysis(CRITERIA_ANALYSIS_ID, ANALYSIS_ID2, SCORE_VALUE_GOOD, MAX_SCORE_VALUE, CRITERIA_DESCRIPTION, JUSTIFICATION_POSITIVE, USER_CRITERIA_ID2),
-            new CriteriaAnalysis(CRITERIA_ANALYSIS_ID, ANALYSIS_ID, SCORE_VALUE_BAD, MAX_SCORE_VALUE, CRITERIA_DESCRIPTION, JUSTIFICATION_NEGATIVE, USER_CRITERIA_ID)
+            new CriteriaAnalysis(CRITERIA_ANALYSIS_ID, ANALYSIS_ID, SCORE_VALUE_BAD, MAX_SCORE_VALUE, CRITERIA_DESCRIPTION_BASE, JUSTIFICATION_NEGATIVE, USER_CRITERIA_ID)
     );
     private final CriteriaAnalysisRepository criteriaAnalysisRepository = mock(CriteriaAnalysisRepository.class);
     private final AnalysisRepository analysisRepository = mock(AnalysisRepository.class);
@@ -64,7 +64,7 @@ class AnalysisDalImplTest {
         assertEquals(MAX_SCORE_VALUE, goodCriteriaAnalysis.getMaxScore());
         assertEquals(MAX_SCORE_VALUE, badCriteriaAnalysis.getMaxScore());
         assertEquals(CRITERIA_DESCRIPTION, goodCriteriaAnalysis.getCriteriaRequest());
-        assertEquals(CRITERIA_DESCRIPTION, badCriteriaAnalysis.getCriteriaRequest());
+        assertEquals(CRITERIA_DESCRIPTION_BASE, badCriteriaAnalysis.getCriteriaRequest());
         assertEquals(JUSTIFICATION_POSITIVE, goodCriteriaAnalysis.getDescription());
         assertEquals(JUSTIFICATION_NEGATIVE, badCriteriaAnalysis.getDescription());
     }

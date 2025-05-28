@@ -2,10 +2,7 @@ package org.smartjobs.adaptors.data;
 
 import jakarta.transaction.Transactional;
 import org.smartjobs.adaptors.data.repository.*;
-import org.smartjobs.adaptors.data.repository.data.Role;
-import org.smartjobs.adaptors.data.repository.data.RoleCriteria;
-import org.smartjobs.adaptors.data.repository.data.SelectedRole;
-import org.smartjobs.adaptors.data.repository.data.UserCriteria;
+import org.smartjobs.adaptors.data.repository.data.*;
 import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.entities.RoleDisplay;
 import org.smartjobs.core.entities.UserScoringCriteria;
@@ -17,8 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 @Component
 public class RoleDalImpl implements RoleDal {
@@ -52,24 +47,29 @@ public class RoleDalImpl implements RoleDal {
 
     @Override
     public org.smartjobs.core.entities.Role getRoleById(long id) {
-        var criteriaF = supplyAsync(() -> roleCriteriaRepository.findAllCriteriaByRoleId(id).stream()
-                .map(tuple -> {
-                    String aiPrompt = tuple.get("ai_prompt", String.class);
-                    String value = tuple.get("value", String.class);
-                    return new UserScoringCriteria(
-                            tuple.get("id", Long.class),
-                            CriteriaCategory.getFromName(tuple.get("category", String.class)),
-                            tuple.get("criteria", String.class) + (tuple.get("input", Boolean.class) ? ": " + value : ""),
-                            tuple.get("is_boolean", Boolean.class),
-                            tuple.get("score", Long.class),
-                            value == null ? aiPrompt : aiPrompt.replace("X", value));
-                }).toList());
-        var roleFoundByIdF = supplyAsync(() -> roleRepository.findById(id));
-        var criteria = criteriaF.join();
-        var roleFoundById = roleFoundByIdF.join();
-        return roleFoundById
-                .map(role -> new org.smartjobs.core.entities.Role(role.getId(), role.getPosition(), criteria))
+        Optional<Role> role = roleRepository.findById(id);
+        return convertToCoreRole(role)
                 .orElseThrow(() -> new IncorrectIdForRoleRetrievalException(id));
+    }
+
+    private static Optional<org.smartjobs.core.entities.Role> convertToCoreRole(Optional<Role> role) {
+        return role
+                .map(r -> new org.smartjobs.core.entities.Role(r.getId(), r.getPosition(), r.getRoleCriteria().stream().map(rc -> {
+                    UserCriteria userCriteria = rc.getUserCriteria();
+                    DefinedCriteria definedCriteria = userCriteria.getDefinedCriteria();
+                    String aiPrompt = definedCriteria.getAiPrompt();
+                    String value = userCriteria.getValue();
+                    if(value != null){
+                        aiPrompt = aiPrompt.replace("X", value);
+                    }
+                    return new UserScoringCriteria(
+                            rc.getId(),
+                            CriteriaCategory.getFromName(definedCriteria.getCategory()),
+                            definedCriteria.getCriteria() + (definedCriteria.isInput() ? STR.": \{value}" : ""),
+                            definedCriteria.isBoolean(),
+                            userCriteria.getScore(),
+                            aiPrompt);
+                }).toList()));
     }
 
     @Override
@@ -84,18 +84,20 @@ public class RoleDalImpl implements RoleDal {
     }
 
     @Override
+    @Transactional
     public void setSelectedRole(long userId, long roleId) {
+        Role roleRef = roleRepository.getReferenceById(roleId);
         selectedRoleRepository.saveAndFlush(selectedRoleRepository.findByUserId(userId)
                 .map(sr -> {
-                    sr.setRoleId(roleId);
+                    sr.setRole(roleRef);
                     return sr;
                 })
-                .orElse(SelectedRole.builder().userId(userId).roleId(roleId).build()));
+                .orElse(SelectedRole.builder().userId(userId).role(roleRef).build()));
     }
 
     @Override
     public Optional<Long> getCurrentlySelectedRoleByUserId(long userId) {
-        return selectedRoleRepository.findByUserId(userId).map(SelectedRole::getRoleId);
+        return selectedRoleRepository.findRoleIdByUserId(userId);
     }
 
     @Override
@@ -105,16 +107,16 @@ public class RoleDalImpl implements RoleDal {
 
     @Override
     public Optional<org.smartjobs.core.entities.Role> getCurrentlySelectedRole(long userId) {
-        return selectedRoleRepository.findByUserId(userId)
-                .map(SelectedRole::getRoleId)
-                .map(this::getRoleById);
+        return convertToCoreRole(selectedRoleRepository.findByUserId(userId).map(SelectedRole::getRole));
     }
 
     @Transactional
     public org.smartjobs.core.entities.UserCriteria createNewUserCriteriaForRole(long definedCriteriaId, long roleId, String value, int score) {
-        UserCriteria userCriteria = userCriteriaRepository.saveAndFlush(UserCriteria.builder().definedCriteriaId(definedCriteriaId).value(value).score(score).build());
-        roleCriteriaRepository.save(RoleCriteria.builder().roleId(roleId).userCriteriaId(userCriteria.getId()).build());
-        return new org.smartjobs.core.entities.UserCriteria(userCriteria.getId(), userCriteria.getDefinedCriteriaId(), Optional.ofNullable(userCriteria.getValue()), userCriteria.getScore());
+        DefinedCriteria definedCriteria = definedScoringCriteriaRepository.getReferenceById(definedCriteriaId);
+        Role role = roleRepository.getReferenceById(roleId);
+        UserCriteria userCriteria = userCriteriaRepository.saveAndFlush(UserCriteria.builder().definedCriteria(definedCriteria).value(value).score(score).build());
+        roleCriteriaRepository.save(RoleCriteria.builder().role(role).userCriteria(userCriteria).build());
+        return new org.smartjobs.core.entities.UserCriteria(userCriteria.getId(), userCriteria.getDefinedCriteria().getId(), Optional.ofNullable(userCriteria.getValue()), userCriteria.getScore());
     }
 
     @Override

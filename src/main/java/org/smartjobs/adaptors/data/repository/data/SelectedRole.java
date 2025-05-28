@@ -17,7 +17,9 @@ public class SelectedRole {
 
     private Long userId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
     @Setter
-    private Long roleId;
+    private Role role;
 
 }

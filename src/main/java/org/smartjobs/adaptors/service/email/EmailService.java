@@ -8,7 +8,7 @@ import org.smartjobs.core.ports.listener.Listener;
 
 public abstract class EmailService implements Listener {
 
-    public EmailService(EventEmitter emitter) {
+    EmailService(EventEmitter emitter) {
         emitter.registerForEvents(this, ValidateEmailEvent.class);
         emitter.registerForEvents(this, IssueCouponEvent.class);
     }

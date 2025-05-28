@@ -1,7 +1,6 @@
 package integration;
 
 import display.CamelCaseDisplayNameGenerator;
-import org.smartjobs.config.TestcontainersConfiguration;
 import integration.configuration.TestingConfig;
 import lombok.Getter;
 import org.hamcrest.Description;
@@ -9,6 +8,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.smartjobs.SmartJobs;
+import org.smartjobs.config.TestcontainersConfiguration;
 import org.smartjobs.core.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
