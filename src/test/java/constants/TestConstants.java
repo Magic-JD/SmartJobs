@@ -2,9 +2,7 @@ package constants;
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import org.smartjobs.adaptors.data.repository.data.DefinedCriteria;
-import org.smartjobs.adaptors.data.repository.data.RoleCriteria;
-import org.smartjobs.adaptors.data.repository.data.SelectedRole;
+import org.smartjobs.adaptors.data.repository.data.*;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptMessage;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptModel;
 import org.smartjobs.adaptors.service.ai.gpt.data.GptRole;
@@ -15,6 +13,8 @@ import org.smartjobs.adaptors.service.ai.gpt.response.GptUsage;
 import org.smartjobs.adaptors.view.web.controller.roles.display.Category;
 import org.smartjobs.adaptors.view.web.controller.roles.display.ScoringCriteria;
 import org.smartjobs.core.constants.CreditType;
+import org.smartjobs.core.entities.Role;
+import org.smartjobs.core.entities.UserCriteria;
 import org.smartjobs.core.entities.*;
 import org.smartjobs.core.event.EventEmitter;
 import org.smartjobs.core.event.implementation.EventEmitterImpl;
@@ -151,8 +151,8 @@ public class TestConstants {
     public static final org.smartjobs.adaptors.data.repository.data.UserCriteria DATABASE_USER_CRITERIA_SCORE = new org.smartjobs.adaptors.data.repository.data.UserCriteria(53242342L, DEFINED_CRITERIA_SCORE, VALUE, 10);
     public static final RoleCriteria ROLE_CRITERIA_PASS = new RoleCriteria(USER_CRITERIA_ID, null, DATABASE_USER_CRITERIA_PASS);
     public static final RoleCriteria ROLE_CRITERIA_SCORE = new RoleCriteria(USER_CRITERIA_ID2, null, DATABASE_USER_CRITERIA_SCORE);
-    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID, USER_ID, POSITION, List.of(ROLE_CRITERIA_SCORE, ROLE_CRITERIA_PASS));
-    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE2 = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID2, USER_ID, POSITION2, Collections.emptyList());
+    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID, USER_ID, POSITION, List.of(ROLE_CRITERIA_SCORE, ROLE_CRITERIA_PASS), Collections.emptyList());
+    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE2 = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID2, USER_ID, POSITION2, Collections.emptyList(), Collections.emptyList());
     public static final List<org.smartjobs.adaptors.data.repository.data.Role> DATABASE_ROLE_LIST = List.of(DATABASE_ROLE, DATABASE_ROLE2);
     public static final long SELECTED_ROLE_ID = 4346453L;
     public static final SelectedRole SELECTED_ROLE = new SelectedRole(SELECTED_ROLE_ID, USER_ID, DATABASE_ROLE);
@@ -250,6 +250,11 @@ public class TestConstants {
     public static final CodeProvider CODE_SUPPLIER = () -> CODE;
     public static final NoOpCache EMAIL_VALIDATION_CACHE = new NoOpCache("email-validation");
     public static final UserService USER_SERVICE = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, EVENT_EMITTER, CODE_SUPPLIER, EMAIL_VALIDATION_CACHE);
+
+    public static final Candidate DATABASE_CANDIDATE = new Candidate(CANDIDATE_ID, true, CANDIDATE_NAME, null, USER_ID, DATABASE_ROLE, new Date(0));
+    public static final Candidate DATABASE_CANDIDATE2 = new Candidate(CANDIDATE_ID2, true, CANDIDATE_NAME2, null, USER_ID, DATABASE_ROLE, new Date(0));
+    public static final Cv DATABASE_CV = new Cv(CV_ID, HASH_TXT, CV_STRING_CONDENSED, DATABASE_CANDIDATE);
+    public static final Cv DATABASE_CV2 = new Cv(CV_ID2, HASH_TXT, CV_STRING_CONDENSED2, DATABASE_CANDIDATE2);
 
 
     //PORT MOCKS

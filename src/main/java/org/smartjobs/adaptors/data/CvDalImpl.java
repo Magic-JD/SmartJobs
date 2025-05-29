@@ -4,8 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.adaptors.data.repository.CandidateRepository;
 import org.smartjobs.adaptors.data.repository.CvRepository;
+import org.smartjobs.adaptors.data.repository.RoleRepository;
 import org.smartjobs.adaptors.data.repository.data.Candidate;
 import org.smartjobs.adaptors.data.repository.data.Cv;
+import org.smartjobs.adaptors.data.repository.data.Role;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.ProcessedCv;
@@ -25,57 +27,36 @@ public class CvDalImpl implements CvDal {
     private final CvRepository cvRepository;
     private final CandidateRepository candidateRepository;
     private final DateProvider dateProvider;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public CvDalImpl(CvRepository repository, CandidateRepository candidateRepository, DateProvider dateProvider) {
+    public CvDalImpl(CvRepository repository, CandidateRepository candidateRepository, DateProvider dateProvider, RoleRepository roleRepository) {
         this.cvRepository = repository;
         this.candidateRepository = candidateRepository;
         this.dateProvider = dateProvider;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     @Transactional
     public void addCvsToRepository(long userId, long roleId, List<ProcessedCv> processedCvs) {
         for (ProcessedCv pc : processedCvs) {
-            Long cvId = this.getByHash(pc.fileHash())
-                    .map(CvData::id)
-                    .orElseGet(() -> cvRepository.save(
-                            Cv.builder()
-                                    .fileHash(pc.fileHash())
-                                    .condensedText(pc.condensedDescription())
-                                    .build())
-                            .getId());
-            Candidate candidate = Candidate.builder()
-                    .name(pc.name())
-                    .cvId(cvId)
-                    .lastAccessed(dateProvider.provideDate())
-                    .userId(userId)
-                    .roleId(roleId)
-                    .currentlySelected(pc.currentlySelected())
-                    .build();
+            Cv cv = cvRepository.findByFileHash(pc.fileHash()).orElseGet(() -> cvRepository.save(Cv.builder().fileHash(pc.fileHash()).condensedText(pc.condensedDescription()).build()));
+            Role role = roleRepository.getReferenceById(roleId);
+            Candidate candidate = Candidate.builder().name(pc.name()).cv(cv).lastAccessed(dateProvider.provideDate()).userId(userId).role(role).currentlySelected(pc.currentlySelected()).build();
             Candidate savedCandidate = candidateRepository.save(candidate);
-            log.debug("Saved Cv: {} Candidate: {}", cvId, savedCandidate.getId());
+            log.debug("Saved Cv: {} Candidate: {}", cv.getId(), savedCandidate.getId());
         }
     }
 
     @Override
     public List<CandidateData> getAllCandidates(long userId, long roleId) {
-        return candidateRepository.findAllByUserIdAndRoleId(userId, roleId).stream()
-                .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected()))
-                .toList();
+        return candidateRepository.findAllByUserIdAndRoleId(userId, roleId).stream().map(this::convertToCandidateData).toList();
     }
 
     @Override
     public List<ProcessedCv> getAllSelected(long userId, long roleId) {
-        return cvRepository.findByCurrentlySelected(true, userId, roleId)
-                .stream()
-                .map(cv -> new ProcessedCv(
-                        (Long) cv.get("id"),
-                        (String) cv.get("name"),
-                        true,
-                        (String) cv.get("file_hash"),
-                        (String) cv.get("condensed_text")))
-                .toList();
+        return cvRepository.findByCurrentlySelected(true, userId, roleId).stream().map(cv -> new ProcessedCv(cv.getId(), cv.getCandidate().getName(), cv.getCandidate().getCurrentlySelected(), cv.getFileHash(), cv.getCondensedText())).toList();
     }
 
     @Override
@@ -91,16 +72,22 @@ public class CvDalImpl implements CvDal {
 
     @Override
     public Optional<CandidateData> updateCurrentlySelectedById(long cvId, boolean select) {
-        return candidateRepository.updateCurrentlySelectedById(cvId, select)
-                .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected()));
+        return candidateRepository.updateCurrentlySelectedById(cvId, select).map(this::convertToCandidateData);
     }
 
     @Override
     public List<CandidateData> updateCurrentlySelectedAll(long userId, long roleId, boolean select) {
-        return candidateRepository.updateCurrentlySelectedAll(userId, roleId, select)
-                .stream()
-                .map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected()))
-                .toList();
+        return candidateRepository.updateCurrentlySelectedAll(userId, roleId, select).stream().map(this::convertToCandidateData).toList();
+    }
+
+    private CandidateData convertToCandidateData(Candidate candidate) {
+        return new CandidateData(
+                candidate.getId(),
+                candidate.getName(),
+                candidate.getUserId(),
+                candidate.getRole().getId(),
+                candidate.getCurrentlySelected()
+        );
     }
 
     @Override
@@ -116,16 +103,12 @@ public class CvDalImpl implements CvDal {
     @Override
     @Transactional
     public Optional<CvData> getByHash(String hash) {
-        return cvRepository.findByFileHash(hash).stream().findAny()
-                .map(cv -> new CvData(
-                        cv.getId(),
-                        cv.getFileHash(),
-                        cv.getCondensedText()));
+        return cvRepository.findByFileHash(hash).stream().findAny().map(cv -> new CvData(cv.getId(), cv.getFileHash(), cv.getCondensedText()));
 
     }
 
     @Override
     public List<CandidateData> getByCvId(Long id) {
-        return candidateRepository.findAllByCvId(id).stream().map(candidate -> new CandidateData(candidate.getId(), candidate.getName(), candidate.getUserId(), candidate.getRoleId(), candidate.getCurrentlySelected())).toList();
+        return candidateRepository.findAllByCvId(id).stream().map(this::convertToCandidateData).toList();
     }
 }

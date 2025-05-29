@@ -1,10 +1,7 @@
 package org.smartjobs.adaptors.data.repository.data;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
@@ -17,7 +14,12 @@ public class CriteriaAnalysis {
     @Column(updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private long analysisId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analysis_id", nullable = false)
+    @Setter
+    private Analysis analysis;
+
     private double score;
     private long maxScore;
     private String criteriaRequest;

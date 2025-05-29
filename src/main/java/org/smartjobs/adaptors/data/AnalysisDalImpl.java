@@ -2,6 +2,8 @@ package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.AnalysisRepository;
 import org.smartjobs.adaptors.data.repository.CriteriaAnalysisRepository;
+import org.smartjobs.adaptors.data.repository.CvRepository;
+import org.smartjobs.adaptors.data.repository.RoleRepository;
 import org.smartjobs.adaptors.data.repository.data.Analysis;
 import org.smartjobs.adaptors.data.repository.data.CriteriaAnalysis;
 import org.smartjobs.core.entities.CandidateScores;
@@ -19,11 +21,15 @@ public class AnalysisDalImpl implements AnalysisDal {
 
     private final CriteriaAnalysisRepository criteriaAnalysisRepository;
     private final AnalysisRepository analysisRepository;
+    private final CvRepository cvRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public AnalysisDalImpl(CriteriaAnalysisRepository criteriaAnalysisRepository, AnalysisRepository analysisRepository) {
+    public AnalysisDalImpl(CriteriaAnalysisRepository criteriaAnalysisRepository, AnalysisRepository analysisRepository, CvRepository cvRepository, RoleRepository roleRepository) {
         this.criteriaAnalysisRepository = criteriaAnalysisRepository;
         this.analysisRepository = analysisRepository;
+        this.cvRepository = cvRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -39,12 +45,13 @@ public class AnalysisDalImpl implements AnalysisDal {
 
     @Override
     public long saveResults(long userId, long cvId, long roleId, List<ScoredCriteria> clearResults) {
-        Analysis savedAnalysis = analysisRepository.save(Analysis.builder().cvId(cvId).roleId(roleId).userId(userId).build());
-        long analysisId = savedAnalysis.getId();
+        var cv = cvRepository.getReferenceById(cvId);
+        var role = roleRepository.getReferenceById(roleId);
+        Analysis analysis = analysisRepository.save(Analysis.builder().cv(cv).role(role).userId(userId).build());
         criteriaAnalysisRepository.saveAll(clearResults
                 .stream()
                 .map(scoredCriteria -> CriteriaAnalysis.builder()
-                        .analysisId(analysisId)
+                        .analysis(analysis)
                         .score(scoredCriteria.score())
                         .userCriteriaId(scoredCriteria.userCriteriaId())
                         .maxScore(scoredCriteria.maxScore())
@@ -52,6 +59,6 @@ public class AnalysisDalImpl implements AnalysisDal {
                         .description(scoredCriteria.justification())
                         .build())
                 .toList());
-        return analysisId;
+        return analysis.getId();
     }
 }

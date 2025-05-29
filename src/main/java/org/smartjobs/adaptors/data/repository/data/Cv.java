@@ -22,4 +22,7 @@ public class Cv {
     @Setter
     private String condensedText;
 
+    @OneToOne(mappedBy = "cv", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Candidate candidate;
+
 }

@@ -23,11 +23,18 @@ public class Candidate {
     @Setter
     private String name;
 
-    private Long cvId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cv_id", nullable = false)
+    @Setter
+    private Cv cv;
 
     private Long userId;
 
-    private Long roleId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    @Setter
+    private Role role;
 
     private Date lastAccessed;
 }
