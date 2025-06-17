@@ -26,7 +26,7 @@
         <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
     </nav>
     <div th:replace="${loggedIn} ? ~{trigger/message-trigger} : ~{trigger/empty-trigger}"></div>
-    <div id="message" class="error-message text-medium" th:if="${error != null}">Username or password is incorrect.
+    <div id="message" class="text-medium error-message" th:if="${error != null}">Username or password is incorrect.
     </div>
 </header>
 <main>
@@ -42,8 +42,8 @@
                     <input type='password' name='password' placeholder="Password"/>
                 </label>
             </div>
-            <input name="submit" type="submit" value="Submit" class="button-light button-enlarge"/>
-            <button class="button-light button-enlarge"
+            <input name="submit" type="submit" value="Submit" class="button-dark button-enlarge"/>
+            <button class="button-dark button-enlarge"
                     hx-get="/login/register"
                     hx-swap="innerHtml"
                     hx-target="closest main"

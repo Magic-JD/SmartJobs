@@ -1,5 +1,6 @@
 package org.smartjobs.adaptors.service.sse;
 
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.adaptors.view.web.constants.DisplayMappings;
 import org.smartjobs.core.event.Event;
@@ -10,12 +11,14 @@ import org.smartjobs.core.event.events.ProgressEvent;
 import org.smartjobs.core.ports.listener.Listener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -61,7 +64,7 @@ public class SseServiceImpl implements SseService, Listener {
 
     @Override
     public SseEmitter register(long userId) {
-        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+        SseEmitter sseEmitter = new SseEmitter(5000L);
         var current = sseEmitters.getOrDefault(userId, new ConcurrentLinkedQueue<>());
         current.add(sseEmitter);
         sseEmitters.put(userId, current);
@@ -109,7 +112,15 @@ public class SseServiceImpl implements SseService, Listener {
         });
     }
 
-    private record Link(long userId, SseEmitter emitter) {
+    @PreDestroy
+    public void shutdown() {
+        log.info("Shutting down, cleaning up SSE emitters");
+        sseEmitters.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .forEach(SseEmitter::complete);
+        sseEmitters.clear();
     }
 
+    private record Link(long userId, SseEmitter emitter) { }
 }
