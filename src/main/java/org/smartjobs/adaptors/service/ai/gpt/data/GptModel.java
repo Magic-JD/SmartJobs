@@ -10,6 +10,7 @@ public enum GptModel {
     GPT_4("gpt-4"),
     GPT_4_TURBO("gpt-4-turbo-preview"),
     GPT_4_O("gpt-4o"),
+    GPT_4_1_MINI("gpt-4.1-mini"),
     UNKNOWN("unknown");
 
     private final String name;

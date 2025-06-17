@@ -1,9 +1,10 @@
 :root {
-    --clr-highlight: rgb(1, 19, 45);
-    --clr-white: rgb(255, 255, 255);
-    --clr-background: rgb(8, 10, 19);
-    --clr-text: rgb(204, 207, 235);
-    --clr-error: rgb(102, 2, 29);
+    --clr-highlight: rgb(205, 175, 149);
+    --clr-white: rgb(255, 253, 240);
+    --clr-black: rgb(0, 0, 0);
+    --clr-background: rgb(255, 253, 240);
+    --clr-text: rgb(30, 33, 45);
+    --clr-error: rgb(182, 0, 36);
 
     --ff-primary: "Heebo", sans-serif;
 
@@ -158,8 +159,8 @@ picture {
 }
 
 .button-light {
-  background-color: var(--clr-text);
-  color: var(--clr-background);
+  background-color: var(--clr-white);
+  color: var(--clr-text);
   border: none;
   padding: 2px 7px;
   margin: 5px 20px;
@@ -193,8 +194,8 @@ picture {
 }
 
 .button-dark:hover {
-  background-color: var(--clr-text);
-  color: var(--clr-background);
+  background-color: var(--clr-white);
+  color: var(--clr-text);
 }
 
 
@@ -205,12 +206,26 @@ picture {
   font-size: var(--fs-medium);
 }
 
-.button-header-dark {
-   background-color: var(--clr-background)
+.header-info {
+  background-color: var(--color-highlight);
+  color: var(--clr-text);
+  border: none;
+  padding: 10px 15px;
+  margin: 0;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: var(--fs-small);
+  font-family: var(--ff-body);
+  border-bottom: 3px solid transparent;
+  width: 100px;
+  height: 100%;
+  transition: border-color 0.3s, background-color 0.3s;
+  cursor: pointer;
 }
 
-.button-header-light:hover {
-    background-color: var(--clr-background)
+.button-header:hover {
+    color: var(--clr-white)
 }
 
 .right-pushed {
@@ -242,7 +257,7 @@ picture {
 }
 
 .highlighted {
-    color: var(--clr-white);
+    color: var(--clr-highlight);
     font-weight: bold;
     text-decoration: underline;
 }
@@ -286,7 +301,7 @@ footer {
 
 .candidate-row {
     border-bottom: 1px solid;
-    border-color: var(--clr-text);
+    border-color: var(--clr-black);
     width: 90%;
     left-margin: 5%;
 }
@@ -321,14 +336,14 @@ footer {
   padding: 20px;
   border-radius: 10px;
   border: 2px dashed;
-  color: var(--clr-text);
+  color: var(--clr-white);
   font: var(--ft-body);
   cursor: pointer;
   transition: background .2s ease-in-out, border .2s ease-in-out;
 }
 
 .drop-container:hover {
-  background: var(--clr-text);
+  background: var(--clr-black);
   border-color: var(--clr-background);
 }
 
@@ -355,8 +370,8 @@ footer {
 input[type=text], input[type=password] {
     margin-top: 10px;
     padding-left: 10px;
-    background-color: var(--clr-text);
-    color: var(--clr-background);
+    background-color: var(--clr-white);
+    color: var(--clr-text);
     border: 1px solid var(--clr-highlight);
     border-radius:10px;
 }
@@ -364,8 +379,8 @@ input[type=text], input[type=password] {
 input[type=file]::file-selector-button {
   margin-right: 20px;
   border: none;
-  background: var(--clr-text);
-  color: var(--clr-background);
+  background: var(--clr-white);
+  color: var(--clr-text);
   padding: 10px 20px;
   border-radius: 10px;
   cursor: pointer;

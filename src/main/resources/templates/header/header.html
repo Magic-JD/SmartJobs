@@ -1,28 +1,30 @@
 <header th:fragment="header" class="primary-header flex-container highlight">
     <a class="text-medium icon-link" th:href="@{/}">Smart Jobs</a>
     <nav class="primary-navigation flex-container right-pushed">
-        <div th:if="${username != null}"
-             class="text-small left-nudged">
-            <div th:text="${username}"></div>
+        <div class="right-pushed">
+            <div th:if="${username != null}"
+                 class="header-info">
+                <div th:text="${username}"></div>
+            </div>
+            <div th:if="${credits != null}"
+                 class="header-info"
+                 hx-ext="sse"
+                 sse-connect="/sse/register"
+                 sse-swap="credit"
+                 hx-swap="innerHtml"
+                 hx-target="this"
+                 hx-trigger="load"
+            >
+                <div th:text="|Credit: ${credits}|"></div>
+            </div>
+            <a class="header-info button-header" th:each="navElement : ${navElements}"
+               th:attr="hx-get=@{|/${navElement.link}|}"
+               hx-swap="innerHtml"
+               hx-target="next main"
+               hx-trigger="click"
+               th:text="${navElement.name}"></a>
+            <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
         </div>
-        <div th:if="${credits != null}"
-             class="text-small left-nudged"
-             hx-ext="sse"
-             sse-connect="/sse/register"
-             sse-swap="credit"
-             hx-swap="innerHtml"
-             hx-target="this"
-             hx-trigger="load"
-        >
-            <div th:text="|Credit: ${credits}|"></div>
-        </div>
-        <a class="button-dark right-pushed button-header-dark" th:each="navElement : ${navElements}"
-           th:attr="hx-get=@{|/${navElement.link}|}"
-           hx-swap="innerHtml"
-           hx-target="next main"
-           hx-trigger="click"
-           th:text="${navElement.name}"></a>
-        <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
     </nav>
     <div th:replace="${loggedIn} ? ~{trigger/message-trigger} : ~{trigger/empty-trigger}"></div>
     <div id="message" class="attacher"></div>
