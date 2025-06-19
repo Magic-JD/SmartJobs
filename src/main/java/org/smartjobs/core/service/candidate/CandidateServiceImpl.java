@@ -67,17 +67,22 @@ public class CandidateServiceImpl implements CandidateService {
     })
     public List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<MultipartFile> files) {
         creditService.debit(userId, files.size());
+        eventEmitter.sendEvent(new ProgressEvent(userId, 0, files.size()));
         var handledFiles = files.stream()
                 .map(fileHandler::handleFile)
                 .distinct()
                 .toList();
-        var fileInformation = handledFiles.stream().map(hfo -> hfo.map(Either::<ProcessFailure, FileInformation>right).orElse(Either.left(FAILURE_TO_READ_FILE))).toList();
+        var fileInformation = handledFiles.stream().map(handledFile -> handledFile.map(Either::<ProcessFailure, FileInformation>right).orElse(Either.left(FAILURE_TO_READ_FILE))).toList();
         var counter = new AtomicInteger(0);
         var total = files.size();
 
         var processedCvs = ConcurrencyUtil.virtualThreadListMap(
                 fileInformation,
-                fi -> processAndUpdateProgress(userId, roleId, fi, counter, total)
+                fileInfo -> {
+                    var processed = fileInfo.flatMap(fi -> this.extractInformation(fi, userId, roleId));
+                    eventEmitter.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
+                    return processed;
+                }
         );
 
         var successfullyProcessed = processedCvs.stream().filter(Either::isRight).map(Either::get).toList();
@@ -88,12 +93,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
         cvDal.addCvsToRepository(userId, roleId, successfullyProcessed);
         return successfullyProcessed;
-    }
-
-    private Either<ProcessFailure, ProcessedCv> processAndUpdateProgress(long userId, long roleId, Either<ProcessFailure, FileInformation> fileInformation, AtomicInteger counter, int total) {
-        var processedCv = fileInformation.flatMap(fi -> this.extractInformation(fi, userId, roleId));
-        eventEmitter.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
-        return processedCv;
     }
 
     private Either<ProcessFailure, ProcessedCv> extractInformation(FileInformation fileInformation, long userId, long roleId) {
@@ -116,15 +115,9 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Either<ProcessFailure, ProcessedCv> preexistingData(FileInformation fileInformation, long userId, long roleId, CvData coreData) {
-        List<CandidateData> candidateData = cvDal.getByCvId(coreData.id());
-        if (candidateData.isEmpty()) {
-            return aiService
-                    .extractCandidateName(fileInformation.fileContent())
-                    .map(name -> Either.<ProcessFailure, ProcessedCv>right(new ProcessedCv(coreData.id(), name, true, coreData.fileHash(), coreData.condensedDescription())))
-                    .orElse(Either.left(LLM_FAILURE_UPLOADING));
-        } else {
-            String name = candidateData.getFirst().name();
-            var existingRowForUser = candidateData.stream().filter(cd -> cd.userId() == userId && cd.roleId() == roleId).findFirst();
+        Optional<CandidateData> candidateData = cvDal.getByCvId(coreData.id());
+            String name = candidateData.orElseThrow().name();
+            var existingRowForUser = candidateData.stream().filter(cd -> cd.userId() == userId).findFirst();
             if (existingRowForUser.isPresent()) {
                 CandidateData currentData = existingRowForUser.get();
                 if (!currentData.currentlySelected()) {
@@ -133,7 +126,6 @@ public class CandidateServiceImpl implements CandidateService {
                 return Either.left(EXISTING_CANDIDATE);
             }
             return Either.right(new ProcessedCv(coreData.id(), name, true, coreData.fileHash(), coreData.condensedDescription()));
-        }
     }
 
     @Override

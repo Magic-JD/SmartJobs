@@ -28,7 +28,7 @@ public interface CvDal {
 
     Optional<CvData> getByHash(String hash);
 
-    List<CandidateData> getByCvId(Long id);
+    Optional<CandidateData> getByCvId(Long id);
 
     List<CandidateData> updateCurrentlySelectedAll(long userId, long roleId, boolean select);
 }

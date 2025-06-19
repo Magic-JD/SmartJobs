@@ -50,7 +50,7 @@ public class SseServiceImpl implements SseService, Listener {
             case ProgressEvent(var userId, var currentState, var finalState) ->
                     send(userId, "progress", STR. "\{ currentState }/\{ finalState }" );
             case CreditEvent(var userId, var currentCredit, var creditType) ->
-                    send(userId, "credit", STR. "Credit: \{ decimalFormat.format(currentCredit) }" );
+                    send(userId, "credit", STR. "\{ decimalFormat.format(currentCredit) }" );
             case ErrorEvent(var userId, var processingFailures) -> {
                 Context context = new Context();
                 context.setVariable("message", processingFailures.stream().map(DisplayMappings::mapProcessingFailure).collect(Collectors.joining("\n")));

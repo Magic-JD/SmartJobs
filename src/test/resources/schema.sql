@@ -92,7 +92,6 @@ CREATE TABLE public.candidate (
 	cv_id int8 NOT NULL,
 	last_accessed date NOT NULL,
 	user_id int8 NOT NULL,
-	role_id int8 NOT NULL,
 	currently_selected bool NOT NULL,
 	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	CONSTRAINT candidate_pk PRIMARY KEY (id),
@@ -135,4 +134,15 @@ CREATE TABLE public.coupon (
 	CONSTRAINT coupon_pk PRIMARY KEY (id),
 	CONSTRAINT coupon_unique UNIQUE (code)
 );
+
 ALTER TABLE public.coupon ADD CONSTRAINT coupon_credential_fk FOREIGN KEY (user_id) REFERENCES public.credential(id);
+
+CREATE TABLE public.candidate_role (
+	id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	role_id int8 NOT NULL,
+	candidate_id int8 NOT NULL,
+	CONSTRAINT candidate_role_pk PRIMARY KEY (id)
+);
+
+ALTER TABLE public.candidate_role ADD CONSTRAINT role_id_fk FOREIGN KEY (role_id) REFERENCES public."role"(id);
+ALTER TABLE public.candidate_role ADD CONSTRAINT candidate_id_fk FOREIGN KEY (candidate_id) REFERENCES public.candidate(id);

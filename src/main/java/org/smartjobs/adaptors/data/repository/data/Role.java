@@ -30,4 +30,7 @@ public class Role {
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Analysis> analysesList;
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
+    private List<Candidate> candidates;
+
 }

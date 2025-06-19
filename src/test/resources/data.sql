@@ -7,9 +7,12 @@ INSERT INTO public."role" (user_id,"position") VALUES
 	 (1,'role');
 INSERT INTO public.selected_role (user_id,role_id) VALUES
 	 (1,1);
-INSERT INTO public.candidate ("name",cv_id,last_accessed,user_id,role_id,currently_selected) VALUES
-	 ('Joe',1,'2024-06-26',1,1,true),
-	 ('James',2,'2024-06-26',1,1,false);
+INSERT INTO public.candidate ("name",cv_id,last_accessed,user_id,currently_selected) VALUES
+	 ('Joe',1,'2024-06-26',1,true),
+	 ('James',2,'2024-06-26',1,false);
+INSERT INTO public.candidate_role(id, role_id, candidate_id) VALUES
+    (1, 1, 1),
+    (1, 1, 2);
 INSERT INTO public.defined_criteria (id,category,criteria,"input",ai_prompt,is_boolean,input_example,tooltip) VALUES
 	 (2,'Soft Skills','Communication and Teamwork',false,'Rate communication and teamwork skills on a CV from 0 to 10: 0 for no evidence; 1-3 for basic collaboration roles; 4-6 for regular involvement in team projects; 7-9 for leadership in team settings; 10 for exceptional, documented achievements in enhancing team performance and communication.',false,NULL,'0 : No evidence of collaboration roles
 1-3 : Basic involvement in collaborative projects or teams

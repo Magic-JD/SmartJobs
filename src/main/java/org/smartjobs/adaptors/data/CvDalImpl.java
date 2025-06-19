@@ -43,7 +43,7 @@ public class CvDalImpl implements CvDal {
         for (ProcessedCv pc : processedCvs) {
             Cv cv = cvRepository.findByFileHash(pc.fileHash()).orElseGet(() -> cvRepository.save(Cv.builder().fileHash(pc.fileHash()).condensedText(pc.condensedDescription()).build()));
             Role role = roleRepository.getReferenceById(roleId);
-            Candidate candidate = Candidate.builder().name(pc.name()).cv(cv).lastAccessed(dateProvider.provideDate()).userId(userId).role(role).currentlySelected(pc.currentlySelected()).build();
+            Candidate candidate = Candidate.builder().name(pc.name()).cv(cv).lastAccessed(dateProvider.provideDate()).userId(userId).roles(List.of(role)).currentlySelected(pc.currentlySelected()).build();
             Candidate savedCandidate = candidateRepository.save(candidate);
             log.debug("Saved Cv: {} Candidate: {}", cv.getId(), savedCandidate.getId());
         }
@@ -51,7 +51,7 @@ public class CvDalImpl implements CvDal {
 
     @Override
     public List<CandidateData> getAllCandidates(long userId, long roleId) {
-        return candidateRepository.findAllByUserIdAndRoleId(userId, roleId).stream().map(this::convertToCandidateData).toList();
+        return candidateRepository.findAllByUserIdAndRoleId(userId, roleId).stream().map(candidate -> this.convertToCandidateData(candidate)).toList();
     }
 
     @Override
@@ -85,7 +85,6 @@ public class CvDalImpl implements CvDal {
                 candidate.getId(),
                 candidate.getName(),
                 candidate.getUserId(),
-                candidate.getRole().getId(),
                 candidate.getCurrentlySelected()
         );
     }
@@ -108,7 +107,7 @@ public class CvDalImpl implements CvDal {
     }
 
     @Override
-    public List<CandidateData> getByCvId(Long id) {
-        return candidateRepository.findAllByCvId(id).stream().map(this::convertToCandidateData).toList();
+    public Optional<CandidateData> getByCvId(Long id) {
+        return candidateRepository.findByCvId(id).map(candidate -> convertToCandidateData(candidate));
     }
 }

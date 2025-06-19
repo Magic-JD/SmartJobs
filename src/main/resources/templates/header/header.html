@@ -6,7 +6,7 @@
     </a>
     <nav class="primary-navigation flex-container right-pushed">
         <div class="right-pushed">
-            <div class="header-info credit">
+            <div class="header-info credit" th:if="${credits != null}">
                 <img alt="Credits" class="credit-image" th:src="@{/images/credit.png}">
                 <span hx-ext="sse"
                       hx-swap="innerHtml"
@@ -14,7 +14,6 @@
                       hx-trigger="load"
                       sse-connect="/sse/register"
                       sse-swap="credit"
-                      th:if="${credits != null}"
                       th:text="|${credits}|"
                 ></span>
             </div>
