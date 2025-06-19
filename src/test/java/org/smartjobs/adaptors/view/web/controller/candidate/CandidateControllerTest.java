@@ -3,7 +3,7 @@ package org.smartjobs.adaptors.view.web.controller.candidate;
 import display.CamelCaseDisplayNameGenerator;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
-import org.smartjobs.core.ports.dal.CvDal;
+import org.smartjobs.core.ports.dal.CandidateDal;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.candidate.CandidateServiceImpl;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -50,9 +50,9 @@ class CandidateControllerTest {
     @Test
     void testDeleteAllCandidatesDeletesAllCandidates() {
         MockHttpServletResponse response = mockHttpServletResponse();
-        CvDal cvDal = cvDalMock();
-        doAnswer(_ -> when(cvDal.getAllCandidates(USER_ID, ROLE_ID)).thenReturn(Collections.emptyList())).when(cvDal).deleteAllCandidates(USER_ID, ROLE_ID);
-        CandidateController candidateController = new CandidateController(new CandidateServiceImpl(AI_SERVICE, cvDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER), ROLE_SERVICE);
+        CandidateDal candidateDal = cvDalMock();
+        doAnswer(_ -> when(candidateDal.getAllCandidates(USER_ID, ROLE_ID)).thenReturn(Collections.emptyList())).when(candidateDal).deleteAllCandidates(USER_ID, ROLE_ID);
+        CandidateController candidateController = new CandidateController(new CandidateServiceImpl(AI_SERVICE, candidateDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER), ROLE_SERVICE);
         String candidateCountUpdated = candidateController.deleteAllCandidates(USER, MODEL, response);
         assertEquals(Collections.emptyList(), MODEL.getAttribute("candidates"));
         assertEquals("candidate-count-updated", response.getHeader("HX-Trigger"));
@@ -79,9 +79,9 @@ class CandidateControllerTest {
 
     @Test
     void testSelectCandidateReturnsTheCorrectCandidateInformationWhenTheCandidateCanNotBeFound() {
-        CvDal cvDal = cvDalMock();
-        when(cvDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.empty());
-        CandidateService candidateService = new CandidateServiceImpl(AI_SERVICE, cvDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
+        CandidateDal candidateDal = cvDalMock();
+        when(candidateDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.empty());
+        CandidateService candidateService = new CandidateServiceImpl(AI_SERVICE, candidateDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
         CandidateController candidateController = new CandidateController(candidateService, ROLE_SERVICE);
         MockHttpServletResponse response = mockHttpServletResponse();
         String emptyResponse = candidateController.selectCandidate(USER, CV_ID, true, MODEL, response);

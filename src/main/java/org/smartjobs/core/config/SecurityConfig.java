@@ -35,6 +35,8 @@ public class SecurityConfig {
                         "/swagger-resources/**",
                         "/configuration/security",
                         "/swagger-ui.html",
+                        "/images/mobius_logo.png",
+                        "/images/smart_jobs_logo.png",
                         "/webjars/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")

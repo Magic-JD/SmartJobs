@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserCriteriaRepository extends JpaRepository<UserCriteria, Long> {
 
+    int countByRoleId(long roleId);
+
 }

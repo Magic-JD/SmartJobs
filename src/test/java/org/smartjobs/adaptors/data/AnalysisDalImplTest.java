@@ -6,8 +6,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.smartjobs.adaptors.data.repository.AnalysisRepository;
+import org.smartjobs.adaptors.data.repository.CandidateRepository;
 import org.smartjobs.adaptors.data.repository.CriteriaAnalysisRepository;
-import org.smartjobs.adaptors.data.repository.CvRepository;
 import org.smartjobs.adaptors.data.repository.RoleRepository;
 import org.smartjobs.adaptors.data.repository.data.Analysis;
 import org.smartjobs.adaptors.data.repository.data.CriteriaAnalysis;
@@ -23,8 +23,9 @@ import static org.mockito.Mockito.*;
 @DisplayNameGeneration(CamelCaseDisplayNameGenerator.class)
 class AnalysisDalImplTest {
     public static final long CRITERIA_ANALYSIS_ID = 534543L;
-    public static final Analysis ANALYSIS = new Analysis(ANALYSIS_ID, USER_ID, DATABASE_CV, DATABASE_ROLE, null);
-    public static final Analysis ANALYSIS2 = new Analysis(ANALYSIS_ID2, USER_ID, DATABASE_CV, DATABASE_ROLE, null);
+
+    public static final Analysis ANALYSIS = new Analysis(ANALYSIS_ID, USER_ID, DATABASE_CANDIDATE, DATABASE_ROLE, null);
+    public static final Analysis ANALYSIS2 = new Analysis(ANALYSIS_ID2, USER_ID, DATABASE_CANDIDATE, DATABASE_ROLE, null);
     public static final List<CriteriaAnalysis> CRITERIA_ANALYSIS_LIST = List.of(
             new CriteriaAnalysis(CRITERIA_ANALYSIS_ID, ANALYSIS2, SCORE_VALUE_GOOD, MAX_SCORE_VALUE, CRITERIA_DESCRIPTION, JUSTIFICATION_POSITIVE, USER_CRITERIA_ID2),
             new CriteriaAnalysis(CRITERIA_ANALYSIS_ID, ANALYSIS, SCORE_VALUE_BAD, MAX_SCORE_VALUE, CRITERIA_DESCRIPTION_BASE, JUSTIFICATION_NEGATIVE, USER_CRITERIA_ID)
@@ -33,17 +34,17 @@ class AnalysisDalImplTest {
     private final ArgumentCaptor<List<CriteriaAnalysis>> criteriaAnalysisCaptor = ArgumentCaptor.forClass(List.class);
     private CriteriaAnalysisRepository criteriaAnalysisRepository = mock(CriteriaAnalysisRepository.class);
     private AnalysisRepository analysisRepository = mock(AnalysisRepository.class);
-    private CvRepository cvRepository = mock(CvRepository.class);
     private RoleRepository roleRepository = mock(RoleRepository.class);
-    private AnalysisDal analysisDal = new AnalysisDalImpl(criteriaAnalysisRepository, analysisRepository, cvRepository, roleRepository);
+    private CandidateRepository candidateRepository = mock(CandidateRepository.class);
+    private AnalysisDal analysisDal = new AnalysisDalImpl(criteriaAnalysisRepository, analysisRepository, candidateRepository, roleRepository);
 
     @BeforeEach
     void before() {
         criteriaAnalysisRepository = mock(CriteriaAnalysisRepository.class);
         analysisRepository = mock(AnalysisRepository.class);
-        cvRepository = mock(CvRepository.class);
+        candidateRepository = mock(CandidateRepository.class);
         roleRepository = mock(RoleRepository.class);
-        analysisDal = new AnalysisDalImpl(criteriaAnalysisRepository, analysisRepository, cvRepository, roleRepository);
+        analysisDal = new AnalysisDalImpl(criteriaAnalysisRepository, analysisRepository, candidateRepository, roleRepository);
     }
 
     @Test
@@ -56,9 +57,9 @@ class AnalysisDalImplTest {
 
     @Test
     void testWhenSaveResultThatItWillSaveTheCorrectResults() {
-        Analysis analysis = Analysis.builder().id(ANALYSIS_ID).cv(DATABASE_CV).role(DATABASE_ROLE).userId(USER_ID).build();
+        Analysis analysis = Analysis.builder().id(ANALYSIS_ID).candidate(DATABASE_CANDIDATE).role(DATABASE_ROLE).userId(USER_ID).build();
         when(analysisRepository.save(analysisArgumentCaptor.capture())).thenReturn(analysis);
-        doReturn(DATABASE_CV).when(cvRepository).getReferenceById(CV_ID);
+        doReturn(DATABASE_CANDIDATE).when(candidateRepository).getReferenceById(CV_ID);
         doReturn(DATABASE_ROLE).when(roleRepository).getReferenceById(ROLE_ID);
         long result = analysisDal.saveResults(USER_ID, CV_ID, ROLE_ID, SCORED_CRITERIA_LIST);
         // Verify the returned response is correct
@@ -67,7 +68,7 @@ class AnalysisDalImplTest {
         Analysis savedAnalysis = analysisArgumentCaptor.getValue();
         assertEquals(USER_ID, savedAnalysis.getUserId());
         assertEquals(DATABASE_ROLE, savedAnalysis.getRole());
-        assertEquals(DATABASE_CV, savedAnalysis.getCv());
+        assertEquals(DATABASE_CANDIDATE, savedAnalysis.getCandidate());
         // Check that the results are saved
         verify(criteriaAnalysisRepository, atLeastOnce()).saveAll(criteriaAnalysisCaptor.capture());
         List<CriteriaAnalysis> criteriaAnalysisList = criteriaAnalysisCaptor.getValue();

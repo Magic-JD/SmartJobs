@@ -4,14 +4,13 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.smartjobs.core.constants.ProcessFailure;
 import org.smartjobs.core.entities.CandidateData;
-import org.smartjobs.core.entities.CvData;
 import org.smartjobs.core.entities.FileInformation;
 import org.smartjobs.core.entities.ProcessedCv;
 import org.smartjobs.core.event.EventEmitter;
 import org.smartjobs.core.event.events.ErrorEvent;
 import org.smartjobs.core.event.events.ProgressEvent;
 import org.smartjobs.core.ports.client.AiService;
-import org.smartjobs.core.ports.dal.CvDal;
+import org.smartjobs.core.ports.dal.CandidateDal;
 import org.smartjobs.core.service.CandidateService;
 import org.smartjobs.core.service.CreditService;
 import org.smartjobs.core.utils.ConcurrencyUtil;
@@ -34,16 +33,16 @@ import static org.smartjobs.core.constants.ProcessFailure.*;
 public class CandidateServiceImpl implements CandidateService {
 
     private final AiService aiService;
-    private final CvDal cvDal;
+    private final CandidateDal candidateDal;
     private final EventEmitter eventEmitter;
     private final CreditService creditService;
     private final FileHandler fileHandler;
 
 
     @Autowired
-    public CandidateServiceImpl(AiService aiService, CvDal cvDal, EventEmitter eventEmitter, CreditService creditService, FileHandler fileHandler) {
+    public CandidateServiceImpl(AiService aiService, CandidateDal candidateDal, EventEmitter eventEmitter, CreditService creditService, FileHandler fileHandler) {
         this.aiService = aiService;
-        this.cvDal = cvDal;
+        this.candidateDal = candidateDal;
         this.eventEmitter = eventEmitter;
         this.creditService = creditService;
         this.fileHandler = fileHandler;
@@ -51,13 +50,13 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<ProcessedCv> getFullCandidateInfo(long userId, long roleId) {
-        return cvDal.getAllSelected(userId, roleId);
+        return candidateDal.getAllSelected(userId, roleId);
     }
 
     @Override
     @Cacheable(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     public List<CandidateData> getCurrentCandidates(long userId, long roleId) {
-        return cvDal.getAllCandidates(userId, roleId);
+        return candidateDal.getAllCandidates(userId, roleId);
     }
 
     @Override
@@ -67,17 +66,22 @@ public class CandidateServiceImpl implements CandidateService {
     })
     public List<ProcessedCv> updateCandidateCvs(long userId, long roleId, List<MultipartFile> files) {
         creditService.debit(userId, files.size());
+        eventEmitter.sendEvent(new ProgressEvent(userId, 0, files.size()));
         var handledFiles = files.stream()
                 .map(fileHandler::handleFile)
                 .distinct()
                 .toList();
-        var fileInformation = handledFiles.stream().map(hfo -> hfo.map(Either::<ProcessFailure, FileInformation>right).orElse(Either.left(FAILURE_TO_READ_FILE))).toList();
+        var fileInformation = handledFiles.stream().map(handledFile -> handledFile.map(Either::<ProcessFailure, FileInformation>right).orElse(Either.left(FAILURE_TO_READ_FILE))).toList();
         var counter = new AtomicInteger(0);
         var total = files.size();
 
         var processedCvs = ConcurrencyUtil.virtualThreadListMap(
                 fileInformation,
-                fi -> processAndUpdateProgress(userId, roleId, fi, counter, total)
+                fileInfo -> {
+                    var processed = fileInfo.flatMap(fi -> this.extractInformation(fi));
+                    eventEmitter.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
+                    return processed;
+                }
         );
 
         var successfullyProcessed = processedCvs.stream().filter(Either::isRight).map(Either::get).toList();
@@ -86,22 +90,12 @@ public class CandidateServiceImpl implements CandidateService {
             creditService.refund(userId, processFailures.size());
             eventEmitter.sendEvent(new ErrorEvent(userId, processFailures));
         }
-        cvDal.addCvsToRepository(userId, roleId, successfullyProcessed);
+        candidateDal.addCvsToRepository(userId, roleId, successfullyProcessed);
         return successfullyProcessed;
     }
 
-    private Either<ProcessFailure, ProcessedCv> processAndUpdateProgress(long userId, long roleId, Either<ProcessFailure, FileInformation> fileInformation, AtomicInteger counter, int total) {
-        var processedCv = fileInformation.flatMap(fi -> this.extractInformation(fi, userId, roleId));
-        eventEmitter.sendEvent(new ProgressEvent(userId, counter.incrementAndGet(), total));
-        return processedCv;
-    }
-
-    private Either<ProcessFailure, ProcessedCv> extractInformation(FileInformation fileInformation, long userId, long roleId) {
+    private Either<ProcessFailure, ProcessedCv> extractInformation(FileInformation fileInformation) {
         String hash = fileInformation.fileHash();
-        var existingData = cvDal.getByHash(hash);
-        if (existingData.isPresent()) {
-            return preexistingData(fileInformation, userId, roleId, existingData.get());
-        }
         var nameFuture = supplyAsync(() -> aiService.extractCandidateName(fileInformation.fileContent()));
         var descriptionFuture = supplyAsync(() -> aiService.anonymizeCv(fileInformation.fileContent()));
         var name = nameFuture.join();
@@ -115,34 +109,13 @@ public class CandidateServiceImpl implements CandidateService {
         return processedCv;
     }
 
-    private Either<ProcessFailure, ProcessedCv> preexistingData(FileInformation fileInformation, long userId, long roleId, CvData coreData) {
-        List<CandidateData> candidateData = cvDal.getByCvId(coreData.id());
-        if (candidateData.isEmpty()) {
-            return aiService
-                    .extractCandidateName(fileInformation.fileContent())
-                    .map(name -> Either.<ProcessFailure, ProcessedCv>right(new ProcessedCv(coreData.id(), name, true, coreData.fileHash(), coreData.condensedDescription())))
-                    .orElse(Either.left(LLM_FAILURE_UPLOADING));
-        } else {
-            String name = candidateData.getFirst().name();
-            var existingRowForUser = candidateData.stream().filter(cd -> cd.userId() == userId && cd.roleId() == roleId).findFirst();
-            if (existingRowForUser.isPresent()) {
-                CandidateData currentData = existingRowForUser.get();
-                if (!currentData.currentlySelected()) {
-                    cvDal.updateCurrentlySelectedById(currentData.id(), true);
-                }
-                return Either.left(EXISTING_CANDIDATE);
-            }
-            return Either.right(new ProcessedCv(coreData.id(), name, true, coreData.fileHash(), coreData.condensedDescription()));
-        }
-    }
-
     @Override
     @Caching(evict = {
             @CacheEvict(value = "cv-currently-selected", key = "{#userId, #roleId}"),
             @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public void deleteCandidate(long userId, long roleId, long candidateId) {
-        cvDal.deleteByCandidateId(candidateId);
+        candidateDal.deleteByCandidateId(candidateId);
     }
 
     @Override
@@ -151,7 +124,7 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public Optional<CandidateData> toggleCandidateSelect(long userId, long roleId, long cvId, boolean select) {
-        return cvDal.updateCurrentlySelectedById(cvId, select);
+        return candidateDal.updateCurrentlySelectedById(cvId, select);
     }
 
     @Override
@@ -160,13 +133,13 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public List<CandidateData> toggleCandidateSelectAll(long userId, long roleId, boolean select) {
-        return cvDal.updateCurrentlySelectedAll(userId, roleId, select);
+        return candidateDal.updateCurrentlySelectedAll(userId, roleId, select);
     }
 
     @Override
     @Cacheable(value = "cv-currently-selected", key = "{#userId, #roleId}")
     public int findSelectedCandidateCount(long userId, long roleId) {
-        return cvDal.findSelectedCandidateCount(userId, roleId);
+        return candidateDal.findSelectedCandidateCount(userId, roleId);
     }
 
     @Override
@@ -175,6 +148,6 @@ public class CandidateServiceImpl implements CandidateService {
             @CacheEvict(value = "cv-criteriaDescription", key = "{#userId, #roleId}")
     })
     public void deleteAllCandidates(long userId, long roleId) {
-        cvDal.deleteAllCandidates(userId, roleId);
+        candidateDal.deleteAllCandidates(userId, roleId);
     }
 }

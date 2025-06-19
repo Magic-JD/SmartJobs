@@ -1,29 +1,33 @@
-<div class="top-padding"></div>
-<form class="flex-stack gappy">
-    <label class="drop-container" for="files" id="dropcontainer">
-        <span class="drop-title text-large">Drop files here<br>or</span>
-    </label>
-    <div class="flex-container">
-        <input accept=".txt, .pdf, .doc, .docx" class="text-medium" id="files" multiple name="files" type="file">
-        <button id="clear" type="button" class="button-dark button-enlarge">Reset Selected</button>
-        <button class="button-light button-enlarge" type="submit"
-                hx-encoding="multipart/form-data"
-                hx-post="/candidate/upload"
-                hx-swap="innerHTML"
-                hx-target="closest main"
-                id="upload-form"
-        >Upload Files</button>
-    </div>
-    <div class="text-large"
-         hx-ext="sse" hx-swap="innerHtml"
-         hx-target="#progress"
-         sse-connect="/sse/register"
-         sse-swap="progress">
-        Uploaded:
-        <span id="progress"
-              th:text="|0/0|"
-        ></span>
-    </div>
-    <img alt="loading" class='htmx-indicator' th:src="@{/images/loading.gif}"/>
-</form>
-<script type="text/javascript" th:src="@{/js/upload.js}"></script>
+<div id="upload-files" class="floating-popup">
+    <div class="exit-button" onclick="this.parentNode.remove();">X</div>
+    <div class="top-padding"></div>
+    <form class="flex-stack gappy">
+        <label class="drop-container" for="files" id="dropcontainer">
+            <span class="drop-title text-large">Drop files here<br>or</span>
+        </label>
+        <div class="flex-container">
+            <input accept=".txt, .pdf, .doc, .docx" class="text-medium" id="files" multiple name="files" type="file">
+            <button class="button-dark button-enlarge" id="clear" type="button">Reset Selected</button>
+            <button class="button-light button-enlarge" hx-encoding="multipart/form-data"
+                    hx-post="/candidate/upload"
+                    hx-swap="innerHTML"
+                    hx-target="closest main"
+                    id="upload-form"
+                    type="submit"
+            >Upload Files
+            </button>
+        </div>
+        <div class="text-large"
+             hx-ext="sse" hx-swap="innerHtml"
+             hx-target="#progress"
+             sse-connect="/sse/register"
+             sse-swap="progress">
+            Uploaded:
+            <span id="progress"
+                  th:text="|0/0|"
+            ></span>
+        </div>
+        <img alt="loading" class='htmx-indicator' th:src="@{/images/loading.gif}"/>
+    </form>
+    <script th:src="@{/js/upload.js}" type="text/javascript"></script>
+</div>

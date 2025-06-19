@@ -16,12 +16,13 @@ public class Analysis {
     @Column(updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cv_id", nullable = false)
+    @JoinColumn(name = "candidate_id", nullable = false)
     @Setter
-    private Cv cv;
+    private Candidate candidate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
@@ -29,6 +30,5 @@ public class Analysis {
     private Role role;
 
     @OneToMany(mappedBy = "analysis", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CriteriaAnalysis> criteriaAnalysisList;
-
+    private List<CriteriaAnalysis> criteriaAnalysis;
 }

@@ -1,29 +1,33 @@
-<header th:fragment="header" class="primary-header flex-container highlight">
-    <a class="text-medium icon-link" th:href="@{/}">Smart Jobs</a>
+<header class="primary-header flex-container highlight" th:fragment="header">
+    <a class="text-small icon-link" th:href="@{/}">
+        <img alt="Mobius Logo" class="logo-image" th:src="@{/images/mobius_logo.png}"> <img alt="Smart Jobs Logo"
+                                                                                            class="logo-image"
+                                                                                            th:src="@{/images/smart_jobs_logo.png}">
+    </a>
     <nav class="primary-navigation flex-container right-pushed">
-        <div th:if="${username != null}"
-             class="text-small left-nudged">
-            <div th:text="${username}"></div>
+        <div class="right-pushed">
+            <div class="header-info credit" th:if="${credits != null}">
+                <img alt="Credits" class="credit-image" th:src="@{/images/credit.png}">
+                <span hx-ext="sse"
+                      hx-swap="innerHtml"
+                      hx-target="this"
+                      hx-trigger="load"
+                      sse-connect="/sse/register"
+                      sse-swap="credit"
+                      th:text="|${credits}|"
+                ></span>
+            </div>
+            <a class="header-info button-header"
+               hx-swap="innerHtml"
+               hx-target="next main"
+               hx-trigger="click"
+               th:attr="hx-get=@{|/${navElement.link}|}"
+               th:classappend="${navElement.currentPage} ? 'button-header-current'"
+               th:each="navElement : ${navElements}"
+               th:text="${navElement.name}"></a>
+            <a th:replace="${loggedIn} ? ~{header/account-button} : ~{header/login-button}"></a>
         </div>
-        <div th:if="${credits != null}"
-             class="text-small left-nudged"
-             hx-ext="sse"
-             sse-connect="/sse/register"
-             sse-swap="credit"
-             hx-swap="innerHtml"
-             hx-target="this"
-             hx-trigger="load"
-        >
-            <div th:text="|Credit: ${credits}|"></div>
-        </div>
-        <a class="button-dark right-pushed button-header-dark" th:each="navElement : ${navElements}"
-           th:attr="hx-get=@{|/${navElement.link}|}"
-           hx-swap="innerHtml"
-           hx-target="next main"
-           hx-trigger="click"
-           th:text="${navElement.name}"></a>
-        <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
     </nav>
     <div th:replace="${loggedIn} ? ~{trigger/message-trigger} : ~{trigger/empty-trigger}"></div>
-    <div id="message" class="attacher"></div>
+    <div class="attacher" id="message"></div>
 </header>

@@ -1,0 +1,23 @@
+<div th:fragment="account-button" class="header-info button-header" onclick="toggleDropdown('accountDropdown')">Account
+    <div id="accountDropdown" class="dropdown text-small" hidden="hidden">
+        <ul>
+            <li>
+                <a th:href="@{/logout}">Logout</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    function toggleDropdown(dropdownId) {
+        const dropdown = document.getElementById(dropdownId);
+
+        if (dropdown) {
+            if (dropdown.hasAttribute('hidden')) {
+                dropdown.removeAttribute('hidden');
+            } else {
+                dropdown.setAttribute('hidden', 'hidden');
+            }
+        }
+    }
+</script>

@@ -23,6 +23,9 @@ public class UserCriteria {
     @JoinColumn(name = "defined_criteria_id", nullable = false)
     private DefinedCriteria definedCriteria;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Role role;
+
     @Nullable
     private String value;
 

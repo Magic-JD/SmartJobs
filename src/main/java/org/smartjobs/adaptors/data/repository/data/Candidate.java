@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Entity
@@ -23,18 +24,21 @@ public class Candidate {
     @Setter
     private String name;
 
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cv_id", nullable = false)
     @Setter
-    private Cv cv;
+    private String fileHash;
+
+    @Column(columnDefinition="TEXT")
+    @Setter
+    private String condensedText;
 
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
-    @Setter
     private Role role;
 
     private Date lastAccessed;
+
+    @OneToMany(mappedBy = "candidate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Analysis> analyses;
 }

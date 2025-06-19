@@ -6,6 +6,7 @@ import org.smartjobs.core.provider.CodeProvider;
 import org.smartjobs.core.provider.DateProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
@@ -45,5 +46,14 @@ public class ApplicationConfig {
     @Bean
     public DateProvider dateProvider() {
         return () -> Date.valueOf(LocalDate.now());
+    }
+
+    @Bean
+    public ThreadPoolTaskScheduler taskScheduler() {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(4);
+        scheduler.setThreadNamePrefix("scheduled-task-");
+        scheduler.setDaemon(true);
+        return scheduler;
     }
 }

@@ -1,8 +1,8 @@
 package org.smartjobs.adaptors.data;
 
 import org.smartjobs.adaptors.data.repository.AnalysisRepository;
+import org.smartjobs.adaptors.data.repository.CandidateRepository;
 import org.smartjobs.adaptors.data.repository.CriteriaAnalysisRepository;
-import org.smartjobs.adaptors.data.repository.CvRepository;
 import org.smartjobs.adaptors.data.repository.RoleRepository;
 import org.smartjobs.adaptors.data.repository.data.Analysis;
 import org.smartjobs.adaptors.data.repository.data.CriteriaAnalysis;
@@ -21,14 +21,14 @@ public class AnalysisDalImpl implements AnalysisDal {
 
     private final CriteriaAnalysisRepository criteriaAnalysisRepository;
     private final AnalysisRepository analysisRepository;
-    private final CvRepository cvRepository;
+    private final CandidateRepository candidateRepository;
     private final RoleRepository roleRepository;
 
     @Autowired
-    public AnalysisDalImpl(CriteriaAnalysisRepository criteriaAnalysisRepository, AnalysisRepository analysisRepository, CvRepository cvRepository, RoleRepository roleRepository) {
+    public AnalysisDalImpl(CriteriaAnalysisRepository criteriaAnalysisRepository, AnalysisRepository analysisRepository, CandidateRepository candidateRepository, RoleRepository roleRepository) {
         this.criteriaAnalysisRepository = criteriaAnalysisRepository;
         this.analysisRepository = analysisRepository;
-        this.cvRepository = cvRepository;
+        this.candidateRepository = candidateRepository;
         this.roleRepository = roleRepository;
     }
 
@@ -44,10 +44,10 @@ public class AnalysisDalImpl implements AnalysisDal {
     }
 
     @Override
-    public long saveResults(long userId, long cvId, long roleId, List<ScoredCriteria> clearResults) {
-        var cv = cvRepository.getReferenceById(cvId);
+    public long saveResults(long userId, long candidateId, long roleId, List<ScoredCriteria> clearResults) {
+        var candidate = candidateRepository.getReferenceById(candidateId);
         var role = roleRepository.getReferenceById(roleId);
-        Analysis analysis = analysisRepository.save(Analysis.builder().cv(cv).role(role).userId(userId).build());
+        Analysis analysis = analysisRepository.save(Analysis.builder().candidate(candidate).role(role).userId(userId).build());
         criteriaAnalysisRepository.saveAll(clearResults
                 .stream()
                 .map(scoredCriteria -> CriteriaAnalysis.builder()

@@ -3,8 +3,8 @@
     <div th:replace="candidate/candidate-count"></div>
     <a class="button-dark button-enlarge right-pushed"
        hx-get="/upload"
-       hx-swap="innerHtml"
-       hx-target="closest main"
+       hx-swap="outerHtml"
+       hx-target="#upload-files"
        hx-trigger="click"
     >Upload Additional Candidates</a>
     <a class="button-light button-enlarge right-pushed"
@@ -20,4 +20,4 @@
     <h1 class="text-large">Loading Candidates</h1>
     <img alt="loading" class='htmx-indicator' th:src="@{/images/loading.gif}"/>
 </div>
-
+<div id="upload-files"></div>
