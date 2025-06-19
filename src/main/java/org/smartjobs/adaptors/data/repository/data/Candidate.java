@@ -24,21 +24,21 @@ public class Candidate {
     @Setter
     private String name;
 
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cv_id", nullable = false)
     @Setter
-    private Cv cv;
+    private String fileHash;
+
+    @Column(columnDefinition="TEXT")
+    @Setter
+    private String condensedText;
 
     private Long userId;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "candidate_role",
-            joinColumns = @JoinColumn(name = "candidate_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private List<Role> roles;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     private Date lastAccessed;
+
+    @OneToMany(mappedBy = "candidate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Analysis> analyses;
 }

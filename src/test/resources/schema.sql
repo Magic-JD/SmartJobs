@@ -1,14 +1,12 @@
 DROP TABLE IF EXISTS public.coupon;
-DROP TABLE IF EXISTS public.role_criteria;
 DROP TABLE IF EXISTS public.criteria_analysis;
-DROP TABLE IF EXISTS public.candidate;
 DROP TABLE IF EXISTS public.analysis;
+DROP TABLE IF EXISTS public.candidate;
 DROP TABLE IF EXISTS public.user_criteria;
 DROP TABLE IF EXISTS public.selected_role;
 DROP TABLE IF EXISTS public."role";
 DROP TABLE IF EXISTS public.credit;
 DROP TABLE IF EXISTS public.defined_criteria;
-DROP TABLE IF EXISTS public.cv;
 DROP TABLE IF EXISTS public.credential;
 
 CREATE TABLE public.credential (
@@ -17,13 +15,6 @@ CREATE TABLE public.credential (
 	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	authority varchar DEFAULT 'USER' NOT NULL,
 	CONSTRAINT credential_pkey PRIMARY KEY (id)
-);
-
-CREATE TABLE public.cv (
-	file_hash varchar NULL,
-	condensed_text text NOT NULL,
-	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	CONSTRAINT cv_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE public.defined_criteria (
@@ -68,38 +59,39 @@ CREATE TABLE public.selected_role (
 );
 
 CREATE TABLE public.user_criteria (
-	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	id int8 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	defined_criteria_id int8 NOT NULL,
-	value varchar NULL,
+	role_id int8 NOT NULL,
+	value varchar,
 	score int8 NOT NULL,
-	CONSTRAINT user_criteria_pk PRIMARY KEY (id),
-	CONSTRAINT user_criteria_criteria_fk FOREIGN KEY (defined_criteria_id) REFERENCES public.defined_criteria(id) ON DELETE CASCADE ON UPDATE CASCADE
+	CONSTRAINT user_criteria_criteria_fk FOREIGN KEY (defined_criteria_id) REFERENCES public.defined_criteria(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT user_criteria_role_fk FOREIGN KEY (role_id) REFERENCES public."role"(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE public.candidate (
+	id int8 GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	currently_selected bool,
+	"name" varchar,
+	file_hash varchar,
+	condensed_text text,
+	user_id int8 NOT NULL,
+	role_id int8 NOT NULL,
+	last_accessed date,
+	CONSTRAINT candidate_user_fk FOREIGN KEY (user_id) REFERENCES public.credential(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE INDEX candidate_id_idx ON public.candidate (id);
 
 CREATE TABLE public.analysis (
 	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	user_id int8 NOT NULL,
-	cv_id int8 NOT NULL,
+	candidate_id int8 NOT NULL,
 	role_id int8 NOT NULL,
 	CONSTRAINT analysis_pk PRIMARY KEY (id),
 	CONSTRAINT analysis_credential_fk FOREIGN KEY (user_id) REFERENCES public.credential(id) ON DELETE CASCADE ON UPDATE CASCADE,
-	CONSTRAINT analysis_cv_fk FOREIGN KEY (cv_id) REFERENCES public.cv(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT analysis_candidate_fk FOREIGN KEY (candidate_id) REFERENCES public.candidate(id) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT analysis_role_fk FOREIGN KEY (role_id) REFERENCES public."role"(id)
 );
-
-CREATE TABLE public.candidate (
-	"name" varchar NOT NULL,
-	cv_id int8 NOT NULL,
-	last_accessed date NOT NULL,
-	user_id int8 NOT NULL,
-	currently_selected bool NOT NULL,
-	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	CONSTRAINT candidate_pk PRIMARY KEY (id),
-	CONSTRAINT candidate_credential_fk FOREIGN KEY (user_id) REFERENCES public.credential(id) ON DELETE CASCADE ON UPDATE CASCADE DEFERRABLE INITIALLY DEFERRED,
-	CONSTRAINT candidate_cv_fk FOREIGN KEY (cv_id) REFERENCES public.cv(id) ON DELETE CASCADE ON UPDATE CASCADE DEFERRABLE INITIALLY DEFERRED,
-	CONSTRAINT candidate_role_fk FOREIGN KEY (role_id) REFERENCES public."role"(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-CREATE INDEX candidate_id_idx ON public.candidate USING btree (id);
 
 CREATE TABLE public.criteria_analysis (
 	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
@@ -114,20 +106,10 @@ CREATE TABLE public.criteria_analysis (
 	CONSTRAINT criteria_analysis_user_criteria_fk FOREIGN KEY (user_criteria_id) REFERENCES public.user_criteria(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE public.role_criteria (
-	role_id int8 NOT NULL,
-	user_criteria_id int8 NOT NULL,
-	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
-	CONSTRAINT role_criteria_pk PRIMARY KEY (id),
-	CONSTRAINT role_criteria_role_fk FOREIGN KEY (role_id) REFERENCES public."role"(id) ON DELETE CASCADE ON UPDATE CASCADE DEFERRABLE INITIALLY DEFERRED,
-	CONSTRAINT role_criteria_user_criteria_fk FOREIGN KEY (user_criteria_id) REFERENCES public.user_criteria(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE TABLE public.coupon (
 	id int8 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START 1 CACHE 1 NO CYCLE) NOT NULL,
 	user_id int8 NOT NULL,
 	applied bool DEFAULT false NOT NULL,
-	created date NOT NULL,
 	expired bool DEFAULT false NOT NULL,
 	value int4 NOT NULL,
 	code varchar NOT NULL,
@@ -136,13 +118,3 @@ CREATE TABLE public.coupon (
 );
 
 ALTER TABLE public.coupon ADD CONSTRAINT coupon_credential_fk FOREIGN KEY (user_id) REFERENCES public.credential(id);
-
-CREATE TABLE public.candidate_role (
-	id int8 GENERATED ALWAYS AS IDENTITY NOT NULL,
-	role_id int8 NOT NULL,
-	candidate_id int8 NOT NULL,
-	CONSTRAINT candidate_role_pk PRIMARY KEY (id)
-);
-
-ALTER TABLE public.candidate_role ADD CONSTRAINT role_id_fk FOREIGN KEY (role_id) REFERENCES public."role"(id);
-ALTER TABLE public.candidate_role ADD CONSTRAINT candidate_id_fk FOREIGN KEY (candidate_id) REFERENCES public.candidate(id);

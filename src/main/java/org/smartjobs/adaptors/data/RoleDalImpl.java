@@ -5,6 +5,7 @@ import org.smartjobs.adaptors.data.repository.*;
 import org.smartjobs.adaptors.data.repository.data.*;
 import org.smartjobs.core.entities.DefinedScoringCriteria;
 import org.smartjobs.core.entities.RoleDisplay;
+import org.smartjobs.core.entities.User;
 import org.smartjobs.core.entities.UserScoringCriteria;
 import org.smartjobs.core.exception.categories.ApplicationExceptions.IncorrectIdForRoleRetrievalException;
 import org.smartjobs.core.ports.dal.RoleDal;
@@ -19,15 +20,13 @@ import java.util.Optional;
 public class RoleDalImpl implements RoleDal {
 
     private final RoleRepository roleRepository;
-    private final RoleCriteriaRepository roleCriteriaRepository;
     private final UserCriteriaRepository userCriteriaRepository;
     private final DefinedScoringCriteriaRepository definedScoringCriteriaRepository;
     private final SelectedRoleRepository selectedRoleRepository;
 
     @Autowired
-    public RoleDalImpl(RoleRepository roleRepository, RoleCriteriaRepository roleCriteriaRepository, UserCriteriaRepository userCriteriaRepository, DefinedScoringCriteriaRepository definedScoringCriteriaRepository, SelectedRoleRepository selectedRoleRepository) {
+    public RoleDalImpl(RoleRepository roleRepository, UserCriteriaRepository userCriteriaRepository, DefinedScoringCriteriaRepository definedScoringCriteriaRepository, SelectedRoleRepository selectedRoleRepository) {
         this.roleRepository = roleRepository;
-        this.roleCriteriaRepository = roleCriteriaRepository;
         this.userCriteriaRepository = userCriteriaRepository;
         this.definedScoringCriteriaRepository = definedScoringCriteriaRepository;
         this.selectedRoleRepository = selectedRoleRepository;
@@ -56,11 +55,10 @@ public class RoleDalImpl implements RoleDal {
         return new org.smartjobs.core.entities.Role(
                 role.getId(),
                 role.getPosition(),
-                role.getRoleCriteria().stream().map(this::convertRoleCriteria).toList());
+                role.getUserCriteria().stream().map(this::convertRoleCriteria).toList());
     }
 
-    private UserScoringCriteria convertRoleCriteria(RoleCriteria rc) {
-        UserCriteria userCriteria = rc.getUserCriteria();
+    private UserScoringCriteria convertRoleCriteria(UserCriteria userCriteria) {
         DefinedCriteria definedCriteria = userCriteria.getDefinedCriteria();
         String aiPrompt = definedCriteria.getAiPrompt();
         String value = userCriteria.getValue();
@@ -68,7 +66,7 @@ public class RoleDalImpl implements RoleDal {
             aiPrompt = aiPrompt.replace("X", value);
         }
         return new UserScoringCriteria(
-                rc.getId(),
+                userCriteria.getId(),
                 CriteriaCategory.getFromName(definedCriteria.getCategory()),
                 definedCriteria.getCriteria() + (definedCriteria.isInput() ? STR.": \{value}" : ""),
                 definedCriteria.isBoolean(),
@@ -120,14 +118,13 @@ public class RoleDalImpl implements RoleDal {
     public org.smartjobs.core.entities.UserCriteria createNewUserCriteriaForRole(long definedCriteriaId, long roleId, String value, int score) {
         DefinedCriteria definedCriteria = definedScoringCriteriaRepository.getReferenceById(definedCriteriaId);
         Role role = roleRepository.getReferenceById(roleId);
-        UserCriteria userCriteria = userCriteriaRepository.saveAndFlush(UserCriteria.builder().definedCriteria(definedCriteria).value(value).score(score).build());
-        roleCriteriaRepository.save(RoleCriteria.builder().role(role).userCriteria(userCriteria).build());
+        UserCriteria userCriteria = userCriteriaRepository.saveAndFlush(UserCriteria.builder().role(role).definedCriteria(definedCriteria).value(value).score(score).build());
         return new org.smartjobs.core.entities.UserCriteria(userCriteria.getId(), userCriteria.getDefinedCriteria().getId(), Optional.ofNullable(userCriteria.getValue()), userCriteria.getScore());
     }
 
     @Override
     public int countCriteriaForRole(long roleId) {
-        return roleCriteriaRepository.countByRoleId(roleId);
+        return userCriteriaRepository.countByRoleId(roleId);
     }
 
     @Override

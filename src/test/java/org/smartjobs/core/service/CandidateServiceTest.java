@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.smartjobs.core.entities.CandidateData;
 import org.smartjobs.core.entities.ProcessedCv;
-import org.smartjobs.core.ports.dal.CvDal;
+import org.smartjobs.core.ports.dal.CandidateDal;
 import org.smartjobs.core.service.candidate.CandidateServiceImpl;
 
 import java.util.List;
@@ -38,10 +38,10 @@ class CandidateServiceTest {
 
     @Test
     void testDeleteCandidateDeletesTheCandidateFromThePropagationLayer() {
-        CvDal cvDal = cvDalMock();
-        CandidateService candidateService = new CandidateServiceImpl(AI_SERVICE, cvDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
+        CandidateDal candidateDal = cvDalMock();
+        CandidateService candidateService = new CandidateServiceImpl(AI_SERVICE, candidateDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
         candidateService.deleteCandidate(USER_ID, ROLE_ID, CANDIDATE_ID);
-        verify(cvDal).deleteByCandidateId(CANDIDATE_ID);
+        verify(candidateDal).deleteByCandidateId(CANDIDATE_ID);
     }
 
     @Test
@@ -71,9 +71,9 @@ class CandidateServiceTest {
 
     @Test
     void testDeleteAllCandidatesDeletesAllCandidatesForTheRoleAndTheUserFromThePersistenceLayer() {
-        CvDal cvDal = cvDalMock();
-        CandidateService candidateService = new CandidateServiceImpl(AI_SERVICE, cvDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
+        CandidateDal candidateDal = cvDalMock();
+        CandidateService candidateService = new CandidateServiceImpl(AI_SERVICE, candidateDal, EVENT_EMITTER, CREDIT_SERVICE, FILE_HANDLER);
         candidateService.deleteAllCandidates(USER_ID, ROLE_ID);
-        verify(cvDal).deleteAllCandidates(USER_ID, ROLE_ID);
+        verify(candidateDal).deleteAllCandidates(USER_ID, ROLE_ID);
     }
 }

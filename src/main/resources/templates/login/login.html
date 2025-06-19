@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head th:replace="header/head"></head>
-<link rel="shortcut icon" type="../image/png" th:href="@{/favicon/favicon.ico}"/>
+<link rel="shortcut icon" type="image/png" th:href="@{/favicon/favicon.ico}"/>
 <body id="mainBody" class="background wrapper">
 <header th:fragment="header" class="primary-header flex-container highlight">
-    <a class="text-medium icon-link" th:href="@{/}">Smart Jobs</a>
+    <a class="text-small icon-link" th:href="@{/}">
+        <img alt="Mobius Logo" class="logo-image" th:src="@{/images/mobius_logo.png}"> <img alt="Smart Jobs Logo"
+                                                                                            class="logo-image"
+                                                                                            th:src="@{/images/smart_jobs_logo.png}">
+    </a>
     <nav class="primary-navigation flex-container right-pushed">
         <div th:if="${credits != null}"
              class="text-small left-nudged"
@@ -23,7 +27,10 @@
            hx-target="next main"
            hx-trigger="click"
            th:text="${navElement.name}"></a>
-        <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
+
+        <div class="right-pushed">
+            <a th:replace="${loggedIn} ? ~{header/logout-button} : ~{header/login-button}"></a>
+        </div>
     </nav>
     <div th:replace="${loggedIn} ? ~{trigger/message-trigger} : ~{trigger/empty-trigger}"></div>
     <div id="message" class="text-medium error-message" th:if="${error != null}">Username or password is incorrect.

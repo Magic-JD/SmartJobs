@@ -23,27 +23,24 @@ import static org.mockito.Mockito.*;
 class RoleDalImplTest {
 
     private RoleRepository roleRepository = mock(RoleRepository.class);
-    private RoleCriteriaRepository roleCriteriaRepository = mock(RoleCriteriaRepository.class);
     private UserCriteriaRepository userCriteriaRepository = mock(UserCriteriaRepository.class);
     private DefinedScoringCriteriaRepository definedScoringCriteriaRepository = mock(DefinedScoringCriteriaRepository.class);
     private SelectedRoleRepository selectedRoleRepository = mock(SelectedRoleRepository.class);
 
-    private RoleDal roleDal = new RoleDalImpl(roleRepository, roleCriteriaRepository, userCriteriaRepository, definedScoringCriteriaRepository, selectedRoleRepository);
+    private RoleDal roleDal = new RoleDalImpl(roleRepository, userCriteriaRepository, definedScoringCriteriaRepository, selectedRoleRepository);
 
 
     private final ArgumentCaptor<Role> roleArgumentCaptor = ArgumentCaptor.forClass(Role.class);
-    private final ArgumentCaptor<RoleCriteria> roleCriteriaArgumentCaptor = ArgumentCaptor.forClass(RoleCriteria.class);
     private final ArgumentCaptor<SelectedRole> selectedRoleArgumentCaptor = ArgumentCaptor.forClass(SelectedRole.class);
     private final ArgumentCaptor<UserCriteria> userCriteriaArgumentCaptor = ArgumentCaptor.forClass(UserCriteria.class);
 
     @BeforeEach
     void before(){
         roleRepository = mock(RoleRepository.class);
-        roleCriteriaRepository = mock(RoleCriteriaRepository.class);
         userCriteriaRepository = mock(UserCriteriaRepository.class);
         definedScoringCriteriaRepository = mock(DefinedScoringCriteriaRepository.class);
         selectedRoleRepository = mock(SelectedRoleRepository.class);
-        roleDal = new RoleDalImpl(roleRepository, roleCriteriaRepository, userCriteriaRepository, definedScoringCriteriaRepository, selectedRoleRepository);
+        roleDal = new RoleDalImpl(roleRepository, userCriteriaRepository, definedScoringCriteriaRepository, selectedRoleRepository);
     }
 
     @Test
@@ -145,11 +142,10 @@ class RoleDalImplTest {
 
     @Test
     void testCreateNewUserCriteriaForRoleWillCreateTheCriteriaAndAddTheRoleLink() {
-        doReturn(new UserCriteria(USER_CRITERIA_ID, DEFINED_CRITERIA_SCORE, VALUE, MAX_SCORE_VALUE)).when(userCriteriaRepository).saveAndFlush(userCriteriaArgumentCaptor.capture());
+        doReturn(new UserCriteria(USER_CRITERIA_ID, DEFINED_CRITERIA_SCORE, DATABASE_ROLE, VALUE, MAX_SCORE_VALUE)).when(userCriteriaRepository).saveAndFlush(userCriteriaArgumentCaptor.capture());
         doReturn(DEFINED_CRITERIA_SCORE).when(definedScoringCriteriaRepository).getReferenceById(DEFINED_SCORING_CRITERIA_ID_SCORE);
         doReturn(DATABASE_ROLE).when(roleRepository).getReferenceById(ROLE_ID);
         org.smartjobs.core.entities.UserCriteria newUserCriteriaForRole = roleDal.createNewUserCriteriaForRole(DEFINED_SCORING_CRITERIA_ID_SCORE, ROLE_ID, VALUE, MAX_SCORE_VALUE);
-        verify(roleCriteriaRepository).save(roleCriteriaArgumentCaptor.capture());
 
         assertEquals(USER_CRITERIA, newUserCriteriaForRole);
 
@@ -157,19 +153,14 @@ class RoleDalImplTest {
         assertEquals(DEFINED_SCORING_CRITERIA_ID_SCORE, userCriteria.getDefinedCriteria().getId());
         assertEquals(MAX_SCORE_VALUE, userCriteria.getScore());
         assertEquals(VALUE, userCriteria.getValue());
-
-        RoleCriteria roleCritera = roleCriteriaArgumentCaptor.getValue();
-        assertEquals(USER_CRITERIA_ID, roleCritera.getUserCriteria().getId());
-        assertEquals(ROLE_ID, roleCritera.getRole().getId());
     }
 
     @Test
     void testCreateNewUserCriteriaForRoleWillCreateTheCriteriaAndAddTheRoleLinkWhenNoValueIsProvided() {
-        doReturn(new UserCriteria(USER_CRITERIA_ID, DEFINED_CRITERIA_SCORE, null, MAX_SCORE_VALUE)).when(userCriteriaRepository).saveAndFlush(userCriteriaArgumentCaptor.capture());
+        doReturn(new UserCriteria(USER_CRITERIA_ID, DEFINED_CRITERIA_SCORE, DATABASE_ROLE, null, MAX_SCORE_VALUE)).when(userCriteriaRepository).saveAndFlush(userCriteriaArgumentCaptor.capture());
         doReturn(DEFINED_CRITERIA_SCORE).when(definedScoringCriteriaRepository).getReferenceById(DEFINED_SCORING_CRITERIA_ID_SCORE);
         doReturn(DATABASE_ROLE).when(roleRepository).getReferenceById(ROLE_ID);
         org.smartjobs.core.entities.UserCriteria newUserCriteriaForRole = roleDal.createNewUserCriteriaForRole(DEFINED_SCORING_CRITERIA_ID_SCORE, ROLE_ID, null, MAX_SCORE_VALUE);
-        verify(roleCriteriaRepository).save(roleCriteriaArgumentCaptor.capture());
 
         assertEquals(USER_CRITERIA_WITHOUT_VALUE, newUserCriteriaForRole);
 
@@ -177,16 +168,6 @@ class RoleDalImplTest {
         assertEquals(DEFINED_SCORING_CRITERIA_ID_SCORE, userCriteria.getDefinedCriteria().getId());
         assertEquals(MAX_SCORE_VALUE, userCriteria.getScore());
         assertNull(userCriteria.getValue());
-
-        RoleCriteria roleCritera = roleCriteriaArgumentCaptor.getValue();
-        assertEquals(USER_CRITERIA_ID, roleCritera.getUserCriteria().getId());
-        assertEquals(ROLE_ID, roleCritera.getRole().getId());
-    }
-
-    @Test
-    void testCountCriteriaForRoleReturnsTheCriteriaForTheRole() {
-        when(roleCriteriaRepository.countByRoleId(ROLE_ID)).thenReturn(ROLE_CRITERIA_COUNT);
-        assertEquals(ROLE_CRITERIA_COUNT, roleDal.countCriteriaForRole(ROLE_ID));
     }
 
     @Test

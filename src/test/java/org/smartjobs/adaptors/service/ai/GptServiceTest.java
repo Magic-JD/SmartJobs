@@ -102,6 +102,6 @@ class GptServiceTest {
     }
 
     private GptRequest createGptRequest(String systemMessage, String userMessage) {
-        return new GptRequest(GptModel.GPT_4_O, 0.0, 0.1, List.of(new GptMessage(GptRole.SYSTEM, systemMessage), new GptMessage(GptRole.USER, userMessage)));
+        return new GptRequest(GptModel.GPT_4_1_MINI, 0.0, 0.1, List.of(new GptMessage(GptRole.SYSTEM, systemMessage), new GptMessage(GptRole.USER, userMessage)));
     }
 }

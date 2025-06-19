@@ -79,6 +79,26 @@ public class TestConstants {
     public static final String CRITERIA_REQUEST_PASS = "Does the candidate match the criteria pass?";
     public static final String CRITERIA_REQUEST_SCORE_BASE = "Does the candidate match the criteria X score?";
     public static final int MAX_SCORE_VALUE = 10;
+    public static final long USER_ID = 5345342L;
+    public static final long USER_ID2 = 63454353L;
+    public static final String POSITION = "Position";
+    public static final String POSITION2 = "Position2";
+    public static final long DEFINED_SCORING_CRITERIA_ID_SCORE = 43543L;
+    public static final long DEFINED_SCORING_CRITERIA_ID_PASS = 487673L;
+    public static final DefinedCriteria DEFINED_CRITERIA_PASS = DefinedCriteria.builder().id(DEFINED_SCORING_CRITERIA_ID_PASS).criteria(CRITERIA_DESCRIPTION_BASE).category(CriteriaCategory.HARD_SKILLS.toString()).aiPrompt(CRITERIA_REQUEST_PASS).isBoolean(true).input(false).build();
+    public static final DefinedCriteria DEFINED_CRITERIA_SCORE = DefinedCriteria.builder().id(DEFINED_SCORING_CRITERIA_ID_SCORE).criteria(CRITERIA_DESCRIPTION_BASE).category(CriteriaCategory.HARD_SKILLS.toString()).aiPrompt(CRITERIA_REQUEST_SCORE_BASE).isBoolean(false).input(true).build();
+    public static final org.smartjobs.adaptors.data.repository.data.UserCriteria DATABASE_USER_CRITERIA_PASS = new org.smartjobs.adaptors.data.repository.data.UserCriteria(USER_CRITERIA_ID, DEFINED_CRITERIA_PASS, null, null, 10);
+    public static final String VALUE = "Java";
+    public static final org.smartjobs.adaptors.data.repository.data.UserCriteria DATABASE_USER_CRITERIA_SCORE = new org.smartjobs.adaptors.data.repository.data.UserCriteria(USER_CRITERIA_ID2, DEFINED_CRITERIA_SCORE, null, VALUE, 10);
+    public static final String HASH_TXT = "12055492ce597b78066c49ec03405635";
+    public static final String CV_STRING_CONDENSED = "Condensed Cv String";
+    public static final String CV_STRING_CONDENSED2 = "Condensed Cv String2";
+    public static final long CANDIDATE_ID = 53242L;
+    public static final long CANDIDATE_ID2 = 5243234L;
+    public static final Candidate DATABASE_CANDIDATE = new Candidate(CANDIDATE_ID, true, CANDIDATE_NAME, HASH_TXT, CV_STRING_CONDENSED, USER_ID, null, new Date(0), null);
+    public static final long ROLE_ID = 5345654342L;
+    public static final long ROLE_ID2 = 64345L;
+    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID, USER_ID, POSITION, List.of(DATABASE_USER_CRITERIA_SCORE, DATABASE_USER_CRITERIA_PASS), Collections.emptyList(), List.of(DATABASE_CANDIDATE));
     public static final UserScoringCriteria USER_SCORING_CRITERIA_BAD = new UserScoringCriteria(USER_CRITERIA_ID, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION_BASE, true, MAX_SCORE_VALUE, CRITERIA_REQUEST_PASS);
     public static final UserScoringCriteria USER_SCORING_CRITERIA_GOOD = new UserScoringCriteria(USER_CRITERIA_ID2, CriteriaCategory.HARD_SKILLS, CRITERIA_DESCRIPTION, false, MAX_SCORE_VALUE, CRITERIA_REQUEST_SCORE);
     public static final List<UserScoringCriteria> USER_SCORING_CRITERIA_LIST = List.of(USER_SCORING_CRITERIA_GOOD, USER_SCORING_CRITERIA_BAD);
@@ -90,14 +110,8 @@ public class TestConstants {
     public static final List<ScoredCriteria> SCORED_CRITERIA_LIST2 = List.of(SCORED_CRITERIA_MEDIUM, SCORED_CRITERIA_BAD);
     public static final CandidateScores CANDIDATE_SCORES = new CandidateScores(ANALYSIS_ID, CANDIDATE_NAME, SCORED_CRITERIA_LIST);
     public static final CandidateScores CANDIDATE_SCORES2 = new CandidateScores(ANALYSIS_ID2, CANDIDATE_NAME2, SCORED_CRITERIA_LIST2);
-    public static final long USER_ID = 5345342L;
-    public static final long USER_ID2 = 63454353L;
     public static final long CV_ID = 5634253242L;
     public static final long CV_ID2 = 5634253242L;
-    public static final long ROLE_ID = 5345654342L;
-    public static final long ROLE_ID2 = 64345L;
-    public static final String CV_STRING_CONDENSED = "Condensed Cv String";
-    public static final String CV_STRING_CONDENSED2 = "Condensed Cv String2";
     public static final String CV_STRING_FULL = "Full Cv String "; //Multipart file adds that space by default
     public static final String CV_STRING_FULL_FOR_CONVERSION_TXT = "Full Cv String";
     public static final String USERNAME = "email@email.com";
@@ -111,48 +125,33 @@ public class TestConstants {
     public static final GrantedAuthority GRANTED_AUTHORITY_USER = () -> "USER";
     public static final long CREDIT_AMOUNT = 543L;
     public static final int CREDIT_CHANGE_AMOUNT = 43;
-    public static final long CANDIDATE_ID = 654432L;
-    public static final long CANDIDATE_ID2 = 643532L;
-    public static final CandidateData CANDIDATE_DATA = new CandidateData(CANDIDATE_ID, CANDIDATE_NAME, USER_ID, ROLE_ID, true);
-    public static final CandidateData CANDIDATE_DATA2 = new CandidateData(CANDIDATE_ID2, CANDIDATE_NAME2, USER_ID, ROLE_ID, true);
-    public static final CandidateData CANDIDATE_DATA_UNSELECTED = new CandidateData(CANDIDATE_ID, CANDIDATE_NAME, USER_ID, ROLE_ID, false);
+    public static final CandidateData CANDIDATE_DATA = new CandidateData(CANDIDATE_ID, CANDIDATE_NAME, USER_ID, true);
+    public static final CandidateData CANDIDATE_DATA2 = new CandidateData(CANDIDATE_ID2, CANDIDATE_NAME2, USER_ID, true);
+    public static final CandidateData CANDIDATE_DATA_UNSELECTED = new CandidateData(CANDIDATE_ID, CANDIDATE_NAME, USER_ID, false);
     public static final List<CandidateData> CANDIDATE_DATA_LIST = List.of(CANDIDATE_DATA, CANDIDATE_DATA2);
     public static final List<CandidateData> SINGLE_CANDIDATE_DATA_LIST = List.of(CANDIDATE_DATA);
     public static final int SELECTED_CANDIDATE_COUNT = 453;
-    public static final String HASH_TXT = "12055492ce597b78066c49ec03405635";
     public static final ProcessedCv PROCESSED_CV = new ProcessedCv(CV_ID, CANDIDATE_NAME, true, HASH_TXT, CV_STRING_CONDENSED);
     public static final ProcessedCv PROCESSED_CV_INVALID = new ProcessedCv(0L, "", true, HASH_TXT, "");
     public static final ProcessedCv PROCESSED_CV2 = new ProcessedCv(CV_ID2, CANDIDATE_NAME2, true, HASH_TXT, CV_STRING_CONDENSED2);
     public static final List<ProcessedCv> PROCESSED_CV_LIST = List.of(PROCESSED_CV2, PROCESSED_CV);
     public static final CvData CV_DATA = new CvData(CV_ID, HASH_TXT, CV_STRING_CONDENSED);
-    public static final long DEFINED_SCORING_CRITERIA_ID_SCORE = 43543L;
-    public static final long DEFINED_SCORING_CRITERIA_ID_PASS = 487673L;
     public static final String DEFINED_SCORING_CRITERIA_DESCRIPTION = "Description";
-    public static final DefinedCriteria DEFINED_CRITERIA_PASS = DefinedCriteria.builder().id(DEFINED_SCORING_CRITERIA_ID_PASS).criteria(CRITERIA_DESCRIPTION_BASE).category(CriteriaCategory.HARD_SKILLS.toString()).aiPrompt(CRITERIA_REQUEST_PASS).isBoolean(true).input(false).build();
-    public static final DefinedCriteria DEFINED_CRITERIA_SCORE = DefinedCriteria.builder().id(DEFINED_SCORING_CRITERIA_ID_SCORE).criteria(CRITERIA_DESCRIPTION_BASE).category(CriteriaCategory.HARD_SKILLS.toString()).aiPrompt(CRITERIA_REQUEST_SCORE_BASE).isBoolean(false).input(true).build();
     public static final String INPUT_EXAMPLE = "Input Example";
     public static final String TOOLTIP = "Tooltip";
     public static final DefinedScoringCriteria DEFINED_SCORING_CRITERIA_PASS = new DefinedScoringCriteria(DEFINED_SCORING_CRITERIA_ID_PASS, DEFINED_SCORING_CRITERIA_DESCRIPTION, CriteriaCategory.HARD_SKILLS, false, Optional.empty(), CRITERIA_REQUEST_PASS, TOOLTIP);
     public static final DefinedScoringCriteria DEFINED_SCORING_CRITERIA_SCORE = new DefinedScoringCriteria(DEFINED_SCORING_CRITERIA_ID_SCORE, DEFINED_SCORING_CRITERIA_DESCRIPTION, CriteriaCategory.SOFT_SKILLS, true, Optional.of(INPUT_EXAMPLE), CRITERIA_REQUEST_SCORE, TOOLTIP);
     public static final List<DefinedScoringCriteria> DEFINED_SCORING_CRITERIA_LIST = List.of(DEFINED_SCORING_CRITERIA_SCORE, DEFINED_SCORING_CRITERIA_PASS);
-    public static final String POSITION = "Position";
-    public static final String POSITION2 = "Position2";
     public static final RoleDisplay ROLE_DISPLAY = new RoleDisplay(ROLE_ID, POSITION);
     public static final RoleDisplay ROLE_DISPLAY2 = new RoleDisplay(ROLE_ID2, POSITION2);
     public static final List<RoleDisplay> ROLE_DISPLAY_LIST = List.of(ROLE_DISPLAY, ROLE_DISPLAY2);
     public static final int ROLE_CRITERIA_COUNT = 5;
-    public static final String VALUE = "Java";
     public static final UserCriteria USER_CRITERIA = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID_SCORE, Optional.of(VALUE), MAX_SCORE_VALUE);
     public static final UserCriteria USER_CRITERIA_WITHOUT_VALUE = new UserCriteria(USER_CRITERIA_ID, DEFINED_SCORING_CRITERIA_ID_SCORE, Optional.empty(), MAX_SCORE_VALUE);
     public static final Role ROLE = new Role(ROLE_ID, POSITION, USER_SCORING_CRITERIA_LIST);
     public static final Role ROLE2 = new Role(ROLE_ID2, POSITION2, USER_SCORING_CRITERIA_LIST2);
     public static final Role ROLE_NEW = new Role(ROLE_ID, POSITION, Collections.emptyList());
-    public static final org.smartjobs.adaptors.data.repository.data.UserCriteria DATABASE_USER_CRITERIA_PASS = new org.smartjobs.adaptors.data.repository.data.UserCriteria(53242342L, DEFINED_CRITERIA_PASS, null, 10);
-    public static final org.smartjobs.adaptors.data.repository.data.UserCriteria DATABASE_USER_CRITERIA_SCORE = new org.smartjobs.adaptors.data.repository.data.UserCriteria(53242342L, DEFINED_CRITERIA_SCORE, VALUE, 10);
-    public static final RoleCriteria ROLE_CRITERIA_PASS = new RoleCriteria(USER_CRITERIA_ID, null, DATABASE_USER_CRITERIA_PASS);
-    public static final RoleCriteria ROLE_CRITERIA_SCORE = new RoleCriteria(USER_CRITERIA_ID2, null, DATABASE_USER_CRITERIA_SCORE);
-    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID, USER_ID, POSITION, List.of(ROLE_CRITERIA_SCORE, ROLE_CRITERIA_PASS), Collections.emptyList());
-    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE2 = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID2, USER_ID, POSITION2, Collections.emptyList(), Collections.emptyList());
+    public static final org.smartjobs.adaptors.data.repository.data.Role DATABASE_ROLE2 = new org.smartjobs.adaptors.data.repository.data.Role(ROLE_ID2, USER_ID, POSITION2, Collections.emptyList(), Collections.emptyList(), List.of(DATABASE_CANDIDATE));
     public static final List<org.smartjobs.adaptors.data.repository.data.Role> DATABASE_ROLE_LIST = List.of(DATABASE_ROLE, DATABASE_ROLE2);
     public static final long SELECTED_ROLE_ID = 4346453L;
     public static final SelectedRole SELECTED_ROLE = new SelectedRole(SELECTED_ROLE_ID, USER_ID, DATABASE_ROLE);
@@ -232,7 +231,7 @@ public class TestConstants {
     public static final org.smartjobs.adaptors.view.web.controller.roles.display.Role DISPLAY_ROLE_NEW = new org.smartjobs.adaptors.view.web.controller.roles.display.Role(ROLE_ID, POSITION, CATEGORY_LIST_NEW);
     public static final List<String> CATEGORY_STRINGS = List.of("Hard Skills", "Professional Engagement and Recognition", "Qualifications", "Relevant Experience", "Soft Skills");
     public static final AiService AI_SERVICE = aiServiceMock();
-    public static final CvDal CV_DAL = cvDalMock();
+    public static final CandidateDal CV_DAL = cvDalMock();
     public static final EventEmitter EVENT_EMITTER = new EventEmitterImpl();
     public static final FileHandler FILE_HANDLER = new FileHandlerImpl();
     public static final RoleDal ROLE_DAL = roleDalMock();
@@ -251,10 +250,6 @@ public class TestConstants {
     public static final NoOpCache EMAIL_VALIDATION_CACHE = new NoOpCache("email-validation");
     public static final UserService USER_SERVICE = new UserService(CREDENTIAL_DAL, PASSWORD_ENCODER, VALIDATOR, EVENT_EMITTER, CODE_SUPPLIER, EMAIL_VALIDATION_CACHE);
 
-    public static final Candidate DATABASE_CANDIDATE = new Candidate(CANDIDATE_ID, true, CANDIDATE_NAME, null, USER_ID, DATABASE_ROLE, new Date(0));
-    public static final Candidate DATABASE_CANDIDATE2 = new Candidate(CANDIDATE_ID2, true, CANDIDATE_NAME2, null, USER_ID, DATABASE_ROLE, new Date(0));
-    public static final Cv DATABASE_CV = new Cv(CV_ID, HASH_TXT, CV_STRING_CONDENSED, DATABASE_CANDIDATE);
-    public static final Cv DATABASE_CV2 = new Cv(CV_ID2, HASH_TXT, CV_STRING_CONDENSED2, DATABASE_CANDIDATE2);
 
 
     //PORT MOCKS
@@ -291,18 +286,15 @@ public class TestConstants {
         return creditDal;
     }
 
-    public static CvDal cvDalMock() {
-        CvDal cvDal = mock(CvDal.class);
-        when(cvDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.of(CANDIDATE_DATA));
-        when(cvDal.updateCurrentlySelectedById(CV_ID, false)).thenReturn(Optional.of(CANDIDATE_DATA_UNSELECTED));
-        when(cvDal.updateCurrentlySelectedAll(USER_ID, ROLE_ID, true)).thenReturn(CANDIDATE_DATA_LIST);
-        when(cvDal.findSelectedCandidateCount(USER_ID, ROLE_ID)).thenReturn(SELECTED_CANDIDATE_COUNT);
-        when(cvDal.getAllCandidates(USER_ID, ROLE_ID)).thenReturn(CANDIDATE_DATA_LIST);
-        when(cvDal.getByCvId(CV_ID)).thenReturn(SINGLE_CANDIDATE_DATA_LIST);
-        when(cvDal.getByHash(HASH_TXT)).thenReturn(Optional.empty());
-        when(cvDal.knownHash(HASH_TXT)).thenReturn(false);
-        when(cvDal.getAllSelected(USER_ID, ROLE_ID)).thenReturn(PROCESSED_CV_LIST);
-        return cvDal;
+    public static CandidateDal cvDalMock() {
+        CandidateDal candidateDal = mock(CandidateDal.class);
+        when(candidateDal.updateCurrentlySelectedById(CV_ID, true)).thenReturn(Optional.of(CANDIDATE_DATA));
+        when(candidateDal.updateCurrentlySelectedById(CV_ID, false)).thenReturn(Optional.of(CANDIDATE_DATA_UNSELECTED));
+        when(candidateDal.updateCurrentlySelectedAll(USER_ID, ROLE_ID, true)).thenReturn(CANDIDATE_DATA_LIST);
+        when(candidateDal.findSelectedCandidateCount(USER_ID, ROLE_ID)).thenReturn(SELECTED_CANDIDATE_COUNT);
+        when(candidateDal.getAllCandidates(USER_ID, ROLE_ID)).thenReturn(CANDIDATE_DATA_LIST);
+        when(candidateDal.getAllSelected(USER_ID, ROLE_ID)).thenReturn(PROCESSED_CV_LIST);
+        return candidateDal;
     }
 
     public static RoleDal roleDalMock() {
