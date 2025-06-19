@@ -37,7 +37,16 @@ public class CandidateDalImpl implements CandidateDal {
     public void addCvsToRepository(long userId, long roleId, List<ProcessedCv> processedCvs) {
         Role role = roleRepository.getReferenceById(roleId);
         for (ProcessedCv pc : processedCvs) {
-            Candidate candidate = Candidate.builder().name(pc.name()).fileHash(pc.fileHash()).name(pc.name()).lastAccessed(dateProvider.provideDate()).userId(userId).role(role).currentlySelected(pc.currentlySelected()).build();
+            Candidate candidate = Candidate.builder()
+                    .name(pc.name())
+                    .fileHash(pc.fileHash())
+                    .name(pc.name())
+                    .condensedText(pc.condensedDescription())
+                    .lastAccessed(dateProvider.provideDate())
+                    .userId(userId)
+                    .role(role)
+                    .currentlySelected(pc.currentlySelected())
+                    .build();
             Candidate savedCandidate = candidateRepository.save(candidate);
             log.debug("Saved Candidate: {}", savedCandidate.getId());
         }
