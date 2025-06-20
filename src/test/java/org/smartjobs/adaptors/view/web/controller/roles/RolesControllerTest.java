@@ -21,7 +21,7 @@ class RolesControllerTest {
         String savedRolesFragment = rolesController.savedRoles(USER, MODEL);
         assertEquals(ROLE_DISPLAY_LIST, MODEL.getAttribute("savedRoles"));
         assertEquals(ROLE_ID, MODEL.getAttribute("currentlySelected"));
-        assertEquals("role/saved-role", savedRolesFragment);
+        assertEquals("role/current-roles", savedRolesFragment);
     }
 
     @Test

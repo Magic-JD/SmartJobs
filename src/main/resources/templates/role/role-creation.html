@@ -1,0 +1,12 @@
+<div class="flex-stack centered role-creation text-large">
+    <div>Create a New Role</div>
+    <div class="flex-container">
+        <form hx-post="roles/create" hx-on::after-request="this.reset()">
+            <input id="position"
+                   class="highlighted-box"
+                   name="position"
+                   type="text"
+            >
+        </form>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="flex-stack saved-role-table" id="current-roles"
+     hx-get="/roles/saved"
+     hx-swap="outerHTML"
+     hx-target="this"
+     hx-trigger="role-changed from:body">
+
+    <div class="saved-role-row" th:each="role : ${savedRoles}">
+        <div class="role-name " th:text="${role.position}"></div>
+        <div class="right-pushed">
+        <button class="button-dark">Criteria</button>
+        <button class="button-dark"
+                hx-swap="innerHTML"
+                hx-target="closest main"
+                hx-trigger="click"
+                th:attr="hx-get=@{|/candidates/${role.id}|}"
+        >Candidates</button>
+        <button class="button-dark">Last Analysis</button>
+        <button class="button-dark"
+                hx-swap="outerHTML"
+                hx-target="closest .saved-role-row"
+                hx-trigger="click"
+                th:attr="hx-delete=@{|/roles/delete/${role.id}|}">
+            Delete
+        </button>
+        </div>
+    </div>
+
+</div>

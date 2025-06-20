@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -52,8 +53,9 @@ public class PageController {
     }
 
 
-    @GetMapping("/candidates")
-    public String getCandidatesPage(@AuthenticationPrincipal User user, Model model) {
+    @GetMapping("/candidates/{roleId}")
+    public String getCandidatesPage(@AuthenticationPrincipal User user, Model model, @PathVariable("roleId") long roleId) {
+        roleService.setCurrentlySelectedRole(user.getId(), roleId);
         addInfoBoxInfo(user, model);
         return CANDIDATE_PAGE;
     }
@@ -112,7 +114,6 @@ public class PageController {
                 "loggedIn", true,
                 "navElements", List.of(
                         new NavElement("roles", "Roles", false),
-                        new NavElement("candidates", "Candidates", false),
                         new NavElement("credit", "Credit", false)
                 )));
     }

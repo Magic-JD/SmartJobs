@@ -40,7 +40,7 @@ public class RolesController {
         var userId = user.getId();
         model.addAttribute("savedRoles", roleService.getUserRoles(userId));
         model.addAttribute("currentlySelected", roleService.getCurrentlySelectedRoleId(userId).orElse(0L));
-        return SAVED_ROLE_FRAGMENT;
+        return CURRENT_ROLE_FRAGMENT;
     }
 
     @HxRequest
@@ -80,7 +80,7 @@ public class RolesController {
 
     @HxRequest
     @PostMapping("/create")
-    public String createNewRole(@AuthenticationPrincipal User user, @PathParam("position") String name, HttpServletResponse response, Model model) {
+    public String createNewRole(@AuthenticationPrincipal User user, @RequestParam("position") String name, HttpServletResponse response, Model model) {
         var userId = user.getId();
         var internalRole = roleService.createRole(name, userId);
         response.addHeader(HX_TRIGGER, ROLE_CHANGED);

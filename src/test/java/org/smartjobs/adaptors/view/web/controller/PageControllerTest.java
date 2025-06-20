@@ -17,9 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PageControllerTest {
 
     public static final NavElement ROLES_NAV_ELEMENT = new NavElement("roles", "Roles", false);
-    public static final NavElement CANDIDATES_NAV_ELEMENT = new NavElement("candidates", "Candidates", false);
     public static final NavElement CREDIT_NAV_ELEMENT = new NavElement("credit", "Credit", false);
-    public static final List<NavElement> FULL_NAV_ELEMENTS = List.of(ROLES_NAV_ELEMENT, CANDIDATES_NAV_ELEMENT, CREDIT_NAV_ELEMENT);
+    public static final List<NavElement> FULL_NAV_ELEMENTS = List.of(ROLES_NAV_ELEMENT, CREDIT_NAV_ELEMENT);
     public static final List<NavElement> EMPTY_NAV_LIST = Collections.emptyList();
     PageController pageController = new PageController(CREDIT_SERVICE, ROLE_SERVICE, CANDIDATE_SERVICE, new ApplicationConfig().decimalFormat());
 
@@ -51,7 +50,7 @@ class PageControllerTest {
 
     @Test
     void testGetCandidatesPageAddsTheInfoBoxInfo() {
-        String analysisPage = pageController.getCandidatesPage(USER, MODEL);
+        String analysisPage = pageController.getCandidatesPage(USER, MODEL, ROLE_ID);
         assertEquals(SELECTED_CANDIDATE_COUNT, MODEL.getAttribute("selectedCount"));
         assertEquals(POSITION, MODEL.getAttribute("currentRole"));
         assertEquals("candidate/candidates", analysisPage);

@@ -226,6 +226,48 @@ picture {
   position: relative;
 }
 
+.role-creation {
+  height: 30vh;
+  max-height: 400px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.highlighted-box {
+  border: 4px solid var(--clr-highlight) !important;
+  background-color: var(--clr-white) !important;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  outline-offset: 2px;
+  caret-color: transparent;
+}
+
+
+.saved-role-table {
+    padding-top: 40px;
+    width: 60%;
+}
+.saved-role-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.role-name {
+    flex: 1;
+    text-align: left;
+    padding: 0.5rem 1rem;
+    font-weight: bold; /* optional */
+}
+
+.button-dark {
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+}
+
 .button-header:hover {
     color: var(--clr-select)
 }
@@ -370,6 +412,13 @@ footer {
     gap: 40px;
 }
 
+.centered {
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
 .drop-container {
   position: relative;
   display: flex;
@@ -415,7 +464,6 @@ footer {
 }
 
 input[type=text], input[type=password] {
-    margin-top: 10px;
     padding-left: 10px;
     background-color: var(--clr-white);
     color: var(--clr-text);

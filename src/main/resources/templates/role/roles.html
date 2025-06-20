@@ -1,5 +1,7 @@
-<div class="flex-container text-medium">
-    <div th:replace="role/saved-role"></div>
-    <div th:replace="role/role"></div>
-    <div class="categories-container right-nudged" id=select-criteria></div>
+<div class="top-padding"></div>
+<div class="flex-stack centered text-medium">
+    <div th:replace="role/role-creation"></div>
+    <hr style="width: 100%; border: none; border-top: 1px solid #ccc; margin: 1rem 0;">
+    <div th:replace="role/current-roles"></div>
+    <div id="create-criteria"></div>
 </div>
